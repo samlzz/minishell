@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 13:46:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:16:56 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,9 @@ typedef enum e_node_type
 {
 	ND_CMD,
 	ND_PIPE,
-	ND_REDIR,
-//todo: for later
 	ND_AND,
-	ND_OR
+	ND_OR,
+	ND_REDIR,
 }	t_node_type;
 
 typedef enum e_redir_type

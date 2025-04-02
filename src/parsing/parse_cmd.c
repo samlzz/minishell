@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:51 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 13:49:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:15:53 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static t_ast	*_parse_redirection(t_token **cur, t_ast *cmd, int16_t *err)
 	*cur = (*cur)->next;
 	node = ft_calloc(1, sizeof (t_ast));
 	if (!node)
-		return (*err = PARSE_ERR_ALLOC, NULL);
+		return (*err = PARSE_ERR, NULL);
 	node->type = ND_REDIR;
 	node->u_data.s_redir.filename = ft_strdup(filename->value);
 	node->u_data.s_redir.redir_type = type;
@@ -79,7 +79,7 @@ static inline char	**_collect_argv(t_token **cur, int16_t *err)
 		return (*err = PARSE_ERR_NO_WORD, NULL);
 	argv = ft_calloc(size + 1, sizeof (char *));
 	if (!argv)
-		return (*err = PARSE_ERR_ALLOC, NULL);
+		return (*err = PARSE_ERR, NULL);
 	tk = *cur;
 	size = 0;
 	while (tk && tk->type == TK_WORD)
@@ -106,7 +106,7 @@ t_ast	*cmd_parser(t_token **cur, int16_t *err)
 	
 	cmd_node = ft_calloc(1, sizeof (t_ast));
 	if (!cmd_node)
-		return (*err = PARSE_ERR_ALLOC, NULL);
+		return (*err = PARSE_ERR, NULL);
 	cmd_node->type = ND_CMD;
 	cmd_node->u_data.s_cmd.argv = _collect_argv(cur, err);
 	if (!cmd_node->u_data.s_cmd.argv)

@@ -16,6 +16,7 @@
 # include "libft.h"
 # include <stdint.h>
 
+//? Error codes
 # define PARSE_OK			0
 # define PARSE_ERR_SQUOTE	-2
 # define PARSE_ERR_DQUOTE	-3
@@ -23,7 +24,9 @@
 # define PARSE_ERR_NO_WORD	-5
 # define PARSE_ERR_NO_BIN	-6
 # define PARSE_ERR_EOF		-7
-# define PARSE_ERR_ALLOC	-1
+# define PARSE_ERR			-1
+
+//* Tokens types
 
 typedef enum e_tk_type
 {
@@ -53,10 +56,14 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-typedef struct s_ast	t_ast;
+//* Functions
 
-t_ast	*binop_parser(t_token **cur, int16_t *err);
+//? Forward declaration
+typedef struct s_ast	t_ast;
+typedef enum e_node_type	t_node_type;
+
 t_ast	*cmd_parser(t_token **cur, int16_t *err);
+t_ast	*binop_parser(t_token **cur, t_node_type bin_op, int16_t *err);
 
 t_token	*tokenise(const char *input, int16_t *exit_code);
 

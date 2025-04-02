@@ -6,55 +6,47 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 13:41:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:22:29 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 
-static bool	_is_binop(t_tk_type type)
+static inline t_node_type	ttk_to_tnode(t_tk_type tk)
 {
-	return (type == TK_AND || type == TK_OR || type == TK_PIPE);
+	if (tk == TK_PIPE)
+		return ND_PIPE;
+	if (tk == TK_AND)
+		return ND_AND;
+	if (tk == TK_OR)
+		return ND_OR;
+	return -1;
 }
 
-static inline t_node_type	_get_bo_type(t_tk_type tk_type)
+t_ast	*binop_parser(t_token **cur, t_node_type bin_op, int16_t *err)
 {
-	t_node_type	type;
-
-	type = -1;
-	if (tk_type == TK_AND)
-		type = ND_AND;
-	else if (tk_type == TK_OR)
-		type = ND_OR;
-	else if (tk_type == TK_PIPE)
-		type = ND_PIPE;
-	return (type);
-}
-
-t_ast	*binop_parser(t_token **cur, int16_t *err)
-{
-	t_ast	*pipe;
+	t_ast	*node;
 	t_ast	*left;
 
-	left = cmd_parser(cur, err);
+	if (bin_op < ND_PIPE)
+		return (cmd_parser(cur, err));
+	if (bin_op > ND_OR)
+		return (*err = PARSE_ERR, NULL);
+	left = binop_parser(cur, bin_op - 1, err);
 	if (!left)
 		return (NULL);
-	while (*cur && _is_binop((*cur)->type))
+	while (*cur && ttk_to_tnode((*cur)->type) == bin_op)
 	{
-		pipe = ft_calloc(1, sizeof (t_ast));
-		if (!pipe)
-		{
-			ast_free(left);
-			*err = PARSE_ERR_ALLOC;
-			return (NULL);
-		}
-		pipe->type = _get_bo_type((*cur)->type);
-		pipe->u_data.s_binop.left = left;
+		node = ft_calloc(1, sizeof (t_ast));
+		if (!node)
+			return (ast_free(left), *err = PARSE_ERR, NULL);
+		node->type = bin_op;
+		node->u_data.s_binop.left = left;
 		*cur = (*cur)->next;
-		pipe->u_data.s_binop.right = cmd_parser(cur, err);
-		if (!pipe->u_data.s_binop.right)
-			return (ast_free(pipe), NULL);
-		left = pipe;
+		node->u_data.s_binop.right = binop_parser(cur, bin_op - 1, err);
+		if (!node->u_data.s_binop.right)
+			return (ast_free(node), NULL);
+		left = node;
 	}
 	return (left);
 }

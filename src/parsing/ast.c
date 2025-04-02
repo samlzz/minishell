@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 13:48:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 16:27:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ void	ast_free(t_ast	*node)
  * -4 = char not handled
  * -5 = no word when expected
  * -6 = no bin operation when expected
+ * -7 = unexpected eof
  */
 int16_t	new_ast(const char *input, t_ast **new)
 {
@@ -49,7 +50,7 @@ int16_t	new_ast(const char *input, t_ast **new)
 	tokens = tokenise(input, &exit_code);
 	if (!tokens)
 		return (exit_code);
-	*new = binop_parser(&tokens, &exit_code);
+	*new = binop_parser(&tokens, ND_OR, &exit_code);
 	if (!*new)
 	{
 		token_clear(tokens);
