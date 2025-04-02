@@ -11,7 +11,7 @@ LIB_DIRS = $(LIBFT)
 LIB_FILES = ft
 
 CC = gcc
-CFLAGS := -Wall -Wextra -Werror -MMD
+CFLAGS := -Wall -Wextra -Werror -g -MMD
 RM = rm -f
 MD = mkdir -p
 AR = ar rcs
@@ -21,7 +21,8 @@ C_FILES =	parsing/ft_token.c	\
 			parsing/ast.c		\
 			parsing/parse_bin.c	\
 			parsing/parse_cmd.c	\
-			main.c
+			main.c		\
+			print_ast.c
 #* Colors
 
 ESC = \033[
