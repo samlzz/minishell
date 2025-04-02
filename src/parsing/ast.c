@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 12:19:33 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 13:48:53 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,19 +32,34 @@ void	ast_free(t_ast	*node)
 	free(node);
 }
 
-t_ast	*new_ast(t_token *tokens)
+/**
+ * @param err(int16_t):
+ * 
+ * -1 = internal error
+ * -2 | -3 = single or double cote not closed
+ * -4 = char not handled
+ * -5 = no word when expected
+ * -6 = no bin operation when expected
+ */
+int16_t	new_ast(const char *input, t_ast **new)
 {
-	t_ast	*ast;
+	t_token	*tokens;
+	int16_t	exit_code;
 
+	tokens = tokenise(input, &exit_code);
 	if (!tokens)
-		return (NULL);
-	ast = binop_parser(&tokens);
-	if (!ast)
-		return (NULL);
+		return (exit_code);
+	*new = binop_parser(&tokens, &exit_code);
+	if (!*new)
+	{
+		token_clear(tokens);
+		return (exit_code);
+	}
 	if (tokens && tokens->type != TK_EOF)
 	{
-		ast_free(ast);
-		return (NULL);
+		token_clear(tokens);
+		ast_free(*new);
+		return (PARSE_ERR_EOF);
 	}
-	return (ast);
+	return (0);
 }

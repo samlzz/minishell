@@ -86,8 +86,8 @@ void	print_ast(t_ast *node)
 int	main(void)
 {
 	char	input[1024];
-	t_token	*tokens;
 	t_ast	*ast;
+	int16_t	err;
 
 	while (1)
 	{
@@ -98,18 +98,14 @@ int	main(void)
 		// Remove trailing newline
 		input[strcspn(input, "\n")] = '\0';
 
-		tokens = tokenise(input);
-		if (!tokens)
+		err = new_ast((const char *)input, &ast);
+		if (!ast)
 		{
-			fprintf(stderr, "Erreur : échec du tokenizer.\n");
+			fprintf(stderr, "Erreur : échec de la création de l'ast. %d\n", err);
 			continue;
 		}
-
-		print_tokens(tokens);
-		ast = new_ast(tokens);
 		print_ast(ast);
 		ast_free(ast);
-		token_clear(tokens);
 	}
 	printf("Bye!\n");
 	return (0);

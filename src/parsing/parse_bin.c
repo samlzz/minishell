@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/01 16:28:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 13:41:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,23 +31,27 @@ static inline t_node_type	_get_bo_type(t_tk_type tk_type)
 	return (type);
 }
 
-t_ast	*binop_parser(t_token **cur)
+t_ast	*binop_parser(t_token **cur, int16_t *err)
 {
 	t_ast	*pipe;
 	t_ast	*left;
 
-	left = cmd_parser(cur);
+	left = cmd_parser(cur, err);
 	if (!left)
 		return (NULL);
 	while (*cur && _is_binop((*cur)->type))
 	{
 		pipe = ft_calloc(1, sizeof (t_ast));
 		if (!pipe)
-			return (ast_free(left), NULL);
+		{
+			ast_free(left);
+			*err = PARSE_ERR_ALLOC;
+			return (NULL);
+		}
 		pipe->type = _get_bo_type((*cur)->type);
 		pipe->u_data.s_binop.left = left;
 		*cur = (*cur)->next;
-		pipe->u_data.s_binop.right = cmd_parser(cur);
+		pipe->u_data.s_binop.right = cmd_parser(cur, err);
 		if (!pipe->u_data.s_binop.right)
 			return (ast_free(pipe), NULL);
 		left = pipe;

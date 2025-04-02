@@ -16,6 +16,15 @@
 # include "libft.h"
 # include <stdint.h>
 
+# define PARSE_OK			0
+# define PARSE_ERR_SQUOTE	-2
+# define PARSE_ERR_DQUOTE	-3
+# define PARSE_ERR_CHAR		-4
+# define PARSE_ERR_NO_WORD	-5
+# define PARSE_ERR_NO_BIN	-6
+# define PARSE_ERR_EOF		-7
+# define PARSE_ERR_ALLOC	-1
+
 typedef enum e_tk_type
 {
 	TK_WORD,
@@ -46,10 +55,10 @@ typedef struct s_token
 
 typedef struct s_ast	t_ast;
 
-t_ast	*binop_parser(t_token **cur);
-t_ast	*cmd_parser(t_token **cur);
+t_ast	*binop_parser(t_token **cur, int16_t *err);
+t_ast	*cmd_parser(t_token **cur, int16_t *err);
 
-t_token	*tokenise(char *input);
+t_token	*tokenise(const char *input, int16_t *exit_code);
 
 //tokens
 void	token_clear(t_token *lst);
