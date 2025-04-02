@@ -1,7 +1,6 @@
 **/**.swp
 .vscode/*
 
-**/main.c
 **/ign_*
 
 libft/*
