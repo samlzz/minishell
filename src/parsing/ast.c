@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/01 16:59:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/02 12:19:33 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,16 @@ void	ast_free(t_ast	*node)
 	free(node);
 }
 
-t_ast	*new_ast(t_token **tokens)
+t_ast	*new_ast(t_token *tokens)
 {
 	t_ast	*ast;
 
-	if (!tokens || !*tokens)
+	if (!tokens)
 		return (NULL);
-	ast = binop_parser(tokens);
+	ast = binop_parser(&tokens);
 	if (!ast)
 		return (NULL);
-	if (*tokens && (*tokens)->type != TK_EOF)
+	if (tokens && tokens->type != TK_EOF)
 	{
 		ast_free(ast);
 		return (NULL);
