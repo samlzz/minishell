@@ -1,0 +1,14 @@
+**/**.swp
+.vscode/*
+
+**/main.c
+**/ign_*
+
+libft/*
+
+build/*
+*.d
+*.o
+*.map
+*.a
+*.out
