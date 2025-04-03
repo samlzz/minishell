@@ -54,14 +54,22 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-//* Functions
-
 //? Forward declaration
 typedef struct s_ast	t_ast;
 typedef enum e_node_type	t_node_type;
 
-t_ast	*cmd_parser(t_token **cur, t_token **errtok);
+//* Functions
+
+static inline bool	_is_redirection(t_tk_type type)
+{
+	return (type == TK_REDIR_IN || type == TK_REDIR_OUT
+		|| type == TK_REDIR_APPEND || type == TK_HEREDOC);
+}
+
 t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok);
+t_ast	*cmd_parser(t_token **cur, t_token **errtok);
+bool	_handle_redirection(t_token **cur, t_ast **tree, \
+	t_token **errtok);
 
 t_token	*tokenise(const char *input, int16_t *exit_code);
 
