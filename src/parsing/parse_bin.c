@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 12:23:24 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:54:23 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok)
 
 	if (bin_op < ND_PIPE)
 		return (cmd_parser(cur, errtok));
-	if (bin_op > ND_OR || (*cur)->type == TK_EOF)
+	if (bin_op > ND_OR)
 		return (NULL);
 	left = binop_parser(cur, bin_op - 1, errtok);
 	if (!left)
@@ -61,7 +61,7 @@ t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok)
 		*cur = (*cur)->next;
 		node->u_data.s_binop.right = binop_parser(cur, bin_op - 1, errtok);
 		if (!node->u_data.s_binop.right)
-			return (ast_free(node), NULL);
+			return (ast_free(node), *errtok = *cur, NULL);
 		left = node;
 	}
 	return (left);

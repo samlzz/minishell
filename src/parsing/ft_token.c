@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 12:19:36 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:54:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,5 +73,6 @@ t_token *token_pop(t_token **lst, t_token *to_retrieve)
 		prev->next = cur->next;
 	else
 		*lst = cur->next;
+	to_retrieve->next = NULL;
 	return (to_retrieve);
 }
