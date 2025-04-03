@@ -22,8 +22,7 @@ C_FILES =	parsing/ft_token.c	\
 			parsing/parse_bin.c	\
 			parsing/parse_cmd.c	\
 			parsing/parse_rd.c	\
-#? Test files
-			test/main.c			\
+			test/Pmain.c		\
 			test/print_ast.c	\
 			test/print_token.c
 #* Colors
