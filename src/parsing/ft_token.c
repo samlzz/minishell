@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 16:19:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:19:36 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void	token_clear(t_token *lst)
 
 	while (lst)
 	{
-		free(lst->value);
+		if (lst->value)
+			free(lst->value);
 		next = lst->next;
 		free(lst);
 		lst = next;
@@ -52,4 +53,25 @@ void	token_addback(t_token **lst, t_token *new)
 		return (token_addfront(lst, new));
 	last = token_last(*lst);
 	last->next = new;
+}
+
+t_token *token_pop(t_token **lst, t_token *to_retrieve)
+{
+	t_token *prev;
+	t_token	*cur;
+
+	prev = NULL;
+	cur = *lst;
+	while (cur && cur != to_retrieve)
+	{
+		prev = cur;
+		cur = cur->next;
+	}
+	if (!cur)
+		return (NULL);
+	if (prev)
+		prev->next = cur->next;
+	else
+		*lst = cur->next;
+	return (to_retrieve);
 }

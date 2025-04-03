@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:51 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 16:15:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 11:30:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,26 +35,26 @@ static inline t_redir_type	_get_rd_type(t_tk_type tk_type)
 	return (type);
 }
 
-static t_ast	*_parse_redirection(t_token **cur, t_ast *cmd, int16_t *err)
+static t_ast	*_parse_redirection(t_token **cur, t_ast *cmd, t_token **errtok)
 {
 	t_ast			*node;
 	t_redir_type	type;
 	t_token			*filename;
 
 	if (!*cur || !_is_redirection((*cur)->type))
-		return (*err = PARSE_ERR_NO_BIN, NULL);
+		return (*errtok = *cur, NULL);
 	type = _get_rd_type((*cur)->type);
 	*cur = (*cur)->next;
 	if (!*cur || (*cur)->type != TK_WORD)
 	{
-		*err = PARSE_ERR_NO_WORD;
+		*errtok = *cur;
 		return (NULL);
 	}
 	filename = *cur;
 	*cur = (*cur)->next;
 	node = ft_calloc(1, sizeof (t_ast));
 	if (!node)
-		return (*err = PARSE_ERR, NULL);
+		return (NULL);
 	node->type = ND_REDIR;
 	node->u_data.s_redir.filename = ft_strdup(filename->value);
 	node->u_data.s_redir.redir_type = type;
@@ -62,7 +62,7 @@ static t_ast	*_parse_redirection(t_token **cur, t_ast *cmd, int16_t *err)
 	return (node);
 }
 
-static inline char	**_collect_argv(t_token **cur, int16_t *err)
+static inline char	**_collect_argv(t_token **cur, t_token **errtok)
 {
 	t_token	*tk;
 	char	**argv;
@@ -76,10 +76,10 @@ static inline char	**_collect_argv(t_token **cur, int16_t *err)
 		tk = tk->next;
 	}
 	if (!size)
-		return (*err = PARSE_ERR_NO_WORD, NULL);
+		return (*errtok = tk, NULL);
 	argv = ft_calloc(size + 1, sizeof (char *));
 	if (!argv)
-		return (*err = PARSE_ERR, NULL);
+		return (NULL);
 	tk = *cur;
 	size = 0;
 	while (tk && tk->type == TK_WORD)
@@ -91,24 +91,16 @@ static inline char	**_collect_argv(t_token **cur, int16_t *err)
 	return (argv);
 }
 
-/**
- * @param err(int16_t):
- * 
- * -1 = internal error
- * ...
- * -5 = no word when expected
- * -6 = no bin operation when expected
- */
-t_ast	*cmd_parser(t_token **cur, int16_t *err)
+t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*cmd_node;
 	t_ast	*rd_node;
 	
 	cmd_node = ft_calloc(1, sizeof (t_ast));
 	if (!cmd_node)
-		return (*err = PARSE_ERR, NULL);
+		return (NULL);
 	cmd_node->type = ND_CMD;
-	cmd_node->u_data.s_cmd.argv = _collect_argv(cur, err);
+	cmd_node->u_data.s_cmd.argv = _collect_argv(cur, errtok);
 	if (!cmd_node->u_data.s_cmd.argv)
 	{
 		free(cmd_node);
@@ -116,7 +108,7 @@ t_ast	*cmd_parser(t_token **cur, int16_t *err)
 	}
 	while (*cur && _is_redirection((*cur)->type))
 	{
-		rd_node = _parse_redirection(cur, cmd_node, err);
+		rd_node = _parse_redirection(cur, cmd_node, errtok);
 		if (!rd_node)
 		{
 			ast_free(cmd_node);

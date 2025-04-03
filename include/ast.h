@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 16:16:56 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 11:28:16 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,6 @@ typedef struct s_ast
 }	t_ast;
 
 void	ast_free(t_ast	*node);
-int16_t	new_ast(const char *input, t_ast **new);
+t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok);
 
 #endif

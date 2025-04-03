@@ -16,15 +16,11 @@
 # include "libft.h"
 # include <stdint.h>
 
+# define HANDLED_CHAR	"<>|&'\""
 //? Error codes
 # define PARSE_OK			0
 # define PARSE_ERR_SQUOTE	-2
 # define PARSE_ERR_DQUOTE	-3
-# define PARSE_ERR_CHAR		-4
-# define PARSE_ERR_NO_WORD	-5
-# define PARSE_ERR_NO_BIN	-6
-# define PARSE_ERR_EOF		-7
-# define PARSE_ERR			-1
 
 //* Tokens types
 
@@ -62,12 +58,13 @@ typedef struct s_token
 typedef struct s_ast	t_ast;
 typedef enum e_node_type	t_node_type;
 
-t_ast	*cmd_parser(t_token **cur, int16_t *err);
-t_ast	*binop_parser(t_token **cur, t_node_type bin_op, int16_t *err);
+t_ast	*cmd_parser(t_token **cur, t_token **errtok);
+t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok);
 
 t_token	*tokenise(const char *input, int16_t *exit_code);
 
 //tokens
+t_token *token_pop(t_token **lst, t_token *to_retrieve);
 void	token_clear(t_token *lst);
 t_token	*token_last(t_token *lst);
 void	token_addfront(t_token **lst, t_token *new);
