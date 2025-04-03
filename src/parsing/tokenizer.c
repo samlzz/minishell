@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/02 13:49:19 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 11:56:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,11 @@ static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 	while (input[len] && input[len] != *input)
 		len++;
 	if (!input[len])
-		return ((*input == '"') * -3 + !(*input == '"') * -2);
+	{
+		if (*input == '"')
+			return (-3);
+		return (-2);
+	}
 	curr->value = ft_substr(input, 1, len - 1);
 	if (!curr->value)
 		return (-1);
@@ -32,6 +36,18 @@ static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 	return (len + 1);
 }
 
+static inline bool	_isspace(int c)
+{
+	unsigned char	uc;
+
+	uc = (unsigned char)c;
+	return (
+		uc == ' ' || uc == '\f' || \
+		uc == '\n' || uc == '\r' || \
+		uc == '\t' || uc == '\v'
+	);
+}
+
 static inline int32_t	_handle_word(const char *input, t_token *curr)
 {
 	int32_t	len;
@@ -39,27 +55,21 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 	curr->type = TK_WORD;
 	if (*input == '"' || *input == '\'')
 		return (_handle_quoted_word(input, curr));
-	else if (ft_isalnum(*input) || ft_strchr("./-_$", *input))
-	{
-		len = 0;
-		while (input[len] && !ft_strchr(" <>|&'\"\t\n", input[len]))
-			len++;
-		curr->value = ft_substr(input, 0, len);
-		if (!curr->value)
-			return (-1);
-		curr->quote = QUOTE_NONE;
-		return (len);
-	}
-	return (-4);
+	len = 0;
+	while (input[len] && !_isspace(input[len]) && \
+		!ft_strchr(HANDLED_CHAR, input[len]))
+		len++;
+	curr->value = ft_substr(input, 0, len);
+	if (!curr->value)
+		return (-1);
+	curr->quote = QUOTE_NONE;
+	return (len);
 }
 
 static inline int32_t	_fill_token(const char *input, t_token *curr)
 {
 	if (!*input)
-	{
-		curr->type = TK_EOF;
-		return (0);
-	}
+		return (curr->type = TK_EOF, 0);
 	else if (*input == '|')
 	{
 		if (input[1] == '|')
@@ -82,14 +92,24 @@ static inline int32_t	_fill_token(const char *input, t_token *curr)
 }
 
 /**
- * @param exit_code(int32_t):
- *  
- * 	-1 = internal error
- *  
- *  -2 | -3 = single or double cote not closed
- *  
- *  -4 = char not handled
+ * @brief Tokenizes an input string into a linked list of tokens.
+ *
+ * This function splits the input command line into meaningful tokens (words,
+ * pipes, redirections, etc.) for further parsing into an AST.
+ *
+ * @param input       The raw input string from the user.
+ * @param exit_code   A pointer to an int16_t to store the error code:
+ *                    -  0 : success
+ *                    - -1 : malloc failure
+ *                    - -2 : unclosed single quote
+ *                    - -3 : unclosed double quote
+ *
+ * @return A linked list of tokens on success, or NULL on error.
+ *
+ * @note If an error occurs (e.g., unclosed quote), all allocated tokens are freed
+ *       and the function returns NULL. No partial token list is returned.
  */
+
 t_token	*tokenise(const char *input, int16_t *exit_code)
 {
 	size_t	i;
@@ -104,7 +124,7 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 		curr = ft_calloc(1, sizeof (t_token));
 		if (!curr)
 			return (token_clear(tokens), *exit_code = -1, NULL);
-		while (input[i] == ' ')
+		while (_isspace(input[i]))
 			i++;
 		offset = _fill_token(input + i, curr);
 		if (offset < 0)
