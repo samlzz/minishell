@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 15:43:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 17:50:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 
 static char	**_collect_argv(t_token **cur, t_token **errtok)
 {
-	char	**argv;
 	t_token	*tk;
-	int		size;
+	char	**argv;
+	int32_t	size;
 
 	tk = *cur;
 	size = 0;
@@ -28,13 +28,14 @@ static char	**_collect_argv(t_token **cur, t_token **errtok)
 	}
 	if (!size)
 		return (*errtok = tk, NULL);
-	argv = ft_calloc(size + 1, sizeof(char *));
+	argv = ft_calloc(size + 1, sizeof (char *));
 	if (!argv)
 		return (NULL);
 	tk = *cur;
-	for (int i = 0; i < size; i++)
+	size = 0;
+	while (tk && tk->type == TK_WORD)
 	{
-		argv[i] = ft_strdup(tk->value);
+		argv[size++] = ft_strdup(tk->value);
 		tk = tk->next;
 	}
 	*cur = tk;
@@ -45,11 +46,9 @@ static inline bool	_insert_cmd_leaf(t_ast *tree, t_ast *cmd)
 {
 	while (tree->type == ND_REDIR && tree->u_data.s_redir.child)
 		tree = tree->u_data.s_redir.child;
-	if (tree->type == ND_REDIR)
-	{
-		tree->u_data.s_redir.child = cmd;
+	if (tree->type != ND_REDIR)
 		return (false);
-	}
+	tree->u_data.s_redir.child = cmd;
 	return (true);
 }
 
@@ -58,7 +57,7 @@ static bool	_handle_word(t_token **cur, t_ast **tree, \
 {
 	if (*cmd_node)
 		return (*errtok = *cur, false);
-	*cmd_node = ft_calloc(1, sizeof(t_ast));
+	*cmd_node = ft_calloc(1, sizeof (t_ast));
 	if (!*cmd_node)
 		return (false);
 	(*cmd_node)->type = ND_CMD;
@@ -71,6 +70,17 @@ static bool	_handle_word(t_token **cur, t_ast **tree, \
 	return (true);
 }
 
+static bool	has_cmd_node(t_ast *tree)
+{
+	if (!tree)
+		return false;
+	if (tree->type == ND_CMD)
+		return true;
+	if (tree->type == ND_REDIR)
+		return has_cmd_node(tree->u_data.s_redir.child);
+	return false;
+}
+
 t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*tree;
@@ -78,7 +88,7 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 	
 	tree = NULL;
 	cmd_node = NULL;
-	while (*cur && (_is_redirection((*cur)->type) || (*cur)->type == TK_WORD))
+	while (*cur && ((*cur)->type == TK_WORD || _is_redirection((*cur)->type)))
 	{
 		if ((*cur)->type == TK_WORD)
 		{
@@ -91,7 +101,11 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 				return (ast_free(tree), NULL);
 		}
 	}
-	if (!tree)
+	if (!has_cmd_node(tree))
+	{
 		*errtok = *cur;
+		ast_free(tree);
+		return (NULL);
+	}
 	return (tree);
 }
