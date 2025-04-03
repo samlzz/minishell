@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 11:56:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:58:16 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,12 +23,12 @@ static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 	if (!input[len])
 	{
 		if (*input == '"')
-			return (-3);
-		return (-2);
+			return (PARSE_ERR_DQUOTE);
+		return (PARSE_ERR_SQUOTE);
 	}
 	curr->value = ft_substr(input, 1, len - 1);
 	if (!curr->value)
-		return (-1);
+		return (PARSE_ERR);
 	if (*input == '"')
 		curr->quote = QUOTE_DOUBLE;
 	else
@@ -61,7 +61,7 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 		len++;
 	curr->value = ft_substr(input, 0, len);
 	if (!curr->value)
-		return (-1);
+		return (PARSE_ERR);
 	curr->quote = QUOTE_NONE;
 	return (len);
 }
@@ -123,7 +123,7 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 	{
 		curr = ft_calloc(1, sizeof (t_token));
 		if (!curr)
-			return (token_clear(tokens), *exit_code = -1, NULL);
+			return (token_clear(tokens), *exit_code = PARSE_ERR, NULL);
 		while (_isspace(input[i]))
 			i++;
 		offset = _fill_token(input + i, curr);

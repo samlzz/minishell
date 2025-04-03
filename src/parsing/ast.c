@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 12:29:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 12:59:52 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,15 +74,15 @@ t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok)
 	if (!ast)
 	{
 		*errtok = token_pop(&tokens, *errtok);
-		token_clear(tokens);
-		return (NULL);
+		return (token_clear(tokens), NULL);
 	}
 	if (cursor && cursor->type != TK_EOF)
 	{
-		*errtok = token_pop(&tokens, cursor);
+		if (!*errtok)
+			*errtok = token_pop(&tokens, cursor);
+		*errcode = PARSE_ERR_EOF;
 		token_clear(tokens);
-		ast_free(ast);
-		return (NULL);
+		return (ast_free(ast), NULL);
 	}
 	return (ast);
 }

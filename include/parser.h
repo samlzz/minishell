@@ -19,8 +19,10 @@
 # define HANDLED_CHAR	"<>|&'\""
 //? Error codes
 # define PARSE_OK			0
+# define PARSE_ERR			-1
 # define PARSE_ERR_SQUOTE	-2
 # define PARSE_ERR_DQUOTE	-3
+# define PARSE_ERR_EOF		-4
 
 //* Tokens types
 
