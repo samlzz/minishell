@@ -6,12 +6,35 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 17:50:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/04 00:00:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
+
+static char	*_join_words(t_token **cur)
+{
+	char	*result;
+	char	*tmp;
+
+	if (!*cur || (*cur)->type != TK_WORD)
+		return (NULL);
+	result = ft_strdup((*cur)->value);
+	if (!result)
+		return (NULL);
+	*cur = (*cur)->next;
+	while (*cur && (*cur)->type == TK_WORD && (*cur)->glued)
+	{
+		tmp = ft_strjoin(result, (*cur)->value);
+		if (!tmp)
+			return (free(result), NULL);
+		free(result);
+		result = tmp;
+		*cur = (*cur)->next;
+	}
+	return (result);
+}
 
 static char	**_collect_argv(t_token **cur, t_token **errtok)
 {
@@ -23,22 +46,22 @@ static char	**_collect_argv(t_token **cur, t_token **errtok)
 	size = 0;
 	while (tk && tk->type == TK_WORD)
 	{
-		size++;
 		tk = tk->next;
+		size++;
 	}
 	if (!size)
 		return (*errtok = tk, NULL);
 	argv = ft_calloc(size + 1, sizeof (char *));
 	if (!argv)
 		return (NULL);
-	tk = *cur;
 	size = 0;
-	while (tk && tk->type == TK_WORD)
+	while (*cur && (*cur)->type == TK_WORD)
 	{
-		argv[size++] = ft_strdup(tk->value);
-		tk = tk->next;
+		argv[size] = _join_words(cur);
+		if (!argv[size])
+			return (ft_splitfree(argv, 0), NULL);
+		size++;
 	}
-	*cur = tk;
 	return (argv);
 }
 
@@ -70,15 +93,15 @@ static bool	_handle_word(t_token **cur, t_ast **tree, \
 	return (true);
 }
 
-static bool	has_cmd_node(t_ast *tree)
+static bool	_has_cmd_node(t_ast *tree)
 {
 	if (!tree)
-		return false;
+		return (false);
 	if (tree->type == ND_CMD)
-		return true;
+		return (true);
 	if (tree->type == ND_REDIR)
-		return has_cmd_node(tree->u_data.s_redir.child);
-	return false;
+		return (_has_cmd_node(tree->u_data.s_redir.child));
+	return (false);
 }
 
 t_ast	*cmd_parser(t_token **cur, t_token **errtok)
@@ -101,7 +124,7 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 				return (ast_free(tree), NULL);
 		}
 	}
-	if (!has_cmd_node(tree))
+	if (!_has_cmd_node(tree))
 	{
 		*errtok = *cur;
 		ast_free(tree);
