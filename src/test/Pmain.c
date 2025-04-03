@@ -1,8 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "ast.h"
 #include <stdlib.h>
-
+#include "ast.h"
 
 void	print_ast_ascii(t_ast *node);
 
@@ -40,34 +39,40 @@ void	print_err(int16_t errcode, t_token *errtok)
 	token_clear(errtok);
 }
 
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
-int	main(void)
+void	get_input(void)
 {
-	char	input[1024];
-	t_ast	*ast;
+	char	*input;
 	int16_t	err;
 	t_token	*errtok;
+	t_ast	*ast;
 
 	while (1)
 	{
-		ast = NULL;
-		printf("miniparse> ");
-		if (!fgets(input, sizeof(input), stdin))
-			break;
-		//? Remove trailing newline
-		input[strcspn(input, "\n")] = '\0';
-
-		ast = new_ast((const char *)input, &err, &errtok);
-		if (!ast)
+		input = readline("minishell> ");
+		if (!input)
 		{
-			ft_putendl_fd("", 2);
-			print_err(err, errtok);
-			continue;
+			ft_putendl_fd("exit", 2);
+			break;
 		}
-		print_ast_ascii(ast);
+		if (*input)
+			add_history(input);
+		ast = new_ast(input, &err, &errtok);
+		if (!ast)
+			print_err(err, errtok);
+		else //todo: exec
+			print_ast_ascii(ast);
+		free(input);
 		ast_free(ast);
 	}
-	printf("Bye!\n");
+}
+
+int	main(void)
+{
+	get_input();
 	return (0);
 }
 
