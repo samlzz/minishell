@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 12:59:52 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/03 17:53:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,8 @@ void	ast_free(t_ast	*node)
 		free(node->u_data.s_redir.filename);
 		ast_free(node->u_data.s_redir.child);
 	}
-	else if (node->type == ND_PIPE)
+	else if (node->type == ND_PIPE || \
+		node->type == ND_AND || node->type == ND_OR)
 	{
 		ast_free(node->u_data.s_binop.left);
 		ast_free(node->u_data.s_binop.right);
@@ -84,5 +85,5 @@ t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok)
 		token_clear(tokens);
 		return (ast_free(ast), NULL);
 	}
-	return (ast);
+	return (token_clear(tokens), ast);
 }

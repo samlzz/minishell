@@ -36,6 +36,7 @@ void	print_err(int16_t errcode, t_token *errtok)
 	if (!tk)
 		tk = token_type_str(errtok->type);
 	fprintf(stderr, "minishell: syntax error near unexpected token `%s'\n", tk);
+	fprintf(stderr, "[%d]\n", errcode);
 	token_clear(errtok);
 }
 
@@ -53,7 +54,7 @@ int	main(void)
 		printf("miniparse> ");
 		if (!fgets(input, sizeof(input), stdin))
 			break;
-		// Remove trailing newline
+		//? Remove trailing newline
 		input[strcspn(input, "\n")] = '\0';
 
 		ast = new_ast((const char *)input, &err, &errtok);
