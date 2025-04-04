@@ -17,6 +17,8 @@
 # include <stdint.h>
 
 # define HANDLED_CHAR	"<>|&'\""
+# define EXP_BUFF_PAD		16
+
 //? Error codes
 # define PARSE_OK			0
 # define PARSE_ERR			-1

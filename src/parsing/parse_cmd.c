@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/04 00:00:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/04 13:00:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ static char	*_join_words(t_token **cur)
 {
 	char	*result;
 	char	*tmp;
+	char	*expanded;
 
 	if (!*cur || (*cur)->type != TK_WORD)
 		return (NULL);
