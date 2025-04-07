@@ -6,35 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/04 00:00:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 11:15:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
-
-static char	*_join_words(t_token **cur)
-{
-	char	*result;
-	char	*tmp;
-
-	if (!*cur || (*cur)->type != TK_WORD)
-		return (NULL);
-	result = ft_strdup((*cur)->value);
-	if (!result)
-		return (NULL);
-	*cur = (*cur)->next;
-	while (*cur && (*cur)->type == TK_WORD && (*cur)->glued)
-	{
-		tmp = ft_strjoin(result, (*cur)->value);
-		if (!tmp)
-			return (free(result), NULL);
-		free(result);
-		result = tmp;
-		*cur = (*cur)->next;
-	}
-	return (result);
-}
 
 static char	**_collect_argv(t_token **cur, t_token **errtok)
 {
@@ -57,7 +34,7 @@ static char	**_collect_argv(t_token **cur, t_token **errtok)
 	size = 0;
 	while (*cur && (*cur)->type == TK_WORD)
 	{
-		argv[size] = _join_words(cur);
+		argv[size] = expand_and_join_words(cur, 0);
 		if (!argv[size])
 			return (ft_splitfree(argv, 0), NULL);
 		size++;
@@ -120,7 +97,7 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 		}
 		else
 		{
-			if (!_handle_redirection(cur, &tree, errtok))
+			if (!handle_redirection(cur, &tree, errtok))
 				return (ast_free(tree), NULL);
 		}
 	}

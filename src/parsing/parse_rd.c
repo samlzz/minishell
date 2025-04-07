@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 15:41:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 11:11:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static inline t_ast	*_parse_redirection(t_token **cur, t_ast *tree, t_token **er
 	return (node);
 }
 
-bool	_handle_redirection(t_token **cur, t_ast **tree, \
+bool	handle_redirection(t_token **cur, t_ast **tree, \
 	t_token **errtok)
 {
 	t_ast	*redir;
