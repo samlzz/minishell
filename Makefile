@@ -16,13 +16,13 @@ RM = rm -f
 MD = mkdir -p
 AR = ar rcs
 
-C_FILES =	parsing/lexer/ft_token.c	\
-			parsing/lexer/tokenizer.c	\
-			parsing/parser/ast.c		\
-			parsing/parser/parse_expr.c	\
-			parsing/parser/parse_cmd.c	\
-			parsing/parser/parse_rd.c	\
-			parsing/expander.c			\
+C_FILES =	parsing/lexer/ft_token.c		\
+			parsing/lexer/tokenizer.c		\
+			parsing/parser/ast.c			\
+			parsing/parser/parse_binop.c	\
+			parsing/parser/parse_rd.c		\
+			parsing/parser/parse_expr.c		\
+			parsing/expander.c				\
 			test/Pmain.c		\
 			test/print_ast.c	\
 			test/print_token.c
