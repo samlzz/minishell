@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include "parser.h"
 
-static inline const char	*token_type_str(t_tk_type type)
+const char	*token_type_str(t_tk_type type)
 {
 	if (type == TK_WORD) return "WORD";
 	if (type == TK_PIPE) return "PIPE";
 	if (type == TK_AND) return "AND";
 	if (type == TK_OR) return "OR";
+	if (type == TK_LPAREN) return "BEGIN PARENTHESIS";
+	if (type == TK_RPAREN) return "END PARENTHESIS";
 	if (type == TK_REDIR_IN) return "REDIR_IN";
 	if (type == TK_REDIR_OUT) return "REDIR_OUT";
 	if (type == TK_REDIR_APPEND) return "REDIR_APPEND";

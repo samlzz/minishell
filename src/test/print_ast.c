@@ -7,6 +7,7 @@
 #define YELLOW  "\033[1;33m"
 #define BLUE    "\033[1;34m"
 #define MAGENTA "\033[1;35m"
+#define CYAN	"\033[1;36m"
 
 static const char *redir_str(t_redir_type type)
 {
@@ -70,6 +71,11 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 
 		// Ajoute une indentation plus longue pour les redirs
 		print_ast_rec(node->u_data.s_redir.child, new_prefix, 1);
+	}
+	else if (node->type == ND_SUBSHELL)
+	{
+		printf(CYAN "SUBSHELL" RESET "\n");
+		print_ast_rec(node->u_data.s_subsh.child, new_prefix, 1);
 	}
 }
 
