@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 16:50:59 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 21:43:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,10 @@ void	ast_free(t_ast	*node)
 	{
 		ast_free(node->u_data.s_binop.left);
 		ast_free(node->u_data.s_binop.right);
+	}
+	else if (node->type == ND_SUBSHELL)
+	{
+		ast_free(node->u_data.s_subsh.child);
 	}
 	free(node);
 }
