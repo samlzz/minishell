@@ -6,12 +6,17 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 12:54:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 21:16:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <stdlib.h>
+
+void	next(t_token **cur)
+{
+	*cur = (*cur)->next;
+}
 
 void	token_clear(t_token *lst)
 {
@@ -25,15 +30,6 @@ void	token_clear(t_token *lst)
 		free(lst);
 		lst = next;
 	}
-}
-
-t_token	*token_last(t_token *lst)
-{
-	if (!lst)
-		return (NULL);
-	while (lst->next)
-		lst = lst->next;
-	return (lst);
 }
 
 void	token_addfront(t_token **lst, t_token *new)
@@ -51,7 +47,9 @@ void	token_addback(t_token **lst, t_token *new)
 
 	if (!*lst)
 		return (token_addfront(lst, new));
-	last = token_last(*lst);
+	last = *lst;
+	while (last->next)
+		last = last->next;
 	last->next = new;
 }
 

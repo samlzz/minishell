@@ -67,20 +67,17 @@ typedef enum e_node_type	t_node_type;
 t_token	*tokenise(const char *input, int16_t *exit_code);
 
 // parser
-static inline bool	_is_redirection(t_tk_type type)
-{
-	return (type == TK_REDIR_IN || type == TK_REDIR_OUT
-		|| type == TK_REDIR_APPEND || type == TK_HEREDOC);
-}
 t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok);
-t_ast	*cmd_parser(t_token **cur, t_token **errtok);
-bool	handle_redirection(t_token **cur, t_ast **tree, t_token **errtok);
+t_ast	*redir_parser(t_token **cur, t_token **errtok);
+t_ast	*primary_parser(t_token **cur, t_token **errtok);
+
+// expander
 char	*expand_and_join_words(t_token **cur, int16_t last_exit);
 
 // tokens
+void	next(t_token **cur);
 t_token *token_pop(t_token **lst, t_token *to_retrieve);
 void	token_clear(t_token *lst);
-t_token	*token_last(t_token *lst);
 void	token_addfront(t_token **lst, t_token *new);
 void	token_addback(t_token **lst, t_token *new);
 
