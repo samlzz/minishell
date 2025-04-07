@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 23:51:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:50:59 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,6 @@ void	ast_free(t_ast	*node)
 	}
 	free(node);
 }
-
-void	print_tokens(t_token *tokens);
 
 /**
  * @brief Builds an abstract syntax tree (AST) from an input command string.
@@ -73,7 +71,6 @@ t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok)
 	if (!tokens)
 		return (NULL);
 	cursor = tokens;
-	print_tokens(cursor);
 	ast = binop_parser(&cursor, ND_OR, errtok);
 	if (!ast)
 	{

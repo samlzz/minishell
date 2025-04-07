@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 11:15:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:59:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,30 @@ static bool	_has_cmd_node(t_ast *tree)
 	return (false);
 }
 
+/**
+ * @brief Parses a simple command with optional redirections from the token stream.
+ *
+ * This function processes a sequence of tokens representing a command and its
+ * associated redirections. It constructs an AST subtree consisting of:
+ * - A single `ND_CMD` node for the command and its arguments.
+ * - Zero or more `ND_REDIR` nodes wrapping the command, representing input/output redirections.
+ *
+ * The parser expects at most one command. If multiple command words are found without
+ * proper separation (e.g., with pipes or operators),
+ * a syntax error is raised.
+ *
+ * Redirections (`>, >>, <, <<`) are nested around the command node. If redirections
+ * appear before the command, they are attached and updated later when the command is parsed.
+ *
+ * @param cur		A pointer to the current token pointer in the stream.
+ * @param errtok	A pointer to the token pointer where a parsing error occurred, if any.
+ *
+ * @return A pointer to the resulting AST subtree, or NULL if a parsing error occurred.
+ *
+ * @note If no command is found (i.e., no `TK_WORD` tokens), or a redirection is malformed
+ *       (e.g., missing filename), the function sets *errtok to the error location and
+ *       frees any partially constructed AST.
+ */
 t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*tree;

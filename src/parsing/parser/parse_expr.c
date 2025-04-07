@@ -6,12 +6,32 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 14:31:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 16:55:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 
+/**
+ * @brief Parses a primary expression from the token stream: either a simple
+ *        command or a parenthesized subshell expression.
+ *
+ * This function is called when no binary operator has higher precedence,
+ * and is responsible for handling:
+ * - a command (sequence of TK_WORD / redirections), via `cmd_parser`,
+ * - a parenthesized expression, parsed recursively with `binop_parser`,
+ *   and wrapped in a ND_SUBSHELL node in the AST.
+ *
+ * @param cur		A pointer to the current token pointer in the stream.
+ * @param errtok	A pointer to the token pointer where a parsing error occurred, if any.
+ *
+ * @return A pointer to the resulting AST node (command or subshell),
+ *         or NULL in case of error.
+ *
+ * @note If a subshell is detected (starting with `TK_LPAREN`), the function ensures
+ *       that it is properly closed by a `TK_RPAREN`. If the closing parenthesis is
+ *       missing, `*errtok` is set accordingly, and any allocated subtree is freed.
+ */
 t_ast	*primary_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*subexpr;
@@ -54,9 +74,9 @@ static inline t_node_type	ttk_to_tnode(t_tk_type tk)
  * binary operators (`||`, `&&`, `|`). It builds the corresponding AST nodes,
  * with each binary operator becoming a node with left and right children.
  *
- * @param cur      A pointer to the current token pointer in the stream.
- * @param bin_op   The binary operator node type to parse at this level (ND_PIPE, ND_AND, ND_OR).
- * @param errtok   A pointer to the token pointer where the parsing error occurred, if any.
+ * @param cur		A pointer to the current token pointer in the stream.
+ * @param bin_op	The binary operator node type to parse at this level (`ND_PIPE`, `ND_AND, ND_OR`).
+ * @param errtok	A pointer to the token pointer where the parsing error occurred, if any.
  *
  * @return A pointer to the resulting AST subtree, or NULL if a parsing error occurred.
  *
