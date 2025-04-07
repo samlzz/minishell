@@ -19,7 +19,7 @@ AR = ar rcs
 C_FILES =	parsing/lexer/ft_token.c	\
 			parsing/lexer/tokenizer.c	\
 			parsing/parser/ast.c		\
-			parsing/parser/parse_bin.c	\
+			parsing/parser/parse_expr.c	\
 			parsing/parser/parse_cmd.c	\
 			parsing/parser/parse_rd.c	\
 			parsing/expander.c			\

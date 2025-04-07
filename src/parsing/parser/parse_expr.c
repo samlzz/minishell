@@ -1,16 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_bin.c                                        :+:      :+:    :+:   */
+/*   parse_expr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 12:54:23 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 14:31:01 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
+
+t_ast	*primary_parser(t_token **cur, t_token **errtok)
+{
+	t_ast	*subexpr;
+	t_ast	*subshell;
+
+	if (*cur && (*cur)->type == TK_LPAREN)
+	{
+		*cur = (*cur)->next;
+		subexpr = binop_parser(cur, ND_OR, errtok);
+		if (!subexpr)
+			return (NULL);
+		if (!*cur || (*cur)->type != TK_RPAREN)
+			return (*errtok = *cur, ast_free(subexpr), NULL);
+		*cur = (*cur)->next;
+		subshell = ft_calloc(1, sizeof(t_ast));
+		if (!subshell)
+			return (ast_free(subexpr), NULL);
+		subshell->type = ND_SUBSHELL;
+		subshell->u_data.s_subsh.child = subexpr;
+		return (subshell);
+	}
+	return (cmd_parser(cur, errtok));
+}
 
 static inline t_node_type	ttk_to_tnode(t_tk_type tk)
 {
@@ -45,7 +69,7 @@ t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok)
 	t_ast	*left;
 
 	if (bin_op < ND_PIPE)
-		return (cmd_parser(cur, errtok));
+		return (primary_parser(cur, errtok));
 	if (bin_op > ND_OR)
 		return (NULL);
 	left = binop_parser(cur, bin_op - 1, errtok);

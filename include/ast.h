@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 11:28:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 14:03:01 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ typedef enum e_node_type
 	ND_AND,
 	ND_OR,
 	ND_REDIR,
+	ND_SUBSHELL
 }	t_node_type;
 
 typedef enum e_redir_type
@@ -52,6 +53,10 @@ typedef struct s_ast
 			struct s_ast	*left;
 			struct s_ast	*right;
 		} s_binop;
+		struct
+		{
+			struct s_ast	*child;
+		} s_subsh;
 	}	u_data;
 }	t_ast;
 

@@ -16,7 +16,7 @@
 # include "libft.h"
 # include <stdint.h>
 
-# define HANDLED_CHAR	"<>|&'\""
+# define HANDLED_CHAR	"()<>|&'\""
 
 //? Error codes
 # define PARSE_OK			0
@@ -33,6 +33,8 @@ typedef enum e_tk_type
 	TK_PIPE,
 	TK_AND,
 	TK_OR,
+	TK_LPAREN,
+	TK_RPAREN,
 	TK_REDIR_IN,
 	TK_REDIR_OUT,
 	TK_REDIR_APPEND,

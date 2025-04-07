@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/03 22:07:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/07 14:09:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,10 @@ static inline int32_t	_fill_token(const char *input, t_token *curr)
 {
 	if (!*input)
 		return (curr->type = TK_EOF, 0);
+	else if (*input == '(')
+		curr->type = TK_LPAREN;
+	else if (*input == ')')
+		curr->type = TK_RPAREN;
 	else if (*input == '|')
 	{
 		if (input[1] == '|')
