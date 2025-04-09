@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 12:09:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/09 18:35:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
+#include "ft_dynbuf.h"
 #include <stdlib.h>
 
 static inline int32_t	_put_value(t_dynbuf *buf, const char *input)

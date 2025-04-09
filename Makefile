@@ -4,11 +4,11 @@ NAME = minishell
 #TODO: Folders name must end with '\'
 SRC_DIR = src/
 OBJ_DIR = build/
-LIBFT = libft
+LIBFT = libftc
 
-INCL_DIR = $(LIBFT) include
+INCL_DIR = $(LIBFT)/include $(LIBFT)/libft include
 LIB_DIRS = $(LIBFT)
-LIB_FILES = ft readline
+LIB_FILES = ftc readline
 
 CC = gcc
 CFLAGS := -Wall -Wextra -Werror -g -MMD
