@@ -14,6 +14,7 @@
 # define PARSER_H
 
 # include "libft.h"
+# include "ft_hmap.h"
 # include <stdint.h>
 
 # define HANDLED_CHAR	"()<>|&'\""

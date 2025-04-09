@@ -22,10 +22,12 @@ C_FILES =	parsing/lexer/ft_token.c		\
 			parsing/parser/parse_binop.c	\
 			parsing/parser/parse_rd.c		\
 			parsing/parser/parse_expr.c		\
-			parsing/expander.c				\
-			test/Pmain.c		\
-			test/print_ast.c	\
-			test/print_token.c
+			parsing/expander.c	\
+			parsing/print_err.c	\
+			env.c				\
+			minishell.c			\
+			test/print_ast.c	
+
 #* Colors
 
 ESC = \033[
