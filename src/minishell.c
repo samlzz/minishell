@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/09 19:29:39 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/10 16:47:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ void	get_input(t_hmap *env)
 
 	while (1)
 	{
-		input = readline("minishell> ");
+		input = readline(CMD_PROMPT);
 		if (!input)
 		{
 			ft_putendl_fd("exit", 2);
@@ -36,10 +36,11 @@ void	get_input(t_hmap *env)
 		}
 		if (*input)
 			add_history(input);
+		(void)env;
 		ast = new_ast(input, &err, &errtok);
 		if (!ast)
 			print_err(err, errtok);
-		else //todo: exec
+		else // TODO: exec
 			print_ast_ascii(ast);
 		free(input);
 		ast_free(ast);
@@ -50,9 +51,13 @@ int	main(int argc, char const *argv[], char **envp)
 {
 	t_hmap	env;
 
+	(void)argc;
+	(void)argv;
+	(void)envp;
 	env = env_init(envp);
 	if (!env.__entries)
 		return (1);
 	get_input(&env);
+	ft_hmap_free(&env, &free);
 	return (0);
 }
