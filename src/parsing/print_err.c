@@ -6,27 +6,28 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/09 18:50:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 17:56:56 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
-#include <stdio.h>
 
-const char	*token_type_str(t_tk_type type)
+static inline const char	*token_type_str(t_tk_type type)
 {
-	if (type == TK_WORD) return "WORD";
-	if (type == TK_PIPE) return "|";
-	if (type == TK_AND) return "&&";
-	if (type == TK_OR) return "||";
-	if (type == TK_LPAREN) return "(";
-	if (type == TK_RPAREN) return ")";
-	if (type == TK_REDIR_IN) return "<";
-	if (type == TK_REDIR_OUT) return ">";
-	if (type == TK_REDIR_APPEND) return ">>";
-	if (type == TK_HEREDOC) return "<<";
-	if (type == TK_EOF) return "EOF";
-	return "newline";
+	const char	*stringify[TK_EOF + 1];
+
+	stringify[TK_WORD] = "WORD";
+	stringify[TK_PIPE] = "|";
+	stringify[TK_AND] = "&&";
+	stringify[TK_OR] = "||";
+	stringify[TK_LPAREN] = "(";
+	stringify[TK_RPAREN] = ")";
+	stringify[TK_REDIR_IN] = "<";
+	stringify[TK_REDIR_OUT] = ">";
+	stringify[TK_REDIR_APPEND] = ">>";
+	stringify[TK_HEREDOC] = "<<";
+	stringify[TK_EOF] = "EOF";
+	return (stringify[type]);
 }
 
 void	print_err(int16_t errcode, t_token *errtok)
@@ -45,7 +46,7 @@ void	print_err(int16_t errcode, t_token *errtok)
 		tk = (const char *)errtok->value;
 	if (!tk)
 		tk = token_type_str(errtok->type);
-	fprintf(stderr, "minishell: syntax error near unexpected token `%s'\n", tk);
-	fprintf(stderr, "[%d]\n", errcode);
+	ft_putstr_fd("minishell: syntax error near unexpected token ", 2);
+	ft_putendl_fd(tk, 2);
 	token_clear(errtok);
 }
