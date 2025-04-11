@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/09 18:35:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:37:39 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include "ft_dynbuf.h"
 #include <stdlib.h>
 
-static inline int32_t	_put_value(t_dynbuf *buf, const char *input)
+static inline int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
+	const char *input)
 {
 	int32_t	i;
 	char	*key;
@@ -26,14 +27,15 @@ static inline int32_t	_put_value(t_dynbuf *buf, const char *input)
 	key = ft_substr(input, 0, i);
 	if (!key)
 		return (-1);
-	val = getenv(key);
+	val = ft_hmap_get(env, key);
 	free(key);
 	if (val && !ft_dynbuf_append_str(buf, val))
 		return (-1);
 	return (i);
 }
 
-static inline bool	_fill_buffer(const char **input, t_dynbuf *buf, char *last_exit)
+static inline bool	_fill_buffer(t_hmap *env, const char **input, \
+	t_dynbuf *buf, char *last_exit)
 {
 	int32_t	read;
 
@@ -48,7 +50,7 @@ static inline bool	_fill_buffer(const char **input, t_dynbuf *buf, char *last_ex
 		}
 		else if (ft_isalpha(**input) || **input == '_')
 		{
-			read = _put_value(buf, *input);
+			read = _put_value(env, buf, *input);
 			if (read == -1)
 				return (true);
 			*input += read;
@@ -61,7 +63,7 @@ static inline bool	_fill_buffer(const char **input, t_dynbuf *buf, char *last_ex
 	return (false);
 }
 
-static char *_expand_value(const char *input, int16_t last_exit)
+static char *_expand_value(t_hmap *env, const char *input, int16_t last_exit)
 {
 	t_dynbuf	buf;
 	char		*exit_code;
@@ -74,7 +76,7 @@ static char *_expand_value(const char *input, int16_t last_exit)
 		return (ft_dynbuf_free(&buf), NULL);
 	while (*input)
 	{
-		if (_fill_buffer(&input, &buf, exit_code))
+		if (_fill_buffer(env, &input, &buf, exit_code))
 		{
 			free(exit_code);
 			ft_dynbuf_free(&buf);
@@ -85,7 +87,7 @@ static char *_expand_value(const char *input, int16_t last_exit)
 	return (buf.data);
 }
 
-char	*expand_and_join_words(t_token **cur, int16_t last_exit)
+char	*expand_and_join_words(t_hmap *env, t_token **cur, int16_t last_exit)
 {
 	char	*result;
 	char	*tmp;
@@ -97,7 +99,7 @@ char	*expand_and_join_words(t_token **cur, int16_t last_exit)
 		if ((*cur)->quote == QUOTE_SINGLE || !ft_strcmp((*cur)->value, "$"))
 			expanded = ft_strdup((*cur)->value);
 		else
-			expanded = _expand_value((*cur)->value, last_exit);
+			expanded = _expand_value(env, (*cur)->value, last_exit);
 		if (!expanded)
 			return (free(result), NULL);
 		tmp = ft_strappend(result, expanded);

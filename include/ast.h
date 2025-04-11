@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/09 18:52:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:39:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,8 @@ typedef struct s_ast
 }	t_ast;
 
 void	ast_free(t_ast	*node);
-t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok);
+t_ast	*new_ast(t_hmap *env, const char *input, \
+	int16_t *errcode, t_token **errtok);
 
 void	print_err(int16_t errcode, t_token *errtok);
 

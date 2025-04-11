@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:02:03 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/10 15:56:22 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:21:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,12 +101,12 @@ t_hmap	env_init(char **envp)
 	{
 		if (_env_minimal_init(&env))
 			ft_hmap_free(&env, &free);
-		else if (_init_shlvl(&env))
-			ft_hmap_free(&env, &free);
 	}
 	else
 	{
 		if (_env_init_from_envp(envp, &env))
+			ft_hmap_free(&env, &free);
+		else if (_init_shlvl(&env))
 			ft_hmap_free(&env, &free);
 	}
 	return (env);

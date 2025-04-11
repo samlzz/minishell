@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 21:18:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:25:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,16 +39,17 @@ static inline t_node_type	ttk_to_tnode(t_tk_type tk)
  * @note In case of error, `*errtok` is set to the token at which the error was detected.
  *       Memory allocated during parsing is freed as needed to avoid leaks.
  */
-t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok)
+t_ast	*binop_parser(t_hmap *env, t_token **cur, t_node_type bin_op, \
+	t_token **errtok)
 {
 	t_ast	*node;
 	t_ast	*left;
 
 	if (bin_op < ND_PIPE)
-		return (redir_parser(cur, errtok));
+		return (redir_parser(env, cur, errtok));
 	if (bin_op > ND_OR)
 		return (NULL);
-	left = binop_parser(cur, bin_op - 1, errtok);
+	left = binop_parser(env, cur, bin_op - 1, errtok);
 	if (!left)
 		return (NULL);
 	while (*cur && ttk_to_tnode((*cur)->type) == bin_op)
@@ -59,7 +60,7 @@ t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok)
 		node->type = bin_op;
 		node->u_data.s_binop.left = left;
 		next(cur);
-		node->u_data.s_binop.right = binop_parser(cur, bin_op - 1, errtok);
+		node->u_data.s_binop.right = binop_parser(env, cur, bin_op - 1, errtok);
 		if (!node->u_data.s_binop.right)
 			return (ast_free(node), *errtok = *cur, NULL);
 		left = node;

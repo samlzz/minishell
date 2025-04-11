@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/10 16:47:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 17:40:01 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,8 +36,7 @@ void	get_input(t_hmap *env)
 		}
 		if (*input)
 			add_history(input);
-		(void)env;
-		ast = new_ast(input, &err, &errtok);
+		ast = new_ast(env, input, &err, &errtok);
 		if (!ast)
 			print_err(err, errtok);
 		else // TODO: exec
@@ -53,7 +52,6 @@ int	main(int argc, char const *argv[], char **envp)
 
 	(void)argc;
 	(void)argv;
-	(void)envp;
 	env = env_init(envp);
 	if (!env.__entries)
 		return (1);

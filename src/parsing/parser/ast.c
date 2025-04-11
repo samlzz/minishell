@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 21:43:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 16:39:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ void	ast_free(t_ast	*node)
  * 
  * @see [tokenise, binop_parser, cmd_parser]
  */
-t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok)
+t_ast	*new_ast(t_hmap *env, const char *input, \
+	int16_t *errcode, t_token **errtok)
 {
 	t_ast	*ast;
 	t_token	*tokens;
@@ -75,7 +76,7 @@ t_ast	*new_ast(const char *input, int16_t *errcode, t_token **errtok)
 	if (!tokens)
 		return (NULL);
 	cursor = tokens;
-	ast = binop_parser(&cursor, ND_OR, errtok);
+	ast = binop_parser(env, &cursor, ND_OR, errtok);
 	if (!ast)
 	{
 		*errtok = token_pop(&tokens, *errtok);

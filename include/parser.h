@@ -68,12 +68,13 @@ typedef enum e_node_type	t_node_type;
 t_token	*tokenise(const char *input, int16_t *exit_code);
 
 // parser
-t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok);
-t_ast	*redir_parser(t_token **cur, t_token **errtok);
-t_ast	*primary_parser(t_token **cur, t_token **errtok);
+t_ast	*binop_parser(t_hmap *env, t_token **cur, t_node_type bin_op, \
+	t_token **errtok);
+t_ast	*redir_parser(t_hmap *env, t_token **cur, t_token **errtok);
+t_ast	*primary_parser(t_hmap *env, t_token **cur, t_token **errtok);
 
 // expander
-char	*expand_and_join_words(t_token **cur, int16_t last_exit);
+char	*expand_and_join_words(t_hmap *env, t_token **cur, int16_t last_exit);
 
 // tokens
 void	next(t_token **cur);
