@@ -1,3 +1,15 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
+#    Updated: 2025/04/11 17:46:09 by sliziard         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
 #* VARIABLES
 NAME = minishell
 
@@ -69,7 +81,6 @@ all:	lib $(NAME)
 lib: $(LIBFT)
 	@printf "$(GRAY)"
 	@$(MAKE) -C $(LIBFT)
-	$(call COLOR_PRINT,$(GREEN),$(LIBFT)compiled !)
 
 $(LIBFT):
 	$(call COLOR_PRINT,$(MAGENTA),Retrieving libft sources...)
@@ -79,11 +90,11 @@ $(LIBFT):
 	@$(RM) -r ./$(LIBFT)/.git
 	@$(RM) ./$(LIBFT)/.gitignore
 
-relib: dellib $(LIBFT)
-
 dellib:
 	$(call COLOR_PRINT,$(MAGENTA),$(LIBFT) cleaned !)
 	@$(RM) -r $(LIBFT)
+	@sed -i 's|^LIBFT *=.*|LIBFT = libft|' Makefile 2>/dev/null || true
+	@sed -i -E '/^LIB_FILES *=/ s/\bft\w*\b/ft/g' Makefile 2>/dev/null || true
 
 $(NAME): $(O_DIRS) $(OBJS)
 	@printf "$(GRAY)"
