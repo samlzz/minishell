@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 17:40:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:33:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int	main(int argc, char const *argv[], char **envp)
 
 	(void)argc;
 	(void)argv;
-	env = env_init(envp);
+	env = env_init(envp, argv[0]);
 	if (!env.__entries)
 		return (1);
 	get_input(&env);

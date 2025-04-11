@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:02:03 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 16:21:46 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:35:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,24 +90,26 @@ static inline int16_t	_init_shlvl(t_hmap *env)
 	return (0);
 }
 
-t_hmap	env_init(char **envp)
+t_hmap	env_init(char **envp, const char *argv0)
 {
 	t_hmap	env;
 
 	env = ft_hmap_new(NULL);
 	if (!env.__entries)
 		return (env);
-	if (!envp || !*envp)
+	if (_set_hmap_item(&env, ENV_PRGM_NM, argv0))
+		ft_hmap_free(&env, free);
+	else if (!envp || !*envp)
 	{
 		if (_env_minimal_init(&env))
-			ft_hmap_free(&env, &free);
+			ft_hmap_free(&env, free);
 	}
 	else
 	{
 		if (_env_init_from_envp(envp, &env))
-			ft_hmap_free(&env, &free);
+			ft_hmap_free(&env, free);
 		else if (_init_shlvl(&env))
-			ft_hmap_free(&env, &free);
+			ft_hmap_free(&env, free);
 	}
 	return (env);
 }

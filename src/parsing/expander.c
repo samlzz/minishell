@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 16:37:39 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/11 18:29:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include "ft_dynbuf.h"
 #include <stdlib.h>
 
-static inline int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
+static int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
 	const char *input)
 {
 	int32_t	i;
@@ -34,7 +34,21 @@ static inline int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
 	return (i);
 }
 
-static inline bool	_fill_buffer(t_hmap *env, const char **input, \
+static bool	_handle_num(t_hmap *env, t_dynbuf *buf, const char *input)
+{
+	char	*prgm_name;
+
+	if (*input == '0')
+	{
+		prgm_name = ft_hmap_get(env, ENV_PRGM_NM);
+		if (!prgm_name)
+			prgm_name = "minishell";
+		return (!ft_dynbuf_append_str(buf, prgm_name));
+	}
+	return (false);
+}
+
+static inline bool	fill_buffer(t_hmap *env, const char **input, \
 	t_dynbuf *buf, char *last_exit)
 {
 	int32_t	read;
@@ -45,22 +59,21 @@ static inline bool	_fill_buffer(t_hmap *env, const char **input, \
 		if (**input == '?')
 		{
 			(*input)++;
-			if (!ft_dynbuf_append_str(buf, last_exit))
-				return (true);
+			return (!ft_dynbuf_append_str(buf, last_exit));
 		}
+		else if (**input >= '0' && **input <= '9')
+			return (_handle_num(env, buf, (*input)++));
 		else if (ft_isalpha(**input) || **input == '_')
 		{
 			read = _put_value(env, buf, *input);
-			if (read == -1)
-				return (true);
 			*input += read;
+			return (read == -1);
 		}
-		else if (!ft_dynbuf_append_char(buf, '$'))
-			return (true);
+		else
+			return (!ft_dynbuf_append_char(buf, '$'));
 	}
-	else if (!ft_dynbuf_append_char(buf, *(*input)++))
-		return (true);
-	return (false);
+	else
+		return (!ft_dynbuf_append_char(buf, *(*input)++));
 }
 
 static char *_expand_value(t_hmap *env, const char *input, int16_t last_exit)
@@ -76,7 +89,7 @@ static char *_expand_value(t_hmap *env, const char *input, int16_t last_exit)
 		return (ft_dynbuf_free(&buf), NULL);
 	while (*input)
 	{
-		if (_fill_buffer(env, &input, &buf, exit_code))
+		if (fill_buffer(env, &input, &buf, exit_code))
 		{
 			free(exit_code);
 			ft_dynbuf_free(&buf);
