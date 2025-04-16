@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 16:39:43 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/16 14:50:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,30 +15,22 @@
 
 static char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
 {
-	t_token	*tk;
-	char	**argv;
-	int32_t	size;
+	char		**argv;
+	t_argword	*args;
+	t_argword	*new;
 
-	tk = *cur;
-	size = 0;
-	while (tk && tk->type == TK_WORD)
-	{
-		tk = tk->next;
-		size++;
-	}
-	if (!size)
-		return (*errtok = tk, NULL);
-	argv = ft_calloc(size + 1, sizeof (char *));
-	if (!argv)
-		return (NULL);
-	size = 0;
+	args = NULL;
 	while (*cur && (*cur)->type == TK_WORD)
 	{
-		argv[size] = expand_and_join_words(env, cur, 0);
-		if (!argv[size])
-			return (ft_splitfree(argv, 0), NULL);
-		size++;
+		new = expand_and_join_words(env, cur, 0);
+		if (!new)
+			return (argword_clear(args), NULL);
+		argword_add_back(&args, new);
 	}
+	if (!args)
+		*errtok = *cur;
+	argv = argwords_to_argv(args);
+	argword_clear(args);
 	return (argv);
 }
 

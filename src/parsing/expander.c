@@ -6,12 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 18:29:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/16 15:01:12 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
-#include "ft_dynbuf.h"
 #include <stdlib.h>
 
 static int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
@@ -34,7 +33,7 @@ static int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
 	return (i);
 }
 
-static bool	_handle_num(t_hmap *env, t_dynbuf *buf, const char *input)
+static inline bool	_handle_num(t_hmap *env, t_dynbuf *buf, const char *input)
 {
 	char	*prgm_name;
 
@@ -48,7 +47,7 @@ static bool	_handle_num(t_hmap *env, t_dynbuf *buf, const char *input)
 	return (false);
 }
 
-static inline bool	fill_buffer(t_hmap *env, const char **input, \
+static inline bool	_fill_buffer(t_hmap *env, const char **input, \
 	t_dynbuf *buf, char *last_exit)
 {
 	int32_t	read;
@@ -76,12 +75,16 @@ static inline bool	fill_buffer(t_hmap *env, const char **input, \
 		return (!ft_dynbuf_append_char(buf, *(*input)++));
 }
 
-static char *_expand_value(t_hmap *env, const char *input, int16_t last_exit)
+static char *_expand_value(t_hmap *env, t_token *cur, int16_t last_exit)
 {
 	t_dynbuf	buf;
 	char		*exit_code;
+	const char	*input;
 
-	buf = ft_dynbuf_new(NULL);
+	if (cur->quote == QUOTE_SINGLE || !ft_strcmp(cur->value, "$"))
+		return (ft_strdup(cur->value));
+	input = cur->value;
+	buf = ft_dynbuf_new(ft_strlen(cur->value));
 	if (!buf.data)
 		return (NULL);
 	exit_code = ft_itoa(last_exit);
@@ -89,7 +92,7 @@ static char *_expand_value(t_hmap *env, const char *input, int16_t last_exit)
 		return (ft_dynbuf_free(&buf), NULL);
 	while (*input)
 	{
-		if (fill_buffer(env, &input, &buf, exit_code))
+		if (_fill_buffer(env, &input, &buf, exit_code))
 		{
 			free(exit_code);
 			ft_dynbuf_free(&buf);
@@ -100,29 +103,28 @@ static char *_expand_value(t_hmap *env, const char *input, int16_t last_exit)
 	return (buf.data);
 }
 
-char	*expand_and_join_words(t_hmap *env, t_token **cur, int16_t last_exit)
+t_argword	*expand_and_join_words(t_hmap *env, t_token **cur, \
+	int16_t last_exit)
 {
-	char	*result;
-	char	*tmp;
-	char	*expanded;
+	t_argword	*node;
+	char		*expanded;
+	int16_t		err;
 
-	result = NULL;
+	node = argword_new();
+	if (!node)
+		return (NULL);
 	while (*cur && (*cur)->type == TK_WORD)
 	{
-		if ((*cur)->quote == QUOTE_SINGLE || !ft_strcmp((*cur)->value, "$"))
-			expanded = ft_strdup((*cur)->value);
-		else
-			expanded = _expand_value(env, (*cur)->value, last_exit);
+		expanded = _expand_value(env, *cur, last_exit);
 		if (!expanded)
-			return (free(result), NULL);
-		tmp = ft_strappend(result, expanded);
-		(free(result), free(expanded));
-		if (!tmp)
-			return (NULL);
-		result = tmp;
+			return (argword_clear(node), NULL);
+		err = !argword_append_value(node, expanded, (*cur)->quote);
+		free(expanded);
+		if (err)
+			return (argword_clear(node), NULL);
 		*cur = (*cur)->next;
 		if (*cur && !(*cur)->glued)
 			break ;
 	}
-	return (result);
+	return (node);
 }

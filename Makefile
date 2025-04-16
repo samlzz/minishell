@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/11 17:46:09 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/16 00:03:13 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ C_FILES =	parsing/lexer/ft_token.c		\
 			parsing/parser/parse_binop.c	\
 			parsing/parser/parse_rd.c		\
 			parsing/parser/parse_expr.c		\
+			parsing/argwords.c	\
 			parsing/expander.c	\
 			parsing/print_err.c	\
 			env.c				\
