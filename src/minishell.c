@@ -6,12 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 18:33:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 18:50:11 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
@@ -46,13 +45,20 @@ void	get_input(t_hmap *env)
 	}
 }
 
+// TODO: tmp
+#include <stdio.h>
+void	print_entry(char *key, void *val)
+{
+	printf("[%s]: %s\n", key, (char *)val);
+}
+
 int	main(int argc, char const *argv[], char **envp)
 {
 	t_hmap	env;
 
 	(void)argc;
-	(void)argv;
 	env = env_init(envp, argv[0]);
+	ft_hmap_iter(&env, &print_entry);
 	if (!env.__entries)
 		return (1);
 	get_input(&env);

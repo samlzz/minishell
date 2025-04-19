@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:02:03 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/19 17:34:46 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 18:46:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,8 +69,6 @@ static int16_t	_env_minimal_init(t_hmap *env)
 		return (1);
 	return (
 		_set_hmap_item(env, "SHLVL", "1") || \
-		_set_hmap_item(env, "_", "/usr/bin/env") || \
-		_set_hmap_item(env, "TERM", "xterm-256color") || \
 		_set_hmap_item(env, ENV_PATH_NM, ENV_DEFAULT_PATH)
 	);
 }
