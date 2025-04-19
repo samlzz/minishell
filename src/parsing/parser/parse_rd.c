@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 16:26:22 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:14:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,12 +77,14 @@ t_ast	*redir_parser(t_hmap *env, t_token **cur, t_token **errtok)
 	subtree = NULL;
 	subtree = _build_rd_subtree(cur, subtree, errtok);
 	expr = primary_parser(env, cur, errtok);
-	if (!expr)
-		return (NULL);
 	if (!subtree)
+	{
 		subtree = expr;
-	else if (!insert_expr_leaf(subtree, expr))
-		return (ast_free(subtree), NULL);
-	subtree = _build_rd_subtree(cur, subtree, errtok);
-	return (subtree);
+	}
+	else 
+	{
+		if (!insert_expr_leaf(subtree, expr))
+			return (ast_free(subtree), NULL);
+	}
+	return (_build_rd_subtree(cur, subtree, errtok));
 }

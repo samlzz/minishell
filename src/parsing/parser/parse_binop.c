@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 16:25:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:10:11 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ static inline t_node_type	ttk_to_tnode(t_tk_type tk)
  *
  * @note In case of error, `*errtok` is set to the token at which the error was detected.
  *       Memory allocated during parsing is freed as needed to avoid leaks.
+ *
+ * @see redir_parser
  */
 t_ast	*binop_parser(t_hmap *env, t_token **cur, t_node_type bin_op, \
 	t_token **errtok)
