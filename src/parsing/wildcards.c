@@ -6,15 +6,16 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/19 16:28:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:01:05 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <dirent.h>
 #include <stdlib.h>
-//TODO: tmp
-#include <stdio.h>
+
+#define P 0
+#define T 1
 
 static inline bool	_is_wildcard(t_dynint wild_offsets, int32_t i)
 {
@@ -31,44 +32,54 @@ static inline bool	_is_wildcard(t_dynint wild_offsets, int32_t i)
 }
 
 /**
- * @var `p`: current index in `wpat`
- * @var `t`: current index in `txt`
- * @var `last_star_p`: last position of active '*'
- * @var `last_match_t`: position of txt where we encountred active '*'
- * @if `last_star_p` != -1 :
- *    go back one char after last active '*'
+ * @brief Matches a string `txt` against a wildcard pattern `wpat` using selective wildcards.
+ *
+ * This function implements a greedy pattern matcher.
+ * Only '*' characters located at positions stored in `woffsets` are treated as wildcards.
+ * All other '*' are matched literally.
+ *
+ * @param wpat The wildcard pattern (may include both active and literal '*')
+ * @param txt  The target string (typically a filename) to match against the pattern
+ * @param woffsets Dynamic array of positions in `wpat` where '*' are active wildcards
+ * 
+ * @var `p_t[P]` Current index in pattern (`wpat`)
+ * @var `p_t[T]` Current index in text (`txt`)
+ * @var `lasts[P]` Index of last '*' in `wpat` that was an active wildcard
+ * @var `lasts[T]` Index in `txt` where we last encountered an active '*'
+ * 
+ * If a mismatch occurs and a previous wildcard was active, the function
+ * backtracks to the character after the last active '*' and retries.
+ * Trailing active wildcards at the end of the pattern are also accepted.
+ *
+ * @return true if `txt` matches the wildcard pattern `wpat`, false otherwise.
  */
 static bool	_match_wilds(const char *wpat, const char *txt, t_dynint woffsets)
 {
-	int32_t	p;
-	int32_t	t;
-	int32_t	last_star_p;
-	int32_t	last_match_t;
+	int32_t	*p_t;
+	int32_t	*lasts;
 
-	p = 0;
-	t = 0;
-	last_star_p = -1;
-	last_match_t = -1;
-	while (txt[t])
+	p_t = (int32_t [2]){0};
+	lasts = (int32_t [2]){-1, -1};
+	while (txt[p_t[T]])
 	{
-		if (wpat[p] == '*' && _is_wildcard(woffsets, p))
+		if (wpat[p_t[P]] == '*' && _is_wildcard(woffsets, p_t[P]))
 		{
-			last_star_p = p++;
-			last_match_t = t;
+			lasts[P] = p_t[P]++;
+			lasts[T] = p_t[T];
 		}
-		else if (wpat[p] == txt[t])
-			(p++, t++);
-		else if (last_star_p != -1)
+		else if (wpat[p_t[P]] == txt[p_t[T]])
+			(p_t[P]++, p_t[T]++);
+		else if (lasts[P] != -1)
 		{
-			p = last_star_p + 1;
-			t = ++last_match_t;
+			p_t[P] = lasts[P] + 1;
+			p_t[T] = ++lasts[T];
 		}
 		else
 			return (false);
 	}
-	while (wpat[p] == '*' && _is_wildcard(woffsets, p))
-		p++;
-	return (wpat[p] == '\0');
+	while (wpat[p_t[P]] == '*' && _is_wildcard(woffsets, p_t[P]))
+		p_t[P]++;
+	return (wpat[p_t[P]] == '\0');
 }
 
 static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
@@ -92,8 +103,6 @@ t_argword	*expand_wildcards(t_argword *arg)
 	while (strm)
 	{
 		is_hide = *strm->d_name == '.' && *arg->value != '.';
-		printf("MATCH? %s ~ %s → %s\n", arg->value, strm->d_name, \
-			_match_wilds(arg->value, strm->d_name, arg->wild_offsets) ? "true" : "false");
 		if (!is_hide && _match_wilds(arg->value, strm->d_name, arg->wild_offsets))
 		{
 			new = argword_new();
