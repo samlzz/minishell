@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/16 15:01:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:34:23 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
+#include "env.h"
 #include <stdlib.h>
 
 static int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \

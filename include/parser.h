@@ -19,7 +19,6 @@
 # include <stdint.h>
 
 # define HANDLED_CHAR	"()<>|&'\""
-# define ENV_PRGM_NM "ARGV0"
 
 //? Error codes
 # define PARSE_OK			0

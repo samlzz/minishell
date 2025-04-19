@@ -6,11 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 19:02:03 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 18:35:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 17:34:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "env.h"
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -70,18 +70,31 @@ static int16_t	_env_minimal_init(t_hmap *env)
 	return (
 		_set_hmap_item(env, "SHLVL", "1") || \
 		_set_hmap_item(env, "_", "/usr/bin/env") || \
-		_set_hmap_item(env, "TERM", "xterm-256color")
+		_set_hmap_item(env, "TERM", "xterm-256color") || \
+		_set_hmap_item(env, ENV_PATH_NM, ENV_DEFAULT_PATH)
 	);
 }
 
 static inline int16_t	_init_shlvl(t_hmap *env)
 {
+	int32_t	curr_lvl;
 	char	*sh_lvl;
 
 	sh_lvl = ft_hmap_get(env, "SHLVL");
 	if (sh_lvl)
 	{
-		sh_lvl = ft_itoa(ft_atoi(sh_lvl) + 1);
+		curr_lvl = ft_atoi(sh_lvl) + 1;
+		if (curr_lvl < ENV_SHLVL_MIN)
+			sh_lvl = ft_strdup("0");
+		else if (curr_lvl >= ENV_SHLVL_MAX)
+		{
+			ft_putstr_fd("minishell: warning: shell level (", 2);
+			ft_putnbr_fd(curr_lvl, 2);
+			ft_putendl_fd(") too high, resetting to 1", 2);
+			sh_lvl = ft_strdup("1");
+		}
+		else
+			sh_lvl = ft_itoa(curr_lvl);
 		if (!sh_lvl || ft_hmap_set(env, "SHLVL", sh_lvl, free))
 			return (1);
 	}
