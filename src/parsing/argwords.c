@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/16 14:50:36 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 16:21:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,21 +33,25 @@ int16_t	argword_append_value(t_argword *node, const char *cur_arg, \
 	t_quote_type cur_quote)
 {
 	char	*tmp;
-	size_t	offset;
+	int32_t	i;
 
 	tmp = ft_strappend(node->value, cur_arg);
 	if (!tmp)
 		return (0);
 	free(node->value);
 	node->value = tmp;
-	if (cur_quote == QUOTE_NONE && ft_strchr(cur_arg, '*'))
+	if (cur_quote == QUOTE_NONE)
 	{
-		offset = 0;
-		while (node->value[offset] && node->value[offset] != '*')
-			offset++;
-		if (!node->value[offset] || \
-			!ft_dynint_append(&node->wild_offsets, offset))
-			return (0);
+		i = 0;
+		while (node->value[i])
+		{
+			if (node->value[i] == '*')
+			{
+				if (!ft_dynint_append(&node->wild_offsets, i))
+					return (0);
+			}
+			i++;
+		}
 	}
 	return (1);
 }
