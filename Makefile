@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/17 23:40:56 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/19 16:27:42 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -59,7 +59,7 @@ COLOR_PRINT = @printf "$(1)$(2)$(DEF_COLOR)\n"
 
 
 #* Automatic
-LIBFT_GIT = git@github.com:samlzz/libft.git
+LIBFT_GIT = https://github.com/samlzz/libft.git
 
 INCL_FLAGS = $(addprefix -I, $(INCL_DIR))
 LIB_FLAGS = $(addprefix -L, $(LIB_DIRS)) $(addprefix -l, $(LIB_FILES))

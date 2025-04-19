@@ -6,59 +6,69 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/17 23:42:02 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/19 16:28:11 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <dirent.h>
 #include <stdlib.h>
+//TODO: tmp
+#include <stdio.h>
 
-static char **_get_pat_segments(t_argword *pat)
+static inline bool	_is_wildcard(t_dynint wild_offsets, int32_t i)
 {
-	char	**segments;
-	size_t	prev;
-	size_t	i;
+	size_t	j;
 
-	segments = malloc((pat->wild_offsets.len + 2) * sizeof (char *));
-	if (!segments)
-		return (NULL);
-	i = 0;
-	prev = 0;
-	while (i < pat->wild_offsets.len)
+	j = 0;
+	while (j < wild_offsets.len)
 	{
-		segments[i] = ft_substr(pat->value, prev, pat->wild_offsets.data[i] + 1);
-		prev = pat->wild_offsets.data[i++] + 1;
+		if (wild_offsets.data[j] == i)
+			return (true);
+		j++;
 	}
-	if (pat->value[i])
-		segments[i++] = ft_substr(pat->value, prev, ft_strlen(pat->value));
-	segments[i] = NULL;
-	return (segments);
+	return (false);
 }
 
-static bool	_match_pattern(t_argword *pat, const char *str)
+/**
+ * @var `p`: current index in `wpat`
+ * @var `t`: current index in `txt`
+ * @var `last_star_p`: last position of active '*'
+ * @var `last_match_t`: position of txt where we encountred active '*'
+ * @if `last_star_p` != -1 :
+ *    go back one char after last active '*'
+ */
+static bool	_match_wilds(const char *wpat, const char *txt, t_dynint woffsets)
 {
-	char	**segments;
-	char	*cursor;
-	size_t	i;
-	size_t	len;
-	
-	cursor = (char *)str;
-	segments = _get_pat_segments(pat);
-	if (!segments)
-		return (false);
-	i = 0;
-	while (segments[i])
+	int32_t	p;
+	int32_t	t;
+	int32_t	last_star_p;
+	int32_t	last_match_t;
+
+	p = 0;
+	t = 0;
+	last_star_p = -1;
+	last_match_t = -1;
+	while (txt[t])
 	{
-		len = ft_strlen(segments[i]);
-		cursor = ft_strnstr(cursor, segments[i], len);
-		if (!cursor)
-			return (ft_splitfree(segments, 0), false);
-		cursor += len;
-		i++;
+		if (wpat[p] == '*' && _is_wildcard(woffsets, p))
+		{
+			last_star_p = p++;
+			last_match_t = t;
+		}
+		else if (wpat[p] == txt[t])
+			(p++, t++);
+		else if (last_star_p != -1)
+		{
+			p = last_star_p + 1;
+			t = ++last_match_t;
+		}
+		else
+			return (false);
 	}
-	ft_splitfree(segments, 0);
-	return (true);
+	while (wpat[p] == '*' && _is_wildcard(woffsets, p))
+		p++;
+	return (wpat[p] == '\0');
 }
 
 static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
@@ -82,7 +92,9 @@ t_argword	*expand_wildcards(t_argword *arg)
 	while (strm)
 	{
 		is_hide = *strm->d_name == '.' && *arg->value != '.';
-		if (!is_hide && _match_pattern(arg, strm->d_name))
+		printf("MATCH? %s ~ %s → %s\n", arg->value, strm->d_name, \
+			_match_wilds(arg->value, strm->d_name, arg->wild_offsets) ? "true" : "false");
+		if (!is_hide && _match_wilds(arg->value, strm->d_name, arg->wild_offsets))
 		{
 			new = argword_new();
 			if (!new)

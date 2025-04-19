@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 18:33:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/18 12:47:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 #  define PATH_MAX 4096
 # endif
 
-# define CMD_PROMPT "minishell> "
+# define CMD_PROMPT "\001\033[0;39;49m\002minishell> "
 
 t_hmap	env_init(char **envp, const char *argv0);
 
