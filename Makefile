@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/21 17:38:22 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/21 18:10:11 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,20 +28,20 @@ RM = rm -f
 MD = mkdir -p
 AR = ar rcs
 
-C_FILES =	parsing/lexer/ft_token.c		\
-			parsing/lexer/tokenizer.c		\
-			parsing/parser/ast.c			\
-			parsing/parser/parse_binop.c	\
-			parsing/parser/parse_rd.c		\
-			parsing/parser/parse_expr.c		\
-			parsing/argwords.c	\
-			parsing/expander.c	\
-			parsing/wildcards.c	\
+C_FILES =	parsing/ft_token.c	\
+			parsing/tokenizer.c	\
+			parsing/ast/init.c			\
+			parsing/ast/parse_binop.c	\
+			parsing/ast/parse_expr.c	\
+			parsing/ast/parse_rd.c		\
+			parsing/expand/arg_from_words.c	\
+			parsing/expand/ft_argword.c		\
+			parsing/expand/wildcards.c		\
 			parsing/print_err.c	\
 			env/init.c			\
 			env/wrappers.c		\
 			minishell.c			\
-			test/print_ast.c	
+			test/print_ast.c
 
 #* Colors
 
