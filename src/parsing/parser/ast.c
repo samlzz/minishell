@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 16:39:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:35:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ void	ast_free(t_ast	*node)
  * list with `binop_parser`, using a top-down recursive descent parser to build
  * the AST corresponding to the shell command structure.
  *
+ * @param env      A pointer to the environment hashmap, used for expansions.
  * @param input     The input string to parse (user command line).
  * @param errcode   A pointer to an int16_t that will hold the error code
  * 	(0 = success, -1 = internal error, -2 | -3 = unclosed quote).
@@ -61,7 +62,7 @@ void	ast_free(t_ast	*node)
  *       and `*errcode` describes the nature of the error. If the error comes from program
  *       itself (e.g., allocation failed) it sets `*errtok = NULL` and `*errcode = -1`; 
  * 
- * @see [tokenise, binop_parser, cmd_parser]
+ * @see [tokenise, binop_parser]
  */
 t_ast	*new_ast(t_hmap *env, const char *input, \
 	int16_t *errcode, t_token **errtok)

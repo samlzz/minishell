@@ -6,14 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/17 23:45:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:32:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
 
-static char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
+static inline char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
 {
 	char		**argv;
 	t_argword	*args;
@@ -30,10 +30,7 @@ static char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
 		{
 			wild = expand_wildcards(new);
 			if (wild)
-			{
-				argword_clear(new);
-				new = wild;
-			}
+				(argword_clear(new), (new = wild));
 		}
 		argword_add_back(&args, new);
 	}
@@ -52,6 +49,7 @@ static char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
  * or subshells
  * — those must be wrapped around the result by a higher-level parser.
  *
+ * @param env		A pointer to the environment hashmap, used for expansions.
  * @param cur		A pointer to the current token pointer in the stream.
  * @param errtok	A pointer to the token where an error occurred, if any.
  *
@@ -77,10 +75,11 @@ t_ast	*cmd_parser(t_hmap *env, t_token **cur, t_token **errtok)
  *
  * This function is called when no binary operator has higher precedence,
  * and is responsible for handling:
- * - a command (sequence of TK_WORD / redirections), via `cmd_parser`,
+ * - a command (sequence of TK_WORD), via `cmd_parser`,
  * - a parenthesized expression, parsed recursively with `binop_parser`,
  *   and wrapped in a ND_SUBSHELL node in the AST.
  *
+ * @param env		A pointer to the environment hashmap, used for expansions.
  * @param cur		A pointer to the current token pointer in the stream.
  * @param errtok	A pointer to the token pointer where a parsing error 
  * occurred, if any.
@@ -92,6 +91,7 @@ t_ast	*cmd_parser(t_hmap *env, t_token **cur, t_token **errtok)
  *        ensures that it is properly closed by a `TK_RPAREN`. 
  *        If the closing parenthesis is missing, `*errtok` is set accordingly,
  *        and any allocated subtree is freed.
+ * @see cmd_parser, binop_parser
  */
 t_ast	*primary_parser(t_hmap *env, t_token **cur, t_token **errtok)
 {

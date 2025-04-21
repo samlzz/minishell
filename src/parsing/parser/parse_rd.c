@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/19 17:14:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:33:41 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,30 @@ static inline bool	insert_expr_leaf(t_ast *tree, t_ast *leaf)
 	return (true);
 }
 
+/**
+ * @brief Parses an expression surrounded by optional redirections.
+ *
+ * This function wraps a primary expression (either a command or a subshell)
+ * with any redirections (`<`, `>`, `>>`, `<<`) that may precede or follow it.
+ * The redirections are represented in the AST as ND_REDIR nodes stacked around
+ * the core expression node. The parser supports both:
+ *
+ *   - leading redirections: `< infile (cmd)`
+ * 
+ *   - trailing redirections: `(cmd) > outfile`
+ *
+ * @param env      A pointer to the environment hashmap, used for expansions.
+ * @param cur      A pointer to the current token pointer in the stream.
+ * @param errtok   A pointer to the token pointer where a parsing error occurred, if any.
+ *
+ * @return A pointer to the resulting AST subtree, or NULL if a parsing error occurred.
+ *
+ * @note If an error is detected (e.g., missing filename after a redirection),
+ *       the function sets `*errtok` to the offending token and frees any
+ *       partially constructed AST.
+ *
+ * @see primary_parser
+ */
 t_ast	*redir_parser(t_hmap *env, t_token **cur, t_token **errtok)
 {
 	t_ast	*subtree;

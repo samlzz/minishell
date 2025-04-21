@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/19 17:10:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:32:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ static inline t_node_type	ttk_to_tnode(t_tk_type tk)
  * binary operators (`||`, `&&`, `|`). It builds the corresponding AST nodes,
  * with each binary operator becoming a node with left and right children.
  *
+ * @param env		A pointer to the environment hashmap, used for expansions.
  * @param cur		A pointer to the current token pointer in the stream.
  * @param bin_op	The binary operator node type to parse at this level (`ND_PIPE`, `ND_AND, ND_OR`).
  * @param errtok	A pointer to the token pointer where the parsing error occurred, if any.

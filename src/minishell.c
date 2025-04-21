@@ -6,17 +6,19 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/19 18:50:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/21 12:18:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
-//todo: tmp
-void		print_ast_ascii(t_ast *node);
+//TODO: tmp
+void	print_ast_ascii(t_ast *node);
+#define EXEC(node)	print_ast_ascii(node)
 
 void	get_input(t_hmap *env)
 {
@@ -38,17 +40,18 @@ void	get_input(t_hmap *env)
 		ast = new_ast(env, input, &err, &errtok);
 		if (!ast)
 			print_err(err, errtok);
-		else // TODO: exec
-			print_ast_ascii(ast);
+		else
+			EXEC(ast);
 		free(input);
 		ast_free(ast);
 	}
 }
 
 // TODO: tmp
-#include <stdio.h>
 void	print_entry(char *key, void *val)
 {
+	if (*key == '@')
+		printf("(INTERNAL):");
 	printf("[%s]: %s\n", key, (char *)val);
 }
 
