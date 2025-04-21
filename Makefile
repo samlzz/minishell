@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/19 16:27:42 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/21 17:38:22 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -38,7 +38,8 @@ C_FILES =	parsing/lexer/ft_token.c		\
 			parsing/expander.c	\
 			parsing/wildcards.c	\
 			parsing/print_err.c	\
-			env.c				\
+			env/init.c			\
+			env/wrappers.c		\
 			minishell.c			\
 			test/print_ast.c	
 

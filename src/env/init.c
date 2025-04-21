@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env.c                                              :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/09 19:02:03 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/19 18:46:58 by sliziard         ###   ########.fr       */
+/*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
+/*   Updated: 2025/04/21 17:41:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static int16_t	_env_init_from_envp(char **envp, t_hmap *env)
 			continue ;
 		key = ft_substr(envp[i], 0, sep - envp[i]);
 		val = ft_strdup(sep + 1);
-		if (!key || !val || ft_hmap_set(env, key, val, free) < 0)
+		if (!key || !val || env_set(env, key, val) < 0)
 		{
 			exit = 1;
 			(free(key), free(val));
@@ -43,33 +43,15 @@ static int16_t	_env_init_from_envp(char **envp, t_hmap *env)
 	return (exit);
 }
 
-static inline int16_t	_set_hmap_item(t_hmap *env, const char *key, const char *val)
-{
-	char	*alloc_val;
-
-	alloc_val = ft_strdup(val);
-	if (!alloc_val)
-	{
-		free(alloc_val);
-		return (1);
-	}
-	if (ft_hmap_set(env, key, alloc_val, free))
-	{
-		free(alloc_val);
-		return (1);
-	}
-	return (0);
-}
-
 static int16_t	_env_minimal_init(t_hmap *env)
 {
 	char	pwd[PATH_MAX];
 
-	if (getcwd(pwd, sizeof(pwd)) && _set_hmap_item(env, "PWD", pwd))
+	if (getcwd(pwd, sizeof(pwd)) && env_literal_set(env, "PWD", pwd))
 		return (1);
 	return (
-		_set_hmap_item(env, "SHLVL", "1") || \
-		_set_hmap_item(env, ENV_PATH_NM, ENV_DEFAULT_PATH)
+		env_literal_set(env, "SHLVL", "1") || \
+		env_literal_set(env, ENV_PATH_NM, ENV_DEFAULT_PATH)
 	);
 }
 
@@ -93,11 +75,11 @@ static inline int16_t	_init_shlvl(t_hmap *env)
 		}
 		else
 			sh_lvl = ft_itoa(curr_lvl);
-		if (!sh_lvl || ft_hmap_set(env, "SHLVL", sh_lvl, free))
+		if (!sh_lvl || env_set(env, "SHLVL", sh_lvl))
 			return (1);
 	}
 	else
-		return (_set_hmap_item(env, "SHLVL", "1"));
+		return (env_literal_set(env, "SHLVL", "1"));
 	return (0);
 }
 
@@ -108,7 +90,7 @@ t_hmap	env_init(char **envp, const char *argv0)
 	env = ft_hmap_new(NULL);
 	if (!env.__entries)
 		return (env);
-	if (_set_hmap_item(&env, ENV_PRGM_NM, argv0))
+	if (env_literal_set(&env, ENV_PRGM_NM, argv0))
 		ft_hmap_free(&env, free);
 	else if (!envp || !*envp)
 	{
