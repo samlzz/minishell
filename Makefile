@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/21 18:10:11 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/22 16:30:57 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,9 +34,11 @@ C_FILES =	parsing/ft_token.c	\
 			parsing/ast/parse_binop.c	\
 			parsing/ast/parse_expr.c	\
 			parsing/ast/parse_rd.c		\
-			parsing/expand/arg_from_words.c	\
-			parsing/expand/ft_argword.c		\
-			parsing/expand/wildcards.c		\
+			parsing/expansion/tk_expander.c			\
+			parsing/expansion/wildcards_expander.c	\
+			parsing/expansion/argword_builder.c		\
+			parsing/expansion/argword_sort.c		\
+			parsing/expansion/ft_argword.c			\
 			parsing/print_err.c	\
 			env/init.c			\
 			env/wrappers.c		\

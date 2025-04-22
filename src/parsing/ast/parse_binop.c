@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/21 12:32:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 14:48:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,17 +42,17 @@ static inline t_node_type	ttk_to_tnode(t_tk_type tk)
  *
  * @see redir_parser
  */
-t_ast	*binop_parser(t_hmap *env, t_token **cur, t_node_type bin_op, \
+t_ast	*binop_parser(t_token **cur, t_node_type bin_op, \
 	t_token **errtok)
 {
 	t_ast	*node;
 	t_ast	*left;
 
 	if (bin_op < ND_PIPE)
-		return (redir_parser(env, cur, errtok));
+		return (redir_parser(cur, errtok));
 	if (bin_op > ND_OR)
 		return (NULL);
-	left = binop_parser(env, cur, bin_op - 1, errtok);
+	left = binop_parser(cur, bin_op - 1, errtok);
 	if (!left)
 		return (NULL);
 	while (*cur && ttk_to_tnode((*cur)->type) == bin_op)
@@ -63,7 +63,7 @@ t_ast	*binop_parser(t_hmap *env, t_token **cur, t_node_type bin_op, \
 		node->type = bin_op;
 		node->u_data.s_binop.left = left;
 		next(cur);
-		node->u_data.s_binop.right = binop_parser(env, cur, bin_op - 1, errtok);
+		node->u_data.s_binop.right = binop_parser(cur, bin_op - 1, errtok);
 		if (!node->u_data.s_binop.right)
 			return (ast_free(node), *errtok = *cur, NULL);
 		left = node;

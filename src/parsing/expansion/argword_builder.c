@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   arg.c                                              :+:      :+:    :+:   */
+/*   argword_builder.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/21 18:01:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 14:55:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ static inline bool	_fill_buffer(t_hmap *env, const char **input, \
 		return (!ft_dynbuf_append_char(buf, *(*input)++));
 }
 
-static char *_expand_value(t_hmap *env, t_token *cur, int16_t last_exit)
+static char *_expand_value(t_hmap *env, t_token *cur, int16_t lst_exit)
 {
 	t_dynbuf	buf;
 	char		*exit_code;
@@ -88,7 +88,7 @@ static char *_expand_value(t_hmap *env, t_token *cur, int16_t last_exit)
 	buf = ft_dynbuf_new(ft_strlen(cur->value));
 	if (!buf.data)
 		return (NULL);
-	exit_code = ft_itoa(last_exit);
+	exit_code = ft_itoa(lst_exit);
 	if (!exit_code)
 		return (ft_dynbuf_free(&buf), NULL);
 	while (*input)
@@ -104,8 +104,7 @@ static char *_expand_value(t_hmap *env, t_token *cur, int16_t last_exit)
 	return (buf.data);
 }
 
-t_argword	*expand_and_join_words(t_hmap *env, t_token **cur, \
-	int16_t last_exit)
+t_argword	*build_argword(t_hmap *env, t_token **cur, int16_t lst_exit)
 {
 	t_argword	*node;
 	char		*expanded;
@@ -116,14 +115,14 @@ t_argword	*expand_and_join_words(t_hmap *env, t_token **cur, \
 		return (NULL);
 	while (*cur && (*cur)->type == TK_WORD)
 	{
-		expanded = _expand_value(env, *cur, last_exit);
+		expanded = _expand_value(env, *cur, lst_exit);
 		if (!expanded)
 			return (argword_clear(node), NULL);
 		err = !argword_append_value(node, expanded, (*cur)->quote);
 		free(expanded);
 		if (err)
 			return (argword_clear(node), NULL);
-		*cur = (*cur)->next;
+		next(cur);
 		if (*cur && !(*cur)->glued)
 			break ;
 	}

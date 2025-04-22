@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 21:16:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 16:04:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,21 +32,15 @@ void	token_clear(t_token *lst)
 	}
 }
 
-void	token_addfront(t_token **lst, t_token *new)
-{
-	if (new)
-	{
-		new->next = *lst;
-		*lst = new;
-	}
-}
-
 void	token_addback(t_token **lst, t_token *new)
 {
 	t_token	*last;
 
 	if (!*lst)
-		return (token_addfront(lst, new));
+	{
+		*lst = new;
+		return ;
+	}
 	last = *lst;
 	while (last->next)
 		last = last->next;
@@ -73,4 +67,20 @@ t_token *token_pop(t_token **lst, t_token *to_retrieve)
 		*lst = cur->next;
 	to_retrieve->next = NULL;
 	return (to_retrieve);
+}
+
+t_token	*token_dup(t_token *og)
+{
+	t_token	*copy;
+
+	copy = malloc( sizeof (t_token));
+	if (!copy)
+		return (NULL);
+	copy->next = NULL;
+	copy->glued = og->glued;
+	copy->quote = og->quote;
+	copy->type = og->type;
+	copy->value = og->value;
+	og->value = NULL;
+	return (copy);
 }

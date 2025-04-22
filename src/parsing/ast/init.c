@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/21 17:59:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 15:26:01 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,32 +64,44 @@ void	ast_free(t_ast	*node)
  * 
  * @see [tokenise, binop_parser]
  */
-t_ast	*new_ast(t_hmap *env, const char *input, \
-	int16_t *errcode, t_token **errtok)
+t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 {
 	t_ast	*ast;
-	t_token	*tokens;
 	t_token	*cursor;
 
-	*errcode = PARSE_OK;
-	*errtok = NULL;
-	tokens = tokenise(input, errcode);
-	if (!tokens)
-		return (NULL);
 	cursor = tokens;
-	ast = binop_parser(env, &cursor, ND_OR, errtok);
+	ast = binop_parser(&cursor, ND_OR, errtok);
 	if (!ast)
-	{
-		*errtok = token_pop(&tokens, *errtok);
-		return (token_clear(tokens), NULL);
-	}
+		return (NULL);
 	if (cursor && cursor->type != TK_EOF)
 	{
-		if (!*errtok)
-			*errtok = token_pop(&tokens, cursor);
 		*errcode = PARSE_ERR_EOF;
-		token_clear(tokens);
+		if (!*errtok)
+			*errtok = cursor;
 		return (ast_free(ast), NULL);
 	}
-	return (token_clear(tokens), ast);
+	return (ast);
+}
+
+t_ast	*parse_input(t_hmap *env, const char *input, \
+	int16_t *err_code, t_token **errtok)
+{
+	t_token	*tokens;
+	t_token	*expanded;
+	t_ast	*ast;
+
+	*err_code = PARSE_OK;
+	*errtok = NULL;
+	tokens = tokenise(input, err_code);
+	if (!tokens)
+		return (NULL);
+	expanded = expand_token_list(env, tokens, errtok);
+	*errtok = token_pop(&tokens, *errtok);
+	token_clear(tokens);
+	if (!expanded)
+		return (NULL);
+	ast = new_ast(expanded, errtok, err_code);
+	*errtok = token_pop(&expanded, *errtok);
+	token_clear(expanded);
+	return (ast);
 }

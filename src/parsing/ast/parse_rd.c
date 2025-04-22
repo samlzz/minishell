@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/21 12:33:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 14:48:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,14 +93,14 @@ static inline bool	insert_expr_leaf(t_ast *tree, t_ast *leaf)
  *
  * @see primary_parser
  */
-t_ast	*redir_parser(t_hmap *env, t_token **cur, t_token **errtok)
+t_ast	*redir_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*subtree;
 	t_ast	*expr;
 
 	subtree = NULL;
 	subtree = _build_rd_subtree(cur, subtree, errtok);
-	expr = primary_parser(env, cur, errtok);
+	expr = primary_parser(cur, errtok);
 	if (!subtree)
 	{
 		subtree = expr;

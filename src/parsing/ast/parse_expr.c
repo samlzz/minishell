@@ -6,38 +6,37 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/21 12:32:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 15:37:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
 
-static inline char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
+static inline char	**_collect_argv(t_token **cur, t_token **errtok)
 {
-	char		**argv;
-	t_argword	*args;
-	t_argword	*new;
-	t_argword	*wild;
+	char	**argv;
+	size_t	size;
+	size_t	i;
+	t_token	*cursor;
 
-	args = NULL;
-	while (*cur && (*cur)->type == TK_WORD)
+	size = 0;
+	cursor = *cur;
+	while (cursor && cursor->type == TK_WORD)
+		(size++, (cursor = cursor->next));
+	if (!size)
+		return ((*errtok = cursor), NULL);
+	argv = malloc(sizeof (char *) * (size + 1));
+	if (!argv)
+		return (NULL);
+	i = 0;
+	while (i < size)
 	{
-		new = expand_and_join_words(env, cur, 0);
-		if (!new)
-			return (argword_clear(args), NULL);
-		if (new->wild_offsets.len)
-		{
-			wild = expand_wildcards(new);
-			if (wild)
-				(argword_clear(new), (new = wild));
-		}
-		argword_add_back(&args, new);
+		argv[i++] = (*cur)->value;
+		(*cur)->value = NULL;
+		next(cur);
 	}
-	if (!args)
-		*errtok = *cur;
-	argv = argwords_to_argv(args);
-	argword_clear(args);
+	argv[i] = NULL;
 	return (argv);
 }
 
@@ -55,7 +54,7 @@ static inline char	**_collect_argv(t_hmap *env, t_token **cur, t_token **errtok)
  *
  * @return A pointer to a `ND_CMD` AST node, or `NULL` if parsing failed.
  */
-t_ast	*cmd_parser(t_hmap *env, t_token **cur, t_token **errtok)
+t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*node;
 
@@ -63,7 +62,7 @@ t_ast	*cmd_parser(t_hmap *env, t_token **cur, t_token **errtok)
 	if (!node)
 		return (NULL);
 	node->type = ND_CMD;
-	node->u_data.s_cmd.argv = _collect_argv(env, cur, errtok);
+	node->u_data.s_cmd.argv = _collect_argv(cur, errtok);
 	if (!node->u_data.s_cmd.argv)
 		return (free(node), NULL);
 	return (node);
@@ -93,7 +92,7 @@ t_ast	*cmd_parser(t_hmap *env, t_token **cur, t_token **errtok)
  *        and any allocated subtree is freed.
  * @see cmd_parser, binop_parser
  */
-t_ast	*primary_parser(t_hmap *env, t_token **cur, t_token **errtok)
+t_ast	*primary_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*subexpr;
 	t_ast	*subshell;
@@ -101,7 +100,7 @@ t_ast	*primary_parser(t_hmap *env, t_token **cur, t_token **errtok)
 	if (*cur && (*cur)->type == TK_LPAREN)
 	{
 		*cur = (*cur)->next;
-		subexpr = binop_parser(env, cur, ND_OR, errtok);
+		subexpr = binop_parser(cur, ND_OR, errtok);
 		if (!subexpr)
 			return (NULL);
 		if (!*cur || (*cur)->type != TK_RPAREN)
@@ -114,5 +113,5 @@ t_ast	*primary_parser(t_hmap *env, t_token **cur, t_token **errtok)
 		subshell->u_data.s_subsh.child = subexpr;
 		return (subshell);
 	}
-	return (cmd_parser(env, cur, errtok));
+	return (cmd_parser(cur, errtok));
 }
