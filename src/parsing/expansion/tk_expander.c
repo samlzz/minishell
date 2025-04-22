@@ -6,52 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 16:06:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 18:39:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <stdlib.h>
-
-static inline int16_t	_add_word(t_argword **lst, char *word)
-{
-	t_argword	*new;
-
-	if (!word)
-		return (0);
-	new = argword_new();
-	if (!new)
-		return (free(word), 0);
-	new->value = word;
-	argword_add_back(lst, new);
-	return (1);
-}
-
-static t_argword	*_split_withespace(t_argword *arg)
-{
-	t_argword	*lst;
-	size_t		i;
-	int32_t		len;
-	int32_t		start;
-
-	i = 0;
-	start = 0;
-	lst = NULL;
-	if (!arg->value[0] && !arg->wild_offsets.len)
-		return (_add_word(&lst, ft_strdup("")), lst);
-	while (i < arg->space_offsets.len)
-	{
-		len = arg->space_offsets.data[i] - start;
-		if (len > 0 && \
-			!_add_word(&lst, ft_substr(arg->value, start, len)))
-				return (argword_clear(lst), NULL);
-		start = arg->space_offsets.data[i++] + 1;
-	}
-	if (arg->value[start] && \
-		!_add_word(&lst, ft_strdup(arg->value + start)))
-		return (argword_clear(lst), NULL);
-	return (lst);
-}
 
 static inline t_token	*_tokens_from_argwords(t_argword *word)
 {
@@ -84,7 +44,6 @@ static inline t_token	*_tokens_from_argwords(t_argword *word)
 static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 {
 	t_argword	*new;
-	t_argword	*iter;
 	t_argword	*tmp;
 
 	new = build_argword(env, cur, 0);
@@ -92,20 +51,13 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 		return (NULL);
 	if (new->space_offsets.len)
 	{
-		tmp = _split_withespace(new);
+		tmp = split_withespace(new);
 		argword_clear(new);
 		if (!tmp)
 			return (NULL);
 		new = tmp;
 	}
-	iter = new;
-	while (iter && iter->wild_offsets.len)
-	{
-		tmp = expand_wildcards(new);
-		if (tmp)
-			(argword_clear(new), (new = tmp));
-		iter = iter->next;
-	}
+	new = expand_wildcards_in_list(new);
 	return (_tokens_from_argwords(new));
 }
 
