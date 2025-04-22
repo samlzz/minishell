@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/21 17:41:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/22 15:32:11 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static int16_t	_env_init_from_envp(char **envp, t_hmap *env)
 	while (envp && envp[i])
 	{
 		sep = ft_strchr(envp[i], '=');
-		if (!sep)
+		if (!sep && ++i)
 			continue ;
 		key = ft_substr(envp[i], 0, sep - envp[i]);
 		val = ft_strdup(sep + 1);
