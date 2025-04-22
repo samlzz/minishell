@@ -98,6 +98,8 @@ int16_t		argword_append_value(t_argword *node, const char *cur_arg, \
 void		argword_add_back(t_argword **lst, t_argword *new);
 void		argword_clear(t_argword *lst);
 
+void	argword_sort_alpha(t_argword **head);
+
 // tokens
 void		next(t_token **cur);
 t_token 	*token_pop(t_token **lst, t_token *to_retrieve);
