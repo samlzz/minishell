@@ -6,13 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 18:37:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 12:56:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 
-static inline int16_t	_copy_local_wildcards(t_dynint *dest, t_dynint *src, \
+static inline int16_t	_adjust_wildcards(t_dynint *dest, t_dynint *src, \
 	int32_t start, int32_t len)
 {
 	size_t	i;
@@ -41,8 +41,7 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
 	new->value = ft_substr(arg->value, start, len);
 	if (!new->value)
 		return (argword_clear(new), 0);
-	if (!_copy_local_wildcards(&new->wild_offsets, \
-		&arg->wild_offsets, start, len))
+	if (!_adjust_wildcards(&new->wild_offsets, &arg->wild_offsets, start, len))
 		return (0);
 	argword_add_back(lst, new);
 	return (1);
