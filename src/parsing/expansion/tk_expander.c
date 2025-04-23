@@ -6,38 +6,54 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 17:04:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 19:15:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <stdlib.h>
 
-static inline t_token	*_tokens_from_argwords(t_argword *word)
+static t_token	*_consume_argword(t_argword *word, t_token *prev)
 {
-	t_argword	*lst;
+	t_token	*new;
+	
+	new = ft_calloc(1, sizeof (t_token));
+	if (!new)
+		return (NULL);
+	new->type = TK_WORD;
+	if (prev)
+	{
+		if (!prev->expand)
+			prev->expand = true;
+		new->expand = true;
+	}
+	new->value = word->value;
+	word->value = NULL;
+	if (word->no_quote)
+		new->quote = QUOTE_NONE;
+	else
+		new->quote = QUOTE_SINGLE;
+	return (new);
+}
+
+static inline t_token	*_tokens_from_argwords(t_argword *words)
+{
+	t_argword	*cur;
 	t_token		*dest;
 	t_token		*new;
 
-	lst = word;
+	cur = words;
 	dest = NULL;
-	while (word)
+	while (cur)
 	{
-		new = ft_calloc(1, sizeof (t_token));
+		new = _consume_argword(cur, dest);
 		if (!new)
-			return (argword_clear(lst), \
+			return (argword_clear(words), \
 					token_clear(dest), NULL);
-		new->type = TK_WORD;
-		new->value = word->value;
-		if (word->no_quote)
-			new->quote = QUOTE_NONE;
-		else
-			new->quote = QUOTE_SINGLE;
-		word->value = NULL;
 		token_addback(&dest, new);
-		word = word->next;
+		cur = cur->next;
 	}
-	argword_clear(lst);
+	argword_clear(words);
 	return (dest);
 }
 

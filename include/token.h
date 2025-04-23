@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 13:38:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 19:06:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ typedef struct s_token
 	t_quote_type	quote;
 	char			*value;
 	bool			glued;
+	bool			expand;
 	struct s_token	*next;
 }	t_token;
 

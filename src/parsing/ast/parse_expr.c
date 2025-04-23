@@ -6,14 +6,40 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 15:37:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:52:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
 
-static inline char	**_collect_argv(t_token **cur, t_token **errtok)
+char	**join_argv(char **og, char **new)
+{
+	int32_t	second;
+	int32_t	first;
+	int32_t	i;
+	char	**dest;
+
+	first = 0;
+	while (og[first])
+		first++;
+	second = 0;
+	while (new[second])
+		second++;
+	dest = malloc((first + second + 1) * sizeof (char *));
+	if (!dest)
+		return (NULL);
+	i = -1;
+	while (++i < first)
+		dest[i] = og[i];
+	i = -1;
+	while (++i < second)
+		dest[first + i] = new[i];
+	dest[++i] = NULL;
+	return (dest);
+}
+
+char	**collect_argv(t_token **cur, t_token **errtok)
 {
 	char	**argv;
 	size_t	size;
@@ -62,7 +88,7 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 	if (!node)
 		return (NULL);
 	node->type = ND_CMD;
-	node->u_data.s_cmd.argv = _collect_argv(cur, errtok);
+	node->u_data.s_cmd.argv = collect_argv(cur, errtok);
 	if (!node->u_data.s_cmd.argv)
 		return (free(node), NULL);
 	return (node);
