@@ -77,6 +77,23 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 	return (_tokens_from_argwords(argword));
 }
 
+static t_token	*_expand_heredoc(t_token **lst)
+{
+	t_token	*heredoc;
+	t_token	*delim;
+
+	heredoc = token_dup(*lst);
+	next(lst);
+	if (!heredoc)
+		return (NULL);
+	delim = token_dup(*lst);
+	next(lst);
+	if (!delim)
+		return (token_clear(heredoc), NULL);
+	heredoc->next = delim;
+	return (heredoc);
+}
+
 t_token	*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok)
 {
 	t_token	*new_lst;
@@ -87,6 +104,8 @@ t_token	*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok)
 	{
 		if (lst->type == TK_WORD)
 			node = _expand_one_tk(env, &lst);
+		else if (lst->type == TK_HEREDOC)
+			node = _expand_heredoc(&lst);
 		else
 		{
 			node = token_dup(lst);
