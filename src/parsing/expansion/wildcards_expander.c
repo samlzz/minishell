@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 18:38:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 17:06:40 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,36 +118,4 @@ t_argword	*expand_wildcards(t_argword *arg)
 	if (dir)
 		closedir(dir);
 	return (argword_sort_alpha(&match), match);
-}
-
-t_argword *expand_wildcards_in_list(t_argword *head)
-{
-	t_argword **cursor;
-	t_argword *expanded;
-	t_argword *next;
-
-	cursor = &head;
-	while (*cursor)
-	{
-		if ((*cursor)->wild_offsets.len == 0)
-		{
-			cursor = &(*cursor)->next;
-			continue ;
-		}
-		expanded = expand_wildcards(*cursor);
-		if (!expanded)
-		{
-			cursor = &(*cursor)->next;
-			continue ;
-		}
-		next = (*cursor)->next;
-		(*cursor)->next = NULL;
-		argword_clear(*cursor);
-		*cursor = expanded;
-		while ((*cursor)->next)
-			cursor = &(*cursor)->next;
-		(*cursor)->next = next;
-		cursor = &(*cursor)->next;
-	}
-	return (head);
 }

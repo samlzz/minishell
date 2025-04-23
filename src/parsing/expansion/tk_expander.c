@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 18:39:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 17:04:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,22 +43,22 @@ static inline t_token	*_tokens_from_argwords(t_argword *word)
 
 static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 {
-	t_argword	*new;
-	t_argword	*tmp;
+	t_argword	*argword;
+	t_argword	*split;
 
-	new = build_argword(env, cur, 0);
-	if (!new)
+	argword = build_argword(env, cur, 0);
+	if (!argword)
 		return (NULL);
-	if (new->space_offsets.len)
+	if (argword->space_offsets.len)
 	{
-		tmp = split_withespace(new);
-		argword_clear(new);
-		if (!tmp)
+		split = split_withespace(argword);
+		argword_clear(argword);
+		if (!split)
 			return (NULL);
-		new = tmp;
+		argword = split;
 	}
-	new = expand_wildcards_in_list(new);
-	return (_tokens_from_argwords(new));
+	argword = replace_by_wild_expanded(argword);
+	return (_tokens_from_argwords(argword));
 }
 
 t_token	*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok)
