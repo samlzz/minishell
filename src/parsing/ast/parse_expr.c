@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 20:52:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/24 21:09:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ char	**join_argv(char **og, char **new)
 	i = -1;
 	while (++i < second)
 		dest[first + i] = new[i];
-	dest[++i] = NULL;
+	dest[first + i] = NULL;
 	return (dest);
 }
 
