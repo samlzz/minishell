@@ -33,7 +33,6 @@ typedef struct s_argword
 	char				*value;
 	t_dynint			wild_offsets;
 	t_dynint			space_offsets;
-	bool				no_quote;
 	struct s_argword	*next;
 }	t_argword;
 

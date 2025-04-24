@@ -74,13 +74,13 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 		argword = split;
 	}
 	argword = replace_by_wild_expanded(argword);
-	return (_tokens_from_argwords(argword));
 }
 
 static t_token	*_expand_heredoc(t_token **lst)
 {
 	t_token	*heredoc;
 	t_token	*delim;
+	char	*tmp;
 
 	heredoc = token_dup(*lst);
 	next(lst);
@@ -91,6 +91,17 @@ static t_token	*_expand_heredoc(t_token **lst)
 	if (!delim)
 		return (token_clear(heredoc), NULL);
 	heredoc->next = delim;
+	while (*lst && (*lst)->type == TK_WORD && (*lst)->glued)
+	{
+		tmp = ft_strappend(delim->value, (*lst)->value);
+		if (!tmp)
+			return (token_clear(heredoc), NULL);
+		free(delim->value);
+		delim->value = tmp;
+		if ((*lst)->value != QUOTE_NONE)
+			delim->quote = QUOTE_SINGLE;
+		next(lst);
+	}
 	return (heredoc);
 }
 

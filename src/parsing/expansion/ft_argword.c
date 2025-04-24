@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 17:34:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:09:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ t_argword	*argword_new(void)
 		free(new);
 		return (NULL);
 	}
-	new->no_quote = true;
 	return (new);
 }
 
@@ -74,8 +73,6 @@ int16_t	argword_append_value(t_argword *node, const char *cur_arg, \
 		if (!_check_split_and_wild(node, cur_arg))
 			return (0);
 	}
-	else
-		node->no_quote = false;
 	new_arg = ft_strappend(node->value, cur_arg);
 	if (!new_arg)
 		return (0);
