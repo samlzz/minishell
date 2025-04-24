@@ -30,11 +30,13 @@ void	print_tokens(t_token *tokens)
 	while (tokens)
 	{
 		if (tokens->type == TK_WORD)
-			printf("Token: %s %-18s | Value: \"%s\" Joined: %s\n",
+			printf("Token: %s %-18s | Joined: %s\n\tValue: \"%s\" ('%s')\n",
 				token_type_str(tokens->type),
 				quote_type_str(tokens->quote),
 				tokens->value,
-				tokens->glued ? "true" : "false");
+				tokens->unexpanded,
+				tokens->glued ? "true" : "false"
+			);
 		else
 			printf("Token: %-23s | Value: \"%s\"\n",
 				token_type_str(tokens->type),
