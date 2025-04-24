@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 21:32:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/23 22:06:05 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	redir->u_data.s_redir.filename = ft_strdup(filename->value);
 	if (!redir->u_data.s_redir.filename)
 		return (ast_free(redir), NULL);
-	return redir;
+	return (redir);
 }
 
 static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
