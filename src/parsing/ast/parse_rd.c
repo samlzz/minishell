@@ -5,21 +5,21 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/24 20:19:31 by sliziard         ###   ########.fr       */
+/*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
+/*   Updated: 2025/04/24 21:12:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
 
-static inline bool	is_redirection(t_tk_type type)
+static inline bool	_is_redirection(t_tk_type type)
 {
 	return (type == TK_REDIR_IN || type == TK_REDIR_OUT
 		|| type == TK_REDIR_APPEND || type == TK_HEREDOC);
 }
 
-static inline t_redir_type	get_rd_type(t_tk_type tk)
+static inline t_redir_type	_get_rd_type(t_tk_type tk)
 {
 	if (tk == TK_REDIR_IN)
 		return RD_IN;
@@ -38,7 +38,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	t_redir_type	type;
 	t_ast			*redir;
 
-	type = get_rd_type((*cur)->type);
+	type = _get_rd_type((*cur)->type);
 	next(cur);
 	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
@@ -61,7 +61,7 @@ static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 {
 	t_ast	*redir;
 
-	while (*cur && is_redirection((*cur)->type))
+	while (*cur && _is_redirection((*cur)->type))
 	{
 		redir = _parse_single_redir(cur, errtok);
 		if (!redir)
@@ -75,51 +75,56 @@ static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 	return (inner);
 }
 
-static inline t_ast	*_check_words_left(t_ast *rd_tree, t_ast *expr, \
-	t_token **cur, t_token **errtok)
+static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 {
-	char	**new_args;
+	char	**new;
 	char	**tmp;
 
-	if (!*cur || (*cur)->type != TK_WORD)
-		return (rd_tree);
-	if (expr->type != ND_CMD)
-		return (*errtok = *cur, ast_free(rd_tree), NULL);
-	new_args = collect_argv(cur, errtok);
-	if (!new_args || !expr->u_data.s_cmd.argv)
-		return (ast_free(rd_tree), NULL);
-	tmp = join_argv(expr->u_data.s_cmd.argv, new_args);
+	if (!expr)
+		return (primary_parser(cur, errtok));
+	if (!*cur || (*cur)->type != TK_WORD || \
+		expr->type != ND_CMD || !expr->u_data.s_cmd.argv)
+		return ((*errtok = *cur), ast_free(expr), NULL);
+	new = collect_argv(cur, errtok);
+	if (!new)
+		return (ast_free(expr), NULL);
+	tmp = join_argv(expr->u_data.s_cmd.argv, new);
 	if (!tmp)
-		return (ft_splitfree(new_args, 0), \
-			ast_free(rd_tree), NULL);
-	free(new_args);
+		return (ft_splitfree(new, 0), ast_free(expr), NULL);
+	free(new);
 	free(expr->u_data.s_cmd.argv);
 	expr->u_data.s_cmd.argv = tmp;
-	return (rd_tree);
+	return (expr);
 }
 
 t_ast	*redir_parser(t_token **cur, t_token **errtok)
 {
-	t_ast	*tree;
+	t_ast	*rd_list;
 	t_ast	*expr;
 	t_ast	*last;
-	
-	tree = _collect_redirs(cur, NULL, errtok);
-	if (*errtok)
-		return (NULL);
-	expr = primary_parser(cur, errtok);
-	if (!expr)
-		return (ast_free(tree), NULL);
-	if (tree)
+
+	rd_list = NULL;
+	expr = NULL;
+	while (*cur && ((*cur)->type == TK_WORD || _is_redirection((*cur)->type)))
 	{
-		last = tree;
-		while (last->type == ND_REDIR && last->u_data.s_redir.child)
-			last = last->u_data.s_redir.child;
-		if (last->type != ND_REDIR)
-			return (ast_free(tree), ast_free(expr), NULL);
-		last->u_data.s_redir.child = expr;
+		if ((*cur)->type == TK_WORD)
+		{
+			expr = _collect_command(cur, expr, errtok);
+			if (!expr)
+				return (ast_free(rd_list), NULL);
+		}
+		else
+		{
+			rd_list = _collect_redirs(cur, rd_list, errtok);
+			if (!rd_list)
+				return (ast_free(expr), NULL);
+		}
 	}
-	else
-		tree = expr;
-	return (_collect_redirs(cur, tree, errtok));
+	if (!rd_list)
+		return (expr);
+	last = rd_list;
+	while (last->type == ND_REDIR && last->u_data.s_redir.child)
+		last = last->u_data.s_redir.child;
+	last->u_data.s_redir.child = expr;
+	return (rd_list);
 }
