@@ -6,14 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 19:15:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:26:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <stdlib.h>
 
-static t_token	*_consume_argword(t_argword *word, t_token *prev)
+static t_token	*_consume_argword(t_argword *word, char *raw)
 {
 	t_token	*new;
 	
@@ -21,32 +21,30 @@ static t_token	*_consume_argword(t_argword *word, t_token *prev)
 	if (!new)
 		return (NULL);
 	new->type = TK_WORD;
-	if (prev)
-	{
-		if (!prev->expand)
-			prev->expand = true;
-		new->expand = true;
-	}
+	if (raw && ft_strcmp(word->value, raw))
+		new->unexpanded = raw;
+	else
+		free(raw);
 	new->value = word->value;
 	word->value = NULL;
-	if (word->no_quote)
-		new->quote = QUOTE_NONE;
-	else
-		new->quote = QUOTE_SINGLE;
 	return (new);
 }
 
-static inline t_token	*_tokens_from_argwords(t_argword *words)
+static inline t_token	*_tokens_from_argwords(t_argword *words, t_token *og)
 {
 	t_argword	*cur;
 	t_token		*dest;
 	t_token		*new;
+	char		*raw;
 
 	cur = words;
 	dest = NULL;
 	while (cur)
 	{
-		new = _consume_argword(cur, dest);
+		raw = NULL;
+		if (og && og->value)
+			raw = ft_strdup(og->value);
+		new = _consume_argword(cur, raw);
 		if (!new)
 			return (argword_clear(words), \
 					token_clear(dest), NULL);
@@ -59,9 +57,11 @@ static inline t_token	*_tokens_from_argwords(t_argword *words)
 
 static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 {
+	t_token		*og;
 	t_argword	*argword;
 	t_argword	*split;
 
+	og = *cur;
 	argword = build_argword(env, cur, 0);
 	if (!argword)
 		return (NULL);
@@ -74,6 +74,7 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 		argword = split;
 	}
 	argword = replace_by_wild_expanded(argword);
+	return (_tokens_from_argwords(argword, og));
 }
 
 static t_token	*_expand_heredoc(t_token **lst)

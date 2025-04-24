@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 17:08:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:02:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ void	token_clear(t_token *lst)
 	{
 		if (lst->value)
 			free(lst->value);
+		if (lst->unexpanded)
+			free(lst->unexpanded);
 		next = lst->next;
 		free(lst);
 		lst = next;
@@ -82,5 +84,7 @@ t_token	*token_dup(t_token *og)
 	copy->type = og->type;
 	copy->value = og->value;
 	og->value = NULL;
+	copy->unexpanded = og->unexpanded;
+	og->unexpanded = NULL;
 	return (copy);
 }

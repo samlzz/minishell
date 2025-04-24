@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:36:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 22:06:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/24 20:19:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 
 	type = get_rd_type((*cur)->type);
 	next(cur);
-	if (!*cur || (*cur)->type != TK_WORD)
+	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
 	filename = *cur;
 	next(cur);
@@ -59,13 +59,16 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 
 static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 {
-	t_ast *redir;
+	t_ast	*redir;
 
 	while (*cur && is_redirection((*cur)->type))
 	{
 		redir = _parse_single_redir(cur, errtok);
 		if (!redir)
-			return (ast_free(inner), NULL);
+		{
+			ast_free(inner);
+			return (NULL);
+		}
 		redir->u_data.s_redir.child = inner;
 		inner = redir;
 	}
@@ -80,7 +83,7 @@ static inline t_ast	*_check_words_left(t_ast *rd_tree, t_ast *expr, \
 
 	if (!*cur || (*cur)->type != TK_WORD)
 		return (rd_tree);
-	if ((*cur)->expand || expr->type != ND_CMD)
+	if (expr->type != ND_CMD)
 		return (*errtok = *cur, ast_free(rd_tree), NULL);
 	new_args = collect_argv(cur, errtok);
 	if (!new_args || !expr->u_data.s_cmd.argv)
@@ -118,8 +121,5 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 	}
 	else
 		tree = expr;
-	tree = _collect_redirs(cur, tree, errtok);
-	if (!tree)
-		return (ast_free(expr), NULL);
-	return (_check_words_left(tree, expr, cur, errtok));
+	return (_collect_redirs(cur, tree, errtok));
 }
