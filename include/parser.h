@@ -20,11 +20,13 @@
 # define HANDLED_CHAR	"()<>|&'\""
 
 //? Error codes
-# define PARSE_OK			0
-# define PARSE_ERR			-1
-# define PARSE_ERR_SQUOTE	-2
-# define PARSE_ERR_DQUOTE	-3
-# define PARSE_ERR_EOF		-4
+# define PARSE_OK				0
+# define PARSE_ERR				-1
+# define PARSE_ERR_SQUOTE		-2
+# define PARSE_ERR_DQUOTE		-3
+# define PARSE_ERR_MALFORMED	-4
+# define PARSE_ERR_SOLO_AND		-6
+# define PARSE_ERR_EOF			-5
 
 //* Tokens types
 

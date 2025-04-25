@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 18:59:36 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 20:37:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,11 +49,13 @@ static inline void	_print_unclosed_quote(int16_t errcode)
 		ft_putendl_fd("minishell: unexpected EOF while looking for matching `\"'", 2);
 }
 
-static void	_print_syntax_error(t_token *tok)
+static void	_print_syntax_error(t_token *tok, char *input_tk)
 {
 	const char *tk;
 
-	if (!tok)
+	if (input_tk)
+		tk = input_tk;
+	else if (!tok)
 		tk = "newline";
 	else if (tok->unexpanded)
 		return (_print_ambiguous_redirect(tok->unexpanded));
@@ -72,7 +74,11 @@ void	print_err(int16_t errcode, t_token *errtok)
 		ft_putendl_fd("minishell: internal error occurs", 2);
 	else if (errcode == PARSE_ERR_SQUOTE || errcode == PARSE_ERR_DQUOTE)
 		_print_unclosed_quote(errcode);
+	else if (errcode == PARSE_ERR_MALFORMED)
+		ft_putendl_fd("minishell: wrong input", 2);
+	else if (errcode == PARSE_ERR_SOLO_AND)
+		_print_syntax_error(errtok, "&");
 	else
-		_print_syntax_error(errtok);
+		_print_syntax_error(errtok, NULL);
 	token_clear(errtok);
 }

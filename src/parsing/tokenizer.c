@@ -47,6 +47,8 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 	while (input[len] && !ft_isspace(input[len]) && \
 		!ft_strchr(HANDLED_CHAR, input[len]))
 		len++;
+	if (!len)
+		return (PARSE_ERR_MALFORMED);
 	curr->value = ft_substr(input, 0, len);
 	if (!curr->value)
 		return (PARSE_ERR);
@@ -54,7 +56,7 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 	return (len);
 }
 
-static inline int32_t	_fill_token(const char *input, t_token *curr)
+static int32_t	_fill_token(const char *input, t_token *curr)
 {
 	if (!*input)
 		return (curr->type = TK_EOF, 0);
@@ -62,15 +64,14 @@ static inline int32_t	_fill_token(const char *input, t_token *curr)
 		curr->type = TK_LPAREN;
 	else if (*input == ')')
 		curr->type = TK_RPAREN;
+	else if (*input == '|' && input[1] == '|')
+		curr->type = TK_OR;
 	else if (*input == '|')
-	{
-		if (input[1] == '|')
-			curr->type = TK_OR;
-		else
-			curr->type = TK_PIPE;
-	}
+		curr->type = TK_PIPE;
 	else if (*input == '&' && input[1] == '&')
 		curr->type = TK_AND;
+	else if (*input == '&')
+		return (PARSE_ERR_SOLO_AND);
 	else if (input[0] == '>')
 		curr->type = (input[1] == '>') * TK_REDIR_APPEND \
 			+ !(input[1] == '>') * TK_REDIR_OUT;
@@ -95,6 +96,8 @@ static inline int32_t	_fill_token(const char *input, t_token *curr)
  *                    - -1 : malloc failure
  *                    - -2 : unclosed single quote
  *                    - -3 : unclosed double quote
+ *                    - -4 : some symbol is malformed
+ *                    - -6 : a lonely '&' was encountered
  *
  * @return A linked list of tokens on success, or NULL on error.
  *
