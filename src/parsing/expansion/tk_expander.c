@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/24 15:26:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 19:06:07 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,8 +85,8 @@ static t_token	*_expand_heredoc(t_token **lst)
 
 	heredoc = token_dup(*lst);
 	next(lst);
-	if (!heredoc)
-		return (NULL);
+	if (!heredoc || !*lst)
+		return (token_clear(heredoc), NULL);
 	delim = token_dup(*lst);
 	next(lst);
 	if (!delim)
