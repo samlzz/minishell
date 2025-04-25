@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 18:55:19 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 19:23:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,9 +108,9 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 
 	rd_list = NULL;
 	expr = NULL;
-	while (*cur && ((*cur)->type == TK_WORD || _is_redirection((*cur)->type)))
+	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN || _is_redirection((*cur)->type)))
 	{
-		if ((*cur)->type == TK_WORD)
+		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)
 		{
 			expr = _collect_command(cur, expr, errtok);
 			if (!expr)
