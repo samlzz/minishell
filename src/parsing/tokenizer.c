@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/07 14:09:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 20:33:59 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,6 @@ static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 	return (len + 1);
 }
 
-static inline bool	_isspace(int c)
-{
-	unsigned char	uc;
-
-	uc = (unsigned char)c;
-	return (
-		uc == ' ' || uc == '\f' || \
-		uc == '\n' || uc == '\r' || \
-		uc == '\t' || uc == '\v'
-	);
-}
-
 static inline int32_t	_handle_word(const char *input, t_token *curr)
 {
 	int32_t	len;
@@ -56,7 +44,7 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 	if (*input == '"' || *input == '\'')
 		return (_handle_quoted_word(input, curr));
 	len = 0;
-	while (input[len] && !_isspace(input[len]) && \
+	while (input[len] && !ft_isspace(input[len]) && \
 		!ft_strchr(HANDLED_CHAR, input[len]))
 		len++;
 	curr->value = ft_substr(input, 0, len);
@@ -129,7 +117,7 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 		if (!curr)
 			return (token_clear(tokens), *exit_code = PARSE_ERR, NULL);
 		curr->glued = true;
-		while (_isspace(input[i]))
+		while (ft_isspace(input[i]))
 			(i++, curr->glued = false);
 		offset = _fill_token(input + i, curr);
 		if (offset < 0)

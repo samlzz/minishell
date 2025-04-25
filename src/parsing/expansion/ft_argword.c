@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/24 15:09:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 20:18:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
 		val_len = 0;
 	while (arg[i])
 	{
-		if (arg[i] == ' ' || (arg[i] >= 9 && arg[i] <= 13)) 
+		if (ft_isspace(arg[i])) 
 		{
 			if (!ft_dynint_append(&node->space_offsets, val_len + i))
 				return (0);

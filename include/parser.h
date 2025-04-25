@@ -70,5 +70,7 @@ void		argword_clear(t_argword *lst);
 
 void		argword_sort_alpha(t_argword **head);
 
+//utils
+bool		ft_isspace(int c);
 
 #endif
