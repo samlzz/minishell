@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 14:48:30 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 19:26:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ t_ast	*binop_parser(t_token **cur, t_node_type bin_op, \
 		return (NULL);
 	left = binop_parser(cur, bin_op - 1, errtok);
 	if (!left)
-		return (NULL);
+		return ((void)(!*errtok && (*errtok = *cur)), NULL);
 	while (*cur && ttk_to_tnode((*cur)->type) == bin_op)
 	{
 		node = ft_calloc(1, sizeof (t_ast));
