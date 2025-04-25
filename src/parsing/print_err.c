@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/24 19:55:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:59:36 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static inline void	_print_ambiguous_redirect(const char *raw)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(raw, 2);
-	ft_putendl_fd(": ambiguous redirect", 2);
+	ft_putstr_fd(": ambiguous redirect\n", 2);
 }
 
 static inline void	_print_unclosed_quote(int16_t errcode)
@@ -61,8 +61,9 @@ static void	_print_syntax_error(t_token *tok)
 		tk = tok->value;
 	else
 		tk = token_type_str(tok);
-	ft_putstr_fd("minishell: syntax error near unexpected token ", 2);
-	ft_putendl_fd(tk, 2);
+	ft_putstr_fd("minishell: syntax error near unexpected token `", 2);
+	ft_putstr_fd(tk, 2);
+	ft_putstr_fd("'\n", 2);
 }
 
 void	print_err(int16_t errcode, t_token *errtok)

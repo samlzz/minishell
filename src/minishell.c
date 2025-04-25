@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 15:41:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/24 21:34:16 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,22 @@
 //TODO: tmp
 void	print_ast_ascii(t_ast *node);
 #define EXEC(node)	print_ast_ascii(node)
+
+static inline bool	_skipable(const char *input)
+{
+	size_t	i;
+
+	if (!ft_strncmp(input, "\n", 1))
+		return (true);
+	if (!ft_strncmp(input, ":", 1))
+		return (true);
+	if (!ft_strncmp(input, "!", 1))
+		return (true);
+	i = 0;
+	while (input[i] && (input[i] == ' ' || input[i] == '\t'))
+		i++;
+	return (!input[i]);
+}
 
 void	get_input(t_hmap *env)
 {
@@ -37,13 +53,16 @@ void	get_input(t_hmap *env)
 		}
 		if (*input)
 			add_history(input);
-		ast = parse_input(env, input, &err, &errtok);
-		if (!ast)
-			print_err(err, errtok);
-		else
-			EXEC(ast);
+		if (!_skipable(input))
+		{
+			ast = parse_input(env, input, &err, &errtok);
+			if (!ast)
+				print_err(err, errtok);
+			else
+				EXEC(ast);			
+			ast_free(ast);
+		}
 		free(input);
-		ast_free(ast);
 	}
 }
 
