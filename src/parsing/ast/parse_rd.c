@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/24 21:12:35 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/25 18:55:19 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static inline t_redir_type	_get_rd_type(t_tk_type tk)
 
 static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 {
-	t_token			*filename;
+	t_token			*fname;
 	t_redir_type	type;
 	t_ast			*redir;
 
@@ -42,16 +42,19 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	next(cur);
 	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
-	filename = *cur;
+	fname = *cur;
+	if (fname->unexpanded && fname->next && fname->next->unexpanded && \
+		ft_strcmp(fname->unexpanded, fname->next->unexpanded) == 0)
+		return ((*errtok = fname), NULL);
 	next(cur);
 	redir = ft_calloc(1, sizeof(t_ast));
 	if (!redir)
 		return (NULL);
 	redir->type = ND_REDIR;
 	redir->u_data.s_redir.redir_type = type;
-	if (type == RD_HEREDOC && filename->quote == QUOTE_NONE)
+	if (type == RD_HEREDOC && fname->quote == QUOTE_NONE)
 		redir->u_data.s_redir.hd_expand = true;
-	redir->u_data.s_redir.filename = ft_strdup(filename->value);
+	redir->u_data.s_redir.filename = ft_strdup(fname->value);
 	if (!redir->u_data.s_redir.filename)
 		return (ast_free(redir), NULL);
 	return (redir);
