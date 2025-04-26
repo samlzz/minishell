@@ -75,5 +75,6 @@ void		argword_sort_alpha(t_argword **head);
 //utils
 bool		ft_isspace(int c);
 char		*ft_str3join(const char *s1, const char *s2, const char *s3);
+bool		is_redirection(t_tk_type type);
 
 #endif

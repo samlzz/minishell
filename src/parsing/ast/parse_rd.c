@@ -6,18 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 21:35:52 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/26 21:10:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
-
-static inline bool	_is_redirection(t_tk_type type)
-{
-	return (type == TK_REDIR_IN || type == TK_REDIR_OUT
-		|| type == TK_REDIR_APPEND || type == TK_HEREDOC);
-}
 
 static inline t_redir_type	_get_rd_type(t_tk_type tk)
 {
@@ -91,7 +85,7 @@ static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 {
 	t_ast	*redir;
 
-	while (*cur && _is_redirection((*cur)->type))
+	while (*cur && is_redirection((*cur)->type))
 	{
 		redir = _parse_single_redir(cur, errtok);
 		if (!redir)
@@ -137,7 +131,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 	expr = NULL;
 	while (*cur && ((*cur)->type == TK_WORD \
 		|| (*cur)->type == TK_LPAREN \
-		|| _is_redirection((*cur)->type)))
+		|| is_redirection((*cur)->type)))
 	{
 		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)
 		{

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/25 20:16:45 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 21:19:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/26 20:59:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,10 @@ char	*ft_str3join(const char *s1, const char *s2, const char *s3)
 	ret = ft_strjoin(tmp, s3);
 	free(tmp);
 	return (ret);
+}
+
+bool	is_redirection(t_tk_type type)
+{
+	return (type == TK_REDIR_IN || type == TK_REDIR_OUT
+		|| type == TK_REDIR_APPEND || type == TK_HEREDOC);
 }
