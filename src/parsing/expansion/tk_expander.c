@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 19:06:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/26 21:23:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static inline t_token	*_tokens_from_argwords(t_argword *words, t_token *og)
 	return (dest);
 }
 
-static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
+static t_token	*_expand_one_tk(t_hmap *env, t_token **cur, t_token *prev)
 {
 	t_token		*og;
 	t_argword	*argword;
@@ -65,7 +65,7 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur)
 	argword = build_argword(env, cur, 0);
 	if (!argword)
 		return (NULL);
-	if (argword->space_offsets.len)
+	if (argword->space_offsets.len && (!prev || !is_redirection(prev->type)))
 	{
 		split = split_withespace(argword);
 		argword_clear(argword);
@@ -110,16 +110,19 @@ t_token	*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok)
 {
 	t_token	*new_lst;
 	t_token	*node;
+	t_token	*prev;
 
 	new_lst = NULL;
+	prev = NULL;
 	while (lst && lst->type != TK_EOF)
 	{
 		if (lst->type == TK_WORD)
-			node = _expand_one_tk(env, &lst);
+			node = _expand_one_tk(env, &lst, prev);
 		else if (lst->type == TK_HEREDOC)
 			node = _expand_heredoc(&lst);
 		else
 		{
+			prev = lst;
 			node = token_dup(lst);
 			lst = lst->next;
 		}

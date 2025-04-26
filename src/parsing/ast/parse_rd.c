@@ -26,35 +26,6 @@ static inline t_redir_type	_get_rd_type(t_tk_type tk)
 	return -1;
 }
 
-static inline t_token	*_get_filename(t_token **cur, t_token **errtok)
-{
-	char	*tmp;
-	t_token	*fname;
-
-	(fname = *cur, next(cur));
-	if (!fname->unexpanded || !(*cur) || !(*cur)->unexpanded)
-		return (fname);
-	if (*fname->unexpanded == '$')
-	{
-		while ((*cur) && (*cur)->unexpanded && (*cur)->type == TK_WORD && \
-			ft_strcmp(fname->unexpanded, (*cur)->unexpanded) == 0)
-		{
-			if ((*cur)->glued)
-				tmp = ft_strjoin(fname->value, (*cur)->value);
-			else
-				tmp = ft_str3join(fname->value, " ", (*cur)->value);
-			if (!tmp)
-				return (NULL);
-			free(fname->value);
-			fname->value = tmp;
-			next(cur);
-		}
-	}
-	else if (ft_strcmp(fname->unexpanded, (*cur)->unexpanded) == 0)
-		return ((*errtok = fname), NULL);
-	return (fname);
-}
-
 static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 {
 	t_token			*fname;
@@ -65,9 +36,11 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	next(cur);
 	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
-	fname = _get_filename(cur, errtok);
-	if (!fname || !fname->value)
-		return (NULL);
+	fname = *cur;
+	if (fname->unexpanded && fname->next && fname->next->unexpanded && \
+		ft_strcmp(fname->unexpanded, fname->next->unexpanded) == 0)
+		return ((*errtok = fname), NULL);
+	next(cur);
 	redir = ft_calloc(1, sizeof(t_ast));
 	if (!redir)
 		return (NULL);
