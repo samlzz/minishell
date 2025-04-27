@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 14:55:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/27 18:11:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,8 +82,14 @@ static char *_expand_value(t_hmap *env, t_token *cur, int16_t lst_exit)
 	char		*exit_code;
 	const char	*input;
 
-	if (cur->quote == QUOTE_SINGLE || !ft_strcmp(cur->value, "$"))
+	if (cur->quote == QUOTE_SINGLE)
 		return (ft_strdup(cur->value));
+	if (!ft_strcmp(cur->value, "$"))
+	{
+		if (cur->next && cur->next->glued && cur->next->quote != QUOTE_NONE)
+			return (ft_strdup(""));
+		return (ft_strdup("$"));
+	}
 	input = cur->value;
 	buf = ft_dynbuf_new(ft_strlen(cur->value));
 	if (!buf.data)
@@ -94,14 +100,9 @@ static char *_expand_value(t_hmap *env, t_token *cur, int16_t lst_exit)
 	while (*input)
 	{
 		if (_fill_buffer(env, &input, &buf, exit_code))
-		{
-			free(exit_code);
-			ft_dynbuf_free(&buf);
-			return (NULL);
-		}
+			return (free(exit_code), ft_dynbuf_free(&buf), NULL);
 	}
-	free(exit_code);
-	return (buf.data);
+	return (free(exit_code), buf.data);
 }
 
 t_argword	*build_argword(t_hmap *env, t_token **cur, int16_t lst_exit)
