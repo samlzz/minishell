@@ -33,9 +33,9 @@ void	print_tokens(t_token *tokens)
 			printf("Token: %s %-18s | Joined: %s\n\tValue: \"%s\" ('%s')\n",
 				token_type_str(tokens->type),
 				quote_type_str(tokens->quote),
+				tokens->glued ? "true" : "false",
 				tokens->value,
-				tokens->unexpanded,
-				tokens->glued ? "true" : "false"
+				tokens->unexpanded
 			);
 		else
 			printf("Token: %-23s | Value: \"%s\"\n",
