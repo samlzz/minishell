@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/24 14:46:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 19:39:24 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct s_token
 }	t_token;
 
 t_token		*tokenise(const char *input, int16_t *exit_code);
+t_token		*hd_tokenise(const char *input);
 
 // ft_token
 void		next(t_token **cur);

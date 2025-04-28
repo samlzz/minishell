@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 12:41:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 13:43:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ typedef struct s_ast
 		}		s_subsh;
 	}	u_data;
 }	t_ast;
+
+int16_t	handle_heredocs(t_hmap *env, t_ast *node);
 
 t_ast	*parse_input(t_hmap *env, const char *input, \
 	int16_t *err_code, t_token **errtok);

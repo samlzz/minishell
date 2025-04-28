@@ -19,6 +19,12 @@
 
 # define HANDLED_CHAR	"()<>|&'\""
 
+# define HD_PROMPT			"> "
+# define HD_CHARSET			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+# define HD_CHARSET_LEN		62
+# define HD_FNAME_BASE		"/tmp/.minishell_heredoc_"
+# define HD_FN_LEN			24
+
 //? Error codes
 # define PARSE_OK				0
 # define PARSE_ERR				-1
