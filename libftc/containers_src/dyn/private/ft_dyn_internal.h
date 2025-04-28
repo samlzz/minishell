@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 08:51:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/14 15:52:43 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 10:39:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,12 @@ typedef struct s_dyn
 	void	*data;
 	size_t	len;
 	size_t	cap;
+	size_t	nbytes;
 }	t_dyn;
 
-t_dyn			_dyn_init(size_t init_cap);
+t_dyn			_dyn_init(size_t init_cap, size_t elem_nbytes);
 
-int16_t			_dyn_resize(t_dyn *buf, size_t min_cap, size_t elem_nbytes);
+int16_t			_dyn_resize(t_dyn *buf, size_t min_cap);
 
 void			_dyn_free(t_dyn *buf);
 
@@ -32,12 +33,12 @@ void			_dyn_free(t_dyn *buf);
 
 static inline t_dyn	char_to_generic(t_dynbuf buf)
 {
-	return ((t_dyn){buf.data, buf.len, buf.cap});
+	return ((t_dyn){buf.data, buf.len, buf.cap, sizeof (char)});
 }
 
 static inline t_dyn	int_to_generic(t_dynint buf)
 {
-	return ((t_dyn){buf.data, buf.len, buf.cap});
+	return ((t_dyn){buf.data, buf.len, buf.cap, sizeof (int32_t)});
 }
 
 static inline t_dynbuf	char_from_generic(t_dyn buf)

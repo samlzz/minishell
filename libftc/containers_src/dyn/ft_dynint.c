@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/13 08:28:16 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/14 15:51:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 10:45:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,13 +17,12 @@ t_dynint	ft_dynint_new(size_t init_cap)
 {
 	size_t	cap;
 
-	cap = sizeof (int32_t);
 	if (init_cap)
-		cap *= init_cap;
+		cap = init_cap;
 	else
-		cap *= DYN_INIT_CAP;
+		cap = DYN_INIT_CAP;
 	return (
-		int_from_generic(_dyn_init(cap))
+		int_from_generic(_dyn_init(cap, sizeof (int32_t)))
 	);
 }
 
@@ -34,8 +33,7 @@ int16_t	ft_dynint_append(t_dynint *buf, int32_t val)
 	if (buf->len == buf->cap)
 	{
 		generic = int_to_generic(*buf);
-		if (!_dyn_resize(&generic, buf->cap * DYN_REALOC_FACTOR, \
-			sizeof (int32_t)))
+		if (!_dyn_resize(&generic, buf->cap * DYN_REALOC_FACTOR))
 			return (0);
 		*buf = int_from_generic(generic);
 	}
