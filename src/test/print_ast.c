@@ -48,33 +48,33 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 	else if (node->type == ND_PIPE)
 	{
 		printf(BLUE "PIPE" RESET "\n");
-		print_ast_rec(node->u_data.s_binop.left, new_prefix, 0);
-		print_ast_rec(node->u_data.s_binop.right, new_prefix, 1);
+		print_ast_rec(node->u_data.op.left, new_prefix, 0);
+		print_ast_rec(node->u_data.op.right, new_prefix, 1);
 	}
 	else if (node->type == ND_AND)
 	{
 		printf(GREEN "AND" RESET "\n");
-		print_ast_rec(node->u_data.s_binop.left, new_prefix, 0);
-		print_ast_rec(node->u_data.s_binop.right, new_prefix, 1);
+		print_ast_rec(node->u_data.op.left, new_prefix, 0);
+		print_ast_rec(node->u_data.op.right, new_prefix, 1);
 	}
 	else if (node->type == ND_OR)
 	{
 		printf(MAGENTA "OR" RESET "\n");
-		print_ast_rec(node->u_data.s_binop.left, new_prefix, 0);
-		print_ast_rec(node->u_data.s_binop.right, new_prefix, 1);
+		print_ast_rec(node->u_data.op.left, new_prefix, 0);
+		print_ast_rec(node->u_data.op.right, new_prefix, 1);
 	}
 	else if (node->type == ND_REDIR)
 	{
 		const char	*expand_hd;
 
 		expand_hd = "";
-		if (node->u_data.s_redir.redir_type == RD_HEREDOC)
-			expand_hd = node->u_data.s_redir.hd_expand ? "[expand]" : "[no-expand]";
+		if (node->u_data.rd.redir_type == RD_HEREDOC)
+			expand_hd = node->u_data.rd.hd_expand ? "[expand]" : "[no-expand]";
 		printf(RED "REDIR (%s)%s -> '%s'" RESET "\n",
-			redir_str(node->u_data.s_redir.redir_type),
+			redir_str(node->u_data.rd.redir_type),
 			expand_hd,
-			node->u_data.s_redir.filename);
-		print_ast_rec(node->u_data.s_redir.child, new_prefix, 1);
+			node->u_data.rd.filename);
+		print_ast_rec(node->u_data.rd.child, new_prefix, 1);
 	}
 	else if (node->type == ND_SUBSHELL)
 	{
