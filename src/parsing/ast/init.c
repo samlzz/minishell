@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 12:42:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 13:15:28 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,9 @@ t_ast	*parse_input(t_hmap *env, const char *input, \
 	tokens = tokenise(input, err_code);
 	if (!tokens)
 		return (NULL);
-	expanded = expand_token_list(env, tokens, errtok);
-	*errtok = token_pop(&tokens, *errtok);
+	expanded = expand_token_list(env, tokens);
+	if (!expanded)
+		(*errtok = tokens, token_pop(&tokens, *errtok));
 	token_clear(tokens);
 	if (!expanded)
 		return (NULL);

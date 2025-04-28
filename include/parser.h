@@ -45,7 +45,7 @@ typedef enum e_node_type	t_node_type;
 //* Main Functions
 
 // expander
-t_token		*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok);
+t_token		*expand_token_list(t_hmap *env, t_token *lst);
 
 t_argword	*split_withespace(t_argword *arg);
 t_argword	*replace_by_wild_expanded(t_argword *head);

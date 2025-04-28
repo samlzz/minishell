@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/26 21:23:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 13:12:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ static t_token	*_expand_heredoc(t_token **lst)
 	return (heredoc);
 }
 
-t_token	*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok)
+t_token	*expand_token_list(t_hmap *env, t_token *lst)
 {
 	t_token	*new_lst;
 	t_token	*node;
@@ -130,7 +130,5 @@ t_token	*expand_token_list(t_hmap *env, t_token *lst, t_token **errtok)
 			return (token_clear(new_lst), NULL);
 		token_addback(&new_lst, node);
 	}
-	if (!new_lst || !lst)
-		*errtok = lst;
 	return (new_lst);
 }
