@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 15:26:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 12:42:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,14 +23,14 @@ void	ast_free(t_ast	*node)
 	}
 	else if (node->type == ND_REDIR)
 	{
-		free(node->u_data.s_redir.filename);
-		ast_free(node->u_data.s_redir.child);
+		free(node->u_data.rd.filename);
+		ast_free(node->u_data.rd.child);
 	}
 	else if (node->type == ND_PIPE || \
 		node->type == ND_AND || node->type == ND_OR)
 	{
-		ast_free(node->u_data.s_binop.left);
-		ast_free(node->u_data.s_binop.right);
+		ast_free(node->u_data.op.left);
+		ast_free(node->u_data.op.right);
 	}
 	else if (node->type == ND_SUBSHELL)
 	{

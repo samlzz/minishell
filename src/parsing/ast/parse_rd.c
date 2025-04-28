@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/26 21:10:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 12:43:09 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,11 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	if (!redir)
 		return (NULL);
 	redir->type = ND_REDIR;
-	redir->u_data.s_redir.redir_type = type;
+	redir->u_data.rd.redir_type = type;
 	if (type == RD_HEREDOC && fname->quote == QUOTE_NONE)
-		redir->u_data.s_redir.hd_expand = true;
-	redir->u_data.s_redir.filename = ft_strdup(fname->value);
-	if (!redir->u_data.s_redir.filename)
+		redir->u_data.rd.hd_expand = true;
+	redir->u_data.rd.filename = ft_strdup(fname->value);
+	if (!redir->u_data.rd.filename)
 		return (ast_free(redir), NULL);
 	return (redir);
 }
@@ -66,7 +66,7 @@ static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 			ast_free(inner);
 			return (NULL);
 		}
-		redir->u_data.s_redir.child = inner;
+		redir->u_data.rd.child = inner;
 		inner = redir;
 	}
 	return (inner);
@@ -122,8 +122,8 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 	if (!rd_list)
 		return (expr);
 	last = rd_list;
-	while (last->type == ND_REDIR && last->u_data.s_redir.child)
-		last = last->u_data.s_redir.child;
-	last->u_data.s_redir.child = expr;
+	while (last->type == ND_REDIR && last->u_data.rd.child)
+		last = last->u_data.rd.child;
+	last->u_data.rd.child = expr;
 	return (rd_list);
 }
