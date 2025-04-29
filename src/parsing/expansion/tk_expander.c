@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 13:12:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/29 13:41:09 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,11 +77,32 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur, t_token *prev)
 	return (_tokens_from_argwords(argword, og));
 }
 
+static inline t_token	*_fill_delim(t_token *delim, t_token *cur)
+{
+	char	*tmp;
+
+	if (delim->quote == QUOTE_NONE && cur->quote != QUOTE_NONE \
+		&& !ft_strncmp(delim->value, "$", 1))
+	{
+		tmp = ft_strdup(cur->value);
+	}
+	else
+	{
+		tmp = ft_strappend(delim->value, cur->value);
+	}
+	if (!tmp)
+		return (NULL);
+	free(delim->value);
+	delim->value = tmp;
+	if (cur->quote != QUOTE_NONE)
+		delim->quote = QUOTE_SINGLE;
+	return (delim);
+}
+
 static t_token	*_expand_heredoc(t_token **lst)
 {
 	t_token	*heredoc;
 	t_token	*delim;
-	char	*tmp;
 
 	heredoc = token_dup(*lst);
 	next(lst);
@@ -94,13 +115,8 @@ static t_token	*_expand_heredoc(t_token **lst)
 	heredoc->next = delim;
 	while (*lst && (*lst)->type == TK_WORD && (*lst)->glued)
 	{
-		tmp = ft_strappend(delim->value, (*lst)->value);
-		if (!tmp)
+		if (!_fill_delim(delim, *lst))
 			return (token_clear(heredoc), NULL);
-		free(delim->value);
-		delim->value = tmp;
-		if ((*lst)->value != QUOTE_NONE)
-			delim->quote = QUOTE_SINGLE;
 		next(lst);
 	}
 	return (heredoc);
