@@ -6,12 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 13:15:28 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 21:54:33 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
+#include <unistd.h>
+//TODO: tmp (for DEBUG)
+#include "minishell.h"
 
 void	ast_free(t_ast	*node)
 {
@@ -23,6 +26,9 @@ void	ast_free(t_ast	*node)
 	}
 	else if (node->type == ND_REDIR)
 	{
+		if (!KEEP_HD_FILES && node->u_data.rd.redir_type == RD_HEREDOC 
+		&& node->u_data.rd.filename)
+			unlink(node->u_data.rd.filename);
 		free(node->u_data.rd.filename);
 		ast_free(node->u_data.rd.child);
 	}
@@ -104,5 +110,11 @@ t_ast	*parse_input(t_hmap *env, const char *input, \
 	ast = new_ast(expanded, errtok, err_code);
 	*errtok = token_pop(&expanded, *errtok);
 	token_clear(expanded);
+	if (handle_heredocs(env, ast))
+	{
+		token_clear(*errtok);
+		*errtok = NULL;
+		return (ast_free(ast), NULL);
+	}
 	return (ast);
 }

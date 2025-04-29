@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/25 20:24:44 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/28 21:55:17 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -41,12 +41,14 @@ C_FILES =	parsing/ft_token.c	\
 			parsing/expansion/argword_builder.c		\
 			parsing/expansion/argword_sort.c		\
 			parsing/expansion/ft_argword.c			\
+			parsing/here_doc.c	\
+			parsing/hd_token.c	\
 			parsing/utils.c		\
 			parsing/print_err.c	\
 			env/init.c			\
 			env/wrappers.c		\
 			minishell.c			\
-			test/print_ast.c
+			test/print_ast.c	
 
 #* Colors
 
