@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:36:25 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 19:52:46 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 21:55:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <readline/readline.h>
+#include <stdlib.h>
 
 static void	_gen_rd_filename(char *dest)
 {
@@ -24,7 +25,7 @@ static void	_gen_rd_filename(char *dest)
 	uint8_t		buf[8];
 	int32_t		i;
 	
-	ft_strcpy(dest, HD_FNAME_BASE);
+	ft_memmove(dest, HD_FNAME_BASE, HD_FN_LEN);
 	fd = open("/dev/urandom", O_RDONLY);
 	if (fd < 0 || read(fd, buf, sizeof(buf)) != sizeof(buf))
 	{

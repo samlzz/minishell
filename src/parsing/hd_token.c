@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 19:36:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 19:51:34 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/28 21:31:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
+#include <stdlib.h>
 
 static bool	_is_dollar(int c)
 {
@@ -22,7 +23,8 @@ static bool	_is_token(int c)
 	return (ft_isspace(c) || (uint8_t)c == '"');
 }
 
-static inline t_token	*_new_token(const char *input, size_t *start, bool (*until_not)(int))
+static inline t_token	*_new_token(const char *input, size_t *start, \
+	bool (*until_not) (int))
 {
 	size_t	len;
 	t_token	*new;
@@ -36,9 +38,9 @@ static inline t_token	*_new_token(const char *input, size_t *start, bool (*until
 	new->value = ft_substr(input, *start, len - *start);
 	if (!new->value)
 		return (free(new), NULL);
-	*start = len - *start;
+	*start = len;
 	new->type = TK_WORD;
-	if (*input == '$')
+	if (ft_strchr(input, '$'))
 		new->quote = QUOTE_DOUBLE;
 	else
 		new->quote = QUOTE_SINGLE;
@@ -63,5 +65,10 @@ t_token	*hd_tokenise(const char *input)
 			return (token_clear(lst), NULL);
 		token_addback(&lst, cur);
 	}
+	cur = ft_calloc(1, sizeof (t_token));
+	if (!cur || !lst)
+		return (free(cur), NULL);
+	cur->type = TK_EOF;
+	token_addback(&lst, cur);
 	return (lst);
 }
