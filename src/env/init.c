@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/22 15:32:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:01:24 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+
+/**
+ * @brief Initialize environment from envp.
+ * 
+ * Parses environment variables and populates a hash map.
+ * If memory allocation fails or a variable cannot be set, cleanup is performed.
+ * 
+ * @param envp The environment array from main.
+ * @param env The target hash map to populate.
+ * @return int16_t 0 on success, 1 on failure.
+ */
 static int16_t	_env_init_from_envp(char **envp, t_hmap *env)
 {
 	int16_t	exit;
@@ -43,6 +54,14 @@ static int16_t	_env_init_from_envp(char **envp, t_hmap *env)
 	return (exit);
 }
 
+/**
+ * @brief Initialize a minimal environment if envp is NULL or empty.
+ * 
+ * Sets default values for `PWD`, `SHLVL`, and `PATH`.
+ * 
+ * @param env The target hash map to populate.
+ * @return int16_t 0 on success, 1 on failure.
+ */
 static int16_t	_env_minimal_init(t_hmap *env)
 {
 	char	pwd[PATH_MAX];
@@ -55,6 +74,14 @@ static int16_t	_env_minimal_init(t_hmap *env)
 	);
 }
 
+/**
+ * @brief Update or set the shell level (SHLVL) in the environment.
+ * 
+ * Handles overflow or underflow scenarios, and emits a warning if the level is too high.
+ * 
+ * @param env The environment hash map.
+ * @return int16_t 0 on success, 1 on failure.
+ */
 static inline int16_t	_init_shlvl(t_hmap *env)
 {
 	int32_t	curr_lvl;
@@ -83,6 +110,15 @@ static inline int16_t	_init_shlvl(t_hmap *env)
 	return (0);
 }
 
+/**
+ * @brief Public entry point to initialize the shell environment.
+ * 
+ * Chooses between full or minimal initialization based on envp and stores argv0.
+ * 
+ * @param envp The environment passed to main.
+ * @param argv0 The name of the program (used for internal storage).
+ * @return t_hmap The initialized environment map. If an error occurs, an empty map is returned.
+ */
 t_hmap	env_init(char **envp, const char *argv0)
 {
 	t_hmap	env;

@@ -6,13 +6,22 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 19:32:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:16:19 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
 
+/**
+ * @brief Join two argv arrays into a single null-terminated array.
+ * 
+ * Does not duplicate strings, just merges two pointer arrays.
+ * 
+ * @param og First argv array.
+ * @param new Second argv array.
+ * @return char** New merged argv array (allocated).
+ */
 char	**join_argv(char **og, char **new)
 {
 	int32_t	second;
@@ -39,6 +48,15 @@ char	**join_argv(char **og, char **new)
 	return (dest);
 }
 
+/**
+ * @brief Collect a sequence of TK_WORD tokens into an argv array.
+ * 
+ * Steals ownership of token values (sets them to NULL).
+ * 
+ * @param cur Current token cursor.
+ * @param errtok Output error token if parsing fails.
+ * @return char** Array of arguments or NULL on error.
+ */
 char	**collect_argv(t_token **cur, t_token **errtok)
 {
 	char	**argv;
@@ -67,18 +85,13 @@ char	**collect_argv(t_token **cur, t_token **errtok)
 }
 
 /**
- * @brief Parses a simple command node (`ND_CMD`) from the token stream.
- *
- * This function collects a sequence of `TK_WORD` tokens and expands them to
- * build the argv array of a ND_CMD AST node. It does not handle redirections
- * or subshells
- * — those must be wrapped around the result by a higher-level parser.
- *
- * @param env		A pointer to the environment hashmap, used for expansions.
- * @param cur		A pointer to the current token pointer in the stream.
- * @param errtok	A pointer to the token where an error occurred, if any.
- *
- * @return A pointer to a `ND_CMD` AST node, or `NULL` if parsing failed.
+ * @brief Parse a simple command into a `ND_CMD` node.
+ * 
+ * Collects tokens of type TK_WORD and forms the argv array.
+ * 
+ * @param cur Pointer to the token cursor.
+ * @param errtok Output error token if parsing fails.
+ * @return t_ast* AST node or NULL on error.
  */
 t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 {
@@ -94,28 +107,18 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 	return (node);
 }
 
+
 /**
- * @brief Parses a primary expression from the token stream: either a simple
- *        command or a parenthesized subshell expression.
- *
- * This function is called when no binary operator has higher precedence,
- * and is responsible for handling:
- * - a command (sequence of TK_WORD), via `cmd_parser`,
- * - a parenthesized expression, parsed recursively with `binop_parser`,
- *   and wrapped in a ND_SUBSHELL node in the AST.
- *
- * @param env		A pointer to the environment hashmap, used for expansions.
- * @param cur		A pointer to the current token pointer in the stream.
- * @param errtok	A pointer to the token pointer where a parsing error 
- * occurred, if any.
- *
- * @return A pointer to the resulting AST node (command or subshell),
- *         or NULL in case of error.
- *
+ * @brief Parse either a command or a parenthesized subshell expression.
+ * 
+ * A primary expression can be a ND_CMD or a ND_SUBSHELL node.
+ * 
+ * @param cur Pointer to the token cursor.
+ * @param errtok Output error token if parsing fails.
+ * @return A pointer to the resulting AST node,or NULL in case of error.
+ * 
  * @note If a subshell is detected (starting with `TK_LPAREN`), the function 
- *        ensures that it is properly closed by a `TK_RPAREN`. 
- *        If the closing parenthesis is missing, `*errtok` is set accordingly,
- *        and any allocated subtree is freed.
+ *        ensures that it is properly closed by a `TK_RPAREN`.
  * @see cmd_parser, binop_parser
  */
 t_ast	*primary_parser(t_token **cur, t_token **errtok)

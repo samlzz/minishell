@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 17:06:40 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:41:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,13 @@ static bool	_match_wilds(const char *wpat, const char *txt, t_dynint woffsets)
 	return (wpat[p_t[P]] == '\0');
 }
 
+/**
+ * @brief Initialize DIR* stream and output pointer for matching.
+ *
+ * @param dir_ptr Output directory stream pointer.
+ * @param null_ptr Output pointer to set to NULL.
+ * @return struct dirent* First directory entry or NULL.
+ */
 static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
 {
 	*dir_ptr = opendir(".");
@@ -91,6 +98,14 @@ static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
 	return (readdir(*dir_ptr));
 }
 
+/**
+ * @brief Expand a wildcard-containing argword into a list of matched files.
+ *
+ * Performs matching against the current directory, skipping hidden files unless pattern starts with '.'.
+ *
+ * @param arg The wildcard argument to expand.
+ * @return t_argword* List of matched argwords or NULL on error.
+ */
 t_argword	*expand_wildcards(t_argword *arg)
 {
 	DIR				*dir;

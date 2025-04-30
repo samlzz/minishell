@@ -6,13 +6,25 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/29 13:41:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:39:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <stdlib.h>
 
+/**
+ * @brief Convert an argword to a single token.
+ * 
+ * It optionally save his unexpanded value.
+ *
+ * @param word The argument word structure.
+ * @param raw The original unexpanded string (optional).
+ * @return t_token* A new token created from the argword, or NULL on error.
+ * 
+ * @note `quote` is ignored bc we still only need it for here_docs(which are 
+ * handled separately) since expansions, joints and splitted have been done.
+ */
 static t_token	*_consume_argword(t_argword *word, char *raw)
 {
 	t_token	*new;
@@ -30,6 +42,13 @@ static t_token	*_consume_argword(t_argword *word, char *raw)
 	return (new);
 }
 
+/**
+ * @brief Convert a linked list of argwords into a linked list of tokens.
+ *
+ * @param words The list of argwords.
+ * @param og Original token used to copy the unexpanded form.
+ * @return t_token* List of tokens, or NULL on error.
+ */
 static inline t_token	*_tokens_from_argwords(t_argword *words, t_token *og)
 {
 	t_argword	*cur;
@@ -55,6 +74,20 @@ static inline t_token	*_tokens_from_argwords(t_argword *words, t_token *og)
 	return (dest);
 }
 
+/**
+ * @brief Expand a single token into a list of tokens (handling quotes, splitting, wildcards).
+ *
+ * In order:
+ * 1) expand the variables
+ * 2) merge the words not separated by spaces
+ * 3) split words with spaces in the middle
+ * 4) expand the wildcards.
+
+ * @param env The environment hashmap.
+ * @param cur Pointer to the current token pointer (will be advanced).
+ * @param prev The previous token (for redirection detection).
+ * @return t_token* Resulting expanded token list or NULL on error.
+ */
 static t_token	*_expand_one_tk(t_hmap *env, t_token **cur, t_token *prev)
 {
 	t_token		*og;
@@ -77,6 +110,16 @@ static t_token	*_expand_one_tk(t_hmap *env, t_token **cur, t_token *prev)
 	return (_tokens_from_argwords(argword, og));
 }
 
+/**
+ * @brief Expand heredoc delimiter by merging glued tokens and preserving quotes.
+ *
+ * @param delim The heredoc delimiter token.
+ * @param cur The current glued token to merge.
+ * @return t_token* Updated delimiter token, or NULL on error.
+ * 
+ * @note If current value is "$" and next token is quoted ;
+ *       empty expand current.
+ */
 static inline t_token	*_fill_delim(t_token *delim, t_token *cur)
 {
 	char	*tmp;
@@ -99,6 +142,12 @@ static inline t_token	*_fill_delim(t_token *delim, t_token *cur)
 	return (delim);
 }
 
+/**
+ * @brief Expand a heredoc token and glue all glued TK_WORD tokens to it.
+ *
+ * @param lst Pointer to the current token pointer (will be advanced).
+ * @return t_token* The expanded heredoc token pair, or NULL on error.
+ */
 static t_token	*_expand_heredoc(t_token **lst)
 {
 	t_token	*heredoc;
@@ -122,6 +171,14 @@ static t_token	*_expand_heredoc(t_token **lst)
 	return (heredoc);
 }
 
+/**
+ * @brief Expand a full token list: 
+ * handle variables, heredocs, splitting, wildcards.
+ *
+ * @param env Environment map.
+ * @param lst Original token list to expand.
+ * @return t_token* New list of expanded tokens, or NULL on error.
+ */
 t_token	*expand_token_list(t_hmap *env, t_token *lst)
 {
 	t_token	*new_lst;

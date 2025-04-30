@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 12:36:25 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 21:55:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:50:21 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,13 @@
 #include <readline/readline.h>
 #include <stdlib.h>
 
+/**
+ * @brief Generate a unique temporary heredoc filename.
+ *
+ * Tries to use `/dev/urandom`, falls back to a counter if not available.
+ *
+ * @param dest Output buffer to write the generated filename into.
+ */
 static void	_gen_rd_filename(char *dest)
 {
 	static int	fallback_counter;
@@ -45,6 +52,16 @@ static void	_gen_rd_filename(char *dest)
 	dest[HD_FN_LEN + i] = '\0';
 }
 
+/**
+ * @brief Prepares tokens for heredoc line expansion if needed.
+ *
+ * Only triggered if the line contains a `$`.
+ *
+ * @param env Environment hashmap.
+ * @param dest Output dynamic buffer to receive expanded line.
+ * @param line Input line to expand.
+ * @return t_token* List of tokens from line, or NULL on failure.
+ */
 static inline t_token	*_init_expand_vars(t_hmap *env, t_dynbuf *dest, \
 	char *line)
 {
@@ -67,10 +84,12 @@ static inline t_token	*_init_expand_vars(t_hmap *env, t_dynbuf *dest, \
 }
 
 /**
- * @brief Expands a line using tokenization + expansion and reconstructs it.
- * 
- * @param env Environment map.
- * @param line Address of the line to expand (will be freed and replaced).
+ * @brief Expands a single heredoc input line in-place.
+ *
+ * Replaces `*line` with a newly allocated string after expansion.
+ *
+ * @param env Environment hashmap.
+ * @param line Pointer to line string to replace (will be freed).
  */
 static void _expand_line(t_hmap *env, char **line)
 {
@@ -93,6 +112,15 @@ static void _expand_line(t_hmap *env, char **line)
 	*line = dest.data;
 }
 
+/**
+ * @brief Create and write the heredoc file.
+ *
+ * Reads from stdin until a delimiter match is found. Applies variable expansion if needed.
+ *
+ * @param env Environment hashmap.
+ * @param redir Pointer to the heredoc redirection node.
+ * @return int16_t 0 on success, 1 on failure.
+ */
 static inline int16_t	_create_heredoc(t_hmap *env, t_redir *redir)
 {
 	char	filename[PATH_MAX];
@@ -122,6 +150,15 @@ static inline int16_t	_create_heredoc(t_hmap *env, t_redir *redir)
 	return (0);
 }
 
+/**
+ * @brief Traverse the AST and handle all heredoc redirections recursively.
+ *
+ * Creates temp files and expands content as needed.
+ *
+ * @param env Environment hashmap.
+ * @param node AST node to inspect.
+ * @return int16_t 0 on success, 1 if an error occurred.
+ */
 int16_t	handle_heredocs(t_hmap *env, t_ast *node)
 {
 	if (!node)

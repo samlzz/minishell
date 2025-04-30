@@ -6,12 +6,23 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 12:56:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:44:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 
+/**
+ * @brief Adjust wildcard offsets for a substring.
+ *
+ * Translates wildcard positions from original argword to a split fragment.
+ *
+ * @param dest Destination offset array.
+ * @param src Source offset array.
+ * @param start Starting index of substring.
+ * @param len Length of the substring.
+ * @return int16_t 1 on success, 0 on failure.
+ */
 static inline int16_t	_adjust_wildcards(t_dynint *dest, t_dynint *src, \
 	int32_t start, int32_t len)
 {
@@ -30,6 +41,17 @@ static inline int16_t	_adjust_wildcards(t_dynint *dest, t_dynint *src, \
 	return (1);
 }
 
+/**
+ * @brief Create and append a new argword from a substring.
+ *
+ * Substring is taken from `arg->value` using [start, start+len).
+ *
+ * @param lst Destination list to append to.
+ * @param arg Source argument word.
+ * @param start Start index.
+ * @param len Length of substring.
+ * @return int16_t 1 on success, 0 on failure.
+ */
 static int16_t	_add_word(t_argword **lst, t_argword *arg, \
 	int32_t start, int32_t len)
 {
@@ -47,6 +69,14 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
 	return (1);
 }
 
+/**
+ * @brief Split an argument word into several at whitespace positions.
+ *
+ * Keeps track of original wildcards per segment.
+ *
+ * @param arg Original argword.
+ * @return t_argword* List of split argwords or NULL.
+ */
 t_argword	*split_withespace(t_argword *arg)
 {
 	t_argword	*lst;

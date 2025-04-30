@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:58:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/23 13:33:23 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:41:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,14 @@ static inline t_argword	**_insert_node(t_argword **cur,
 	return (&tail->next);
 }
 
+/**
+ * @brief Replace each argword with wildcard by its expanded list of matches.
+ *
+ * Preserves nodes without wildcards. On error, fallback to original.
+ *
+ * @param head Head of argword list.
+ * @return t_argword* Updated argword list.
+ */
 t_argword	*replace_by_wild_expanded(t_argword *head)
 {
 	t_argword	**cursor;

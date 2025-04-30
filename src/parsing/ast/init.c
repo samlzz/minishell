@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 21:54:33 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:54:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,14 @@
 //TODO: tmp (for DEBUG)
 #include "minishell.h"
 
+/**
+ * @brief Free all memory used by an AST node and its children.
+ * 
+ * Recursively frees the entire AST subtree. For heredoc nodes,
+ * the temporary file is also unlinked.
+ * 
+ * @param node A pointer to the root of the AST subtree to free.
+ */
 void	ast_free(t_ast	*node)
 {
 	if (!node)
@@ -45,30 +53,25 @@ void	ast_free(t_ast	*node)
 	free(node);
 }
 
+
 /**
- * @brief Builds an abstract syntax tree (AST) from an input command string.
- *
- * This function first tokenizes the input using `tokenise`, then parses the token
- * list with `binop_parser`, using a top-down recursive descent parser to build
- * the AST corresponding to the shell command structure.
- *
- * @param env      A pointer to the environment hashmap, used for expansions.
- * @param input     The input string to parse (user command line).
- * @param errcode   A pointer to an int16_t that will hold the error code
- * 	(0 = success, -1 = internal error, -2 | -3 = unclosed quote).
- * @param errtok    A pointer to the token that caused the parse error, if any (NULL otherwise).
- *
- * @return A pointer to the root of the AST on success, or NULL on error.
- *
- * @note If tokenisation fails (e.g. unclosed quotes or memory allocation failure),
- *       the function returns NULL, sets `*errtok = NULL`, and fills `*errcode` with
- *       the appropriate error code.
- *
- * @note If parsing fails, `*errtok` is set to the token that caused the error,
- *       and `*errcode` describes the nature of the error. If the error comes from program
- *       itself (e.g., allocation failed) it sets `*errtok = NULL` and `*errcode = -1`; 
+ * @brief Build an AST from a token list.
  * 
- * @see [tokenise, binop_parser]
+ * Top-level parser that handles full binary operator parsing.
+ * Returns NULL if there's a parse error or unexpected tokens after the parse.
+ * 
+ * @param tokens The list of tokens to parse.
+ * @param errtok Pointer to hold the token causing a parse error, if any.
+ * @param errcode Pointer to hold the parse error code.
+ * @param errcode Pointer to an int16_t to store the error code:
+ *                    -  0 : success
+ *                    - -1 : malloc failure
+ *                    - -2 : unclosed single quote
+ *                    - -3 : unclosed double quote
+ *                    - -4 : some symbol is malformed
+ *                    - -5 : unexpectedly, no EOF is found
+ *                    - -6 : a lonely '&' was encountered
+ * @return t_ast* The AST root node or NULL on error.
  */
 t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 {
@@ -89,6 +92,19 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 	return (ast);
 }
 
+/**
+ * @brief Full parsing routine from input string to AST.
+ * 
+ * Tokenizes the input, expands the tokens using env, parses into an AST,
+ * and handles heredoc collection. Cleans up intermediate structures on failure.
+ * 
+ * @param env The environment hashmap used for expansion.
+ * @param input The raw user input string.
+ * @param err_code Output error code.
+ * @param errtok Token that caused a parse error (if applicable).
+ * @return t_ast* The parsed AST or NULL on failure.
+ * @see print_err
+ */
 t_ast	*parse_input(t_hmap *env, const char *input, \
 	int16_t *err_code, t_token **errtok)
 {

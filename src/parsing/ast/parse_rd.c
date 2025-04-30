@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 12:43:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:15:53 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,15 @@ static inline t_redir_type	_get_rd_type(t_tk_type tk)
 	return -1;
 }
 
+/**
+ * @brief Parse a single redirection from the token stream.
+ * 
+ * Validates filename and builds a ND_REDIR AST node.
+ * 
+ * @param cur Pointer to the token cursor.
+ * @param errtok Output pointer to the token causing error.
+ * @return t_ast* The redirection AST node or NULL.
+ */
 static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 {
 	t_token			*fname;
@@ -54,6 +63,16 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	return (redir);
 }
 
+/**
+ * @brief Wrap multiple redirections around a command or expression.
+ * 
+ * Applies right-to-left nesting: each redirection wraps the next.
+ * 
+ * @param cur Pointer to the token cursor.
+ * @param inner The AST to wrap.
+ * @param errtok Error token on failure.
+ * @return t_ast* Resulting AST or NULL on error.
+ */
 static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 {
 	t_ast	*redir;
@@ -72,6 +91,16 @@ static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
 	return (inner);
 }
 
+/**
+ * @brief Create NC_CMD node or append TK_WORD tokens to it.
+ * 
+ * Add args when redirections appear before the end of the command.
+ * 
+ * @param cur Token cursor.
+ * @param expr A ND_CMD AST node.
+ * @param errtok Error token output.
+ * @return t_ast* Updated command node or NULL on error.
+ */
 static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 {
 	char	**new;
@@ -94,6 +123,17 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 	return (expr);
 }
 
+/**
+ * @brief Parse a command with possible redirections and groupings.
+ * 
+ * Combines redirection and primary parsing.
+ * 
+ * @param cur Pointer to the token stream.
+ * @param errtok Output error token.
+ * @return t_ast* Final AST subtree.
+ * 
+ * @see primary_parser
+ */
 t_ast	*redir_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*rd_list;

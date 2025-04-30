@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 19:36:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 21:31:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:17:02 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,15 @@ static inline t_token	*_new_token(const char *input, size_t *start, \
 	return (new);
 }
 
+/**
+ * @brief Tokenizes a here-document string into WORD tokens.
+ *
+ * Uses `$` and `"` as separators to determine quote context (SINGLE or DOUBLE).
+ * This is used to control whether expansions happen inside heredoc.
+ *
+ * @param input Raw string.
+ * @return t_token* A list of tokens ending in TK_EOF, or NULL on failure.
+ */
 t_token	*hd_tokenise(const char *input)
 {
 	t_token	*lst;

@@ -6,13 +6,20 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 20:18:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:26:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parser.h"
 #include <stdlib.h>
 
+/**
+ * @brief Allocate and initialize a new argword node.
+ * 
+ * Initializes dynamic arrays for space and wildcard offsets.
+ * 
+ * @return t_argword* New node or NULL on allocation failure.
+ */
 t_argword	*argword_new(void)
 {
 	t_argword	*new;
@@ -36,6 +43,18 @@ t_argword	*argword_new(void)
 	return (new);
 }
 
+/**
+ * @brief Check for spaces and wildcards in the argument and record offsets.
+ * 
+ * This is use to later know witch char need to be expanded 
+ * (or splited for space).
+ * 
+ * @param node Target argword node.
+ * @param arg Input argument string.
+ * @return int16_t 1 on success, 0 on failure.
+ * 
+ * @note This only runs for unquoted text.
+ */
 static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
 {
 	size_t	val_len;
@@ -63,6 +82,16 @@ static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
 	return (1);
 }
 
+/**
+ * @brief Append a new value segment to an argword node.
+ * 
+ * If not quoted, updates space and wildcard tracking offsets.
+ * 
+ * @param node Target argword.
+ * @param cur_arg The value string to append.
+ * @param cur_quote Quote context of the string.
+ * @return int16_t 1 on success, 0 on failure.
+ */
 int16_t	argword_append_value(t_argword *node, const char *cur_arg, \
 	t_quote_type cur_quote)
 {

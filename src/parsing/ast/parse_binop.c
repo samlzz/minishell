@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 12:42:37 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:16:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,22 +24,17 @@ static inline t_node_type	ttk_to_tnode(t_tk_type tk)
 }
 
 /**
- * @brief Recursively parses binary operations (pipes, AND, OR) from the token stream.
- *
- * This function implements a precedence-based recursive descent parser for
- * binary operators (`||`, `&&`, `|`). It builds the corresponding AST nodes,
- * with each binary operator becoming a node with left and right children.
- *
- * @param env		A pointer to the environment hashmap, used for expansions.
- * @param cur		A pointer to the current token pointer in the stream.
- * @param bin_op	The binary operator node type to parse at this level (`ND_PIPE`, `ND_AND, ND_OR`).
- * @param errtok	A pointer to the token pointer where the parsing error occurred, if any.
- *
- * @return A pointer to the resulting AST subtree, or NULL if a parsing error occurred.
- *
- * @note In case of error, `*errtok` is set to the token at which the error was detected.
- *       Memory allocated during parsing is freed as needed to avoid leaks.
- *
+ * @brief Parse binary operations (`||`, `&&`, `|`) with correct precedence.
+ * 
+ * Builds a binary expression tree from the token stream. Recursively
+ * calls itself with decreasing precedence levels until it call `redir_parser`
+ * and builds the AST.
+ * 
+ * @param cur Pointer to the current token.
+ * @param bin_op The binary operation type to parse at this level.
+ * @param errtok Output pointer for the error token if parsing fails.
+ * @return t_ast* AST subtree for the binary operation or NULL on error.
+ * 
  * @see redir_parser
  */
 t_ast	*binop_parser(t_token **cur, t_node_type bin_op, \

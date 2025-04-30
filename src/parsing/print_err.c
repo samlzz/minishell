@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 20:37:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:15:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,14 @@ static inline void	_print_unclosed_quote(int16_t errcode)
 		ft_putendl_fd("minishell: unexpected EOF while looking for matching `\"'", 2);
 }
 
+/**
+ * @brief Print a syntax error message for an unexpected token.
+ *
+ * Chooses between various representations: unexpanded, value, or token type string.
+ *
+ * @param tok The erroneous token.
+ * @param input_tk Optional hardcoded token string (e.g., "&").
+ */
 static void	_print_syntax_error(t_token *tok, char *input_tk)
 {
 	const char *tk;
@@ -68,6 +76,14 @@ static void	_print_syntax_error(t_token *tok, char *input_tk)
 	ft_putstr_fd("'\n", 2);
 }
 
+/**
+ * @brief High-level error reporting function for parse errors.
+ *
+ * Dispatches messages based on error codes, then frees the error token.
+ *
+ * @param errcode The error code to report.
+ * @param errtok The token where the error occurred (may be NULL).
+ */
 void	print_err(int16_t errcode, t_token *errtok)
 {
 	if (errcode == PARSE_ERR)

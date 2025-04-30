@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/27 18:11:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 14:20:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,17 @@
 #include "env.h"
 #include <stdlib.h>
 
+/**
+ * @brief Appends the value of a variable to the buffer from the input string.
+ * 
+ * Extracts a valid variable name (alphanumeric or '_'), looks it up in the
+ * environment, and appends its value to the buffer.
+ * 
+ * @param env Environment hashmap.
+ * @param buf Buffer to write into.
+ * @param input Pointer to the variable name start (after `$`).
+ * @return int32_t Number of characters read from input, or -1 on error.
+ */
 static int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
 	const char *input)
 {
@@ -34,6 +45,17 @@ static int32_t	_put_value(t_hmap *env, t_dynbuf *buf, \
 	return (i);
 }
 
+/**
+ * @brief Handles positional parameters like `$0`.
+ * 
+ * Currently only supports `0`, which returns the program name.
+ * If other digit was provided it will be skip.
+ * 
+ * @param env Environment hashmap.
+ * @param buf Buffer to append result.
+ * @param input Pointer to the digit after `$`.
+ * @return true on error, false on succes.
+ */
 static inline bool	_handle_num(t_hmap *env, t_dynbuf *buf, const char *input)
 {
 	char	*prgm_name;
@@ -48,6 +70,17 @@ static inline bool	_handle_num(t_hmap *env, t_dynbuf *buf, const char *input)
 	return (false);
 }
 
+/**
+ * @brief Fills the dynamic buffer based on the current input character.
+ * 
+ * Handles shell expansion logic: `$VAR`, `$?`, `$0`, or normal character.
+ * 
+ * @param env Environment hashmap.
+ * @param input Pointer to the current input string position.
+ * @param buf Buffer to write into.
+ * @param last_exit String version of last exit code (used for `$?`).
+ * @return true on error, false on success.
+ */
 static inline bool	_fill_buffer(t_hmap *env, const char **input, \
 	t_dynbuf *buf, char *last_exit)
 {
@@ -76,6 +109,17 @@ static inline bool	_fill_buffer(t_hmap *env, const char **input, \
 		return (!ft_dynbuf_append_char(buf, *(*input)++));
 }
 
+/**
+ * @brief Expands the value of a token, performing variable substitutions.
+ * 
+ * Handles `$`, `$VAR`, `$?`, `$0`, with quote context. If in single quotes,
+ * returns the value unmodified.
+ * 
+ * @param env Environment hashmap.
+ * @param cur Current token to expand.
+ * @param lst_exit Last command exit status.
+ * @return char* Expanded value string (must be freed), or NULL on error.
+ */
 static char *_expand_value(t_hmap *env, t_token *cur, int16_t lst_exit)
 {
 	t_dynbuf	buf;
@@ -105,6 +149,17 @@ static char *_expand_value(t_hmap *env, t_token *cur, int16_t lst_exit)
 	return (free(exit_code), buf.data);
 }
 
+/**
+ * @brief Build an argword structure from a sequence of glued TK_WORD tokens.
+ * 
+ * Expands values (unless in single quotes), tracks quote state, and merges
+ * tokens until unglued token is reached.
+ * 
+ * @param env Environment hashmap.
+ * @param cur Pointer to the current token pointer (will be moved).
+ * @param lst_exit Last command exit status (for `$?` expansion).
+ * @return t_argword* Newly allocated argword node, or NULL on error.
+ */
 t_argword	*build_argword(t_hmap *env, t_token **cur, int16_t lst_exit)
 {
 	t_argword	*node;

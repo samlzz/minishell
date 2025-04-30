@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/25 20:33:59 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 12:52:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,6 @@ static int32_t	_fill_token(const char *input, t_token *curr)
  *                    - -6 : a lonely '&' was encountered
  *
  * @return A linked list of tokens on success, or NULL on error.
- *
- * @note If an error occurs (e.g., unclosed quote), all allocated tokens are freed
- *       and the function returns NULL. No partial token list is returned.
  */
 
 t_token	*tokenise(const char *input, int16_t *exit_code)
