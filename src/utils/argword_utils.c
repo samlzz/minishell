@@ -1,16 +1,40 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   argword_sort.c                                     :+:      :+:    :+:   */
+/*   argword_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/22 16:26:22 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:23:39 by sliziard         ###   ########.fr       */
+/*   Created: 2025/04/30 16:43:52 by sliziard          #+#    #+#             */
+/*   Updated: 2025/04/30 17:55:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "utils.h"
+#include "expansion/expander.h"
+
+t_argword	*argword_detach_next(t_argword *node)
+{
+	t_argword	*next;
+
+	next = node->next;
+	node->next = NULL;
+	return (next);
+}
+
+t_argword	**argword_insert(t_argword **cur, t_argword *next, t_argword *node)
+{
+	t_argword	*tail;
+
+	(*cur)->next = NULL;
+	argword_clear(*cur);
+	*cur = node;
+	tail = node;
+	while (tail->next)
+		tail = tail->next;
+	tail->next = next;
+	return (&tail->next);
+}
 
 /**
  * @brief Merge two sorted argword lists.
@@ -64,7 +88,6 @@ static void	_split(t_argword *src, t_argword **front, t_argword **back)
 	slow->next = NULL;
 }
 
-
 /**
  * @brief Sort an argword list alphabetically using merge sort.
  * 
@@ -72,7 +95,7 @@ static void	_split(t_argword *src, t_argword **front, t_argword **back)
  * 
  * @param head Pointer to the head of the list.
  */
-void	argword_sort_alpha(t_argword **head)
+void	argword_sort(t_argword **head)
 {
 	t_argword	*a;
 	t_argword	*b;
@@ -80,7 +103,7 @@ void	argword_sort_alpha(t_argword **head)
 	if (!head || !*head || !(*head)->next)
 		return ;
 	_split(*head, &a, &b);
-	argword_sort_alpha(&a);
-	argword_sort_alpha(&b);
+	argword_sort(&a);
+	argword_sort(&b);
 	*head = _merge(a, b);
 }

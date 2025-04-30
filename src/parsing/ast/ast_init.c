@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   ast_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:54:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 15:58:22 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,49 +87,6 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 		*errcode = PARSE_ERR_EOF;
 		if (!*errtok)
 			*errtok = cursor;
-		return (ast_free(ast), NULL);
-	}
-	return (ast);
-}
-
-/**
- * @brief Full parsing routine from input string to AST.
- * 
- * Tokenizes the input, expands the tokens using env, parses into an AST,
- * and handles heredoc collection. Cleans up intermediate structures on failure.
- * 
- * @param env The environment hashmap used for expansion.
- * @param input The raw user input string.
- * @param err_code Output error code.
- * @param errtok Token that caused a parse error (if applicable).
- * @return t_ast* The parsed AST or NULL on failure.
- * @see print_err
- */
-t_ast	*parse_input(t_hmap *env, const char *input, \
-	int16_t *err_code, t_token **errtok)
-{
-	t_token	*tokens;
-	t_token	*expanded;
-	t_ast	*ast;
-
-	*err_code = PARSE_OK;
-	*errtok = NULL;
-	tokens = tokenise(input, err_code);
-	if (!tokens)
-		return (NULL);
-	expanded = expand_token_list(env, tokens);
-	if (!expanded)
-		(*errtok = tokens, token_pop(&tokens, *errtok));
-	token_clear(tokens);
-	if (!expanded)
-		return (NULL);
-	ast = new_ast(expanded, errtok, err_code);
-	*errtok = token_pop(&expanded, *errtok);
-	token_clear(expanded);
-	if (handle_heredocs(env, ast))
-	{
-		token_clear(*errtok);
-		*errtok = NULL;
 		return (ast_free(ast), NULL);
 	}
 	return (ast);

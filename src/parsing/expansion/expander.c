@@ -1,53 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tk_expander.c                                      :+:      :+:    :+:   */
+/*   expander.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 10:50:04 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:39:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 18:03:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "expander.h"
 #include <stdlib.h>
 
 /**
- * @brief Convert an argword to a single token.
- * 
- * It optionally save his unexpanded value.
- *
- * @param word The argument word structure.
- * @param raw The original unexpanded string (optional).
- * @return t_token* A new token created from the argword, or NULL on error.
- * 
- * @note `quote` is ignored bc we still only need it for here_docs(which are 
- * handled separately) since expansions, joints and splitted have been done.
- */
-static t_token	*_consume_argword(t_argword *word, char *raw)
-{
-	t_token	*new;
-	
-	new = ft_calloc(1, sizeof (t_token));
-	if (!new)
-		return (NULL);
-	new->type = TK_WORD;
-	if (raw && ft_strcmp(word->value, raw))
-		new->unexpanded = raw;
-	else
-		free(raw);
-	new->value = word->value;
-	word->value = NULL;
-	return (new);
-}
-
-/**
  * @brief Convert a linked list of argwords into a linked list of tokens.
- *
+ * 
  * @param words The list of argwords.
  * @param og Original token used to copy the unexpanded form.
  * @return t_token* List of tokens, or NULL on error.
+ * 
+ * @note `quote` is ignored bc we still only need it for here_docs(which are 
+ *       handled separately) since expansions, joints and splitted have been done.
  */
 static inline t_token	*_tokens_from_argwords(t_argword *words, t_token *og)
 {
@@ -63,15 +37,19 @@ static inline t_token	*_tokens_from_argwords(t_argword *words, t_token *og)
 		raw = NULL;
 		if (og && og->value)
 			raw = ft_strdup(og->value);
-		new = _consume_argword(cur, raw);
+		new = ft_calloc(1, sizeof (t_token));
 		if (!new)
-			return (argword_clear(words), \
-					token_clear(dest), NULL);
+			return (argword_clear(words), token_clear(dest), NULL);
+		*new = (t_token){TK_WORD, 0, cur->value, NULL, false, NULL};
+		if (raw && ft_strcmp(raw, cur->value))
+			new->unexpanded = raw;
+		else
+			free(raw);
+		cur->value = NULL;
 		token_addback(&dest, new);
 		cur = cur->next;
 	}
-	argword_clear(words);
-	return (dest);
+	return (argword_clear(words), dest);
 }
 
 /**

@@ -6,11 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 14:15:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:59:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast.h"
+#include "error.h"
 
 static inline const char	*token_type_str(t_token *errtok)
 {

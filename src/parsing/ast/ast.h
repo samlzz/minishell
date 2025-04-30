@@ -6,14 +6,17 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 13:43:50 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:36:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef AST_H
 # define AST_H
 
-# include "parser.h"
+# include "parser/parser.h"
+# include "expansion/expander.h"
+
+//* Types
 
 typedef enum e_node_type
 {
@@ -33,6 +36,7 @@ typedef enum e_redir_type
 	RD_APPEND
 }	t_redir_type;
 
+// Data(redir)
 typedef struct s_redir
 {
 	t_redir_type	redir_type;
@@ -41,6 +45,7 @@ typedef struct s_redir
 	struct s_ast	*child;
 }	t_redir;
 
+// Data(binop)
 typedef struct s_binop
 {
 	struct s_ast	*left;
@@ -65,14 +70,9 @@ typedef struct s_ast
 	}	u_data;
 }	t_ast;
 
-int16_t	handle_heredocs(t_hmap *env, t_ast *node);
+//* Functions
 
-t_ast	*parse_input(t_hmap *env, const char *input, \
-	int16_t *err_code, t_token **errtok);
-
-void	ast_free(t_ast	*node);
 t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode);
-
-void	print_err(int16_t errcode, t_token *errtok);
+void	ast_free(t_ast	*node);
 
 #endif

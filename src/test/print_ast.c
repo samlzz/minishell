@@ -1,4 +1,4 @@
-#include "ast.h"
+#include "ast/ast.h"
 #include <stdio.h>
 
 #define RESET   "\033[0m"

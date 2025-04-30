@@ -6,11 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:16:30 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:05:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast.h"
+#include "ast/ast.h"
 
 static inline t_node_type	ttk_to_tnode(t_tk_type tk)
 {

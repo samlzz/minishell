@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/11 17:46:08 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/28 21:55:17 by sliziard         ###   ########.fr        #
+#    Updated: 2025/04/30 18:01:30 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,11 @@ SRC_DIR = src/
 OBJ_DIR = build/
 LIBFT = libftc
 
-INCL_DIR = $(LIBFT)/include $(LIBFT)/libft include
+INCL_DIR = $(LIBFT)/include		\
+			$(LIBFT)/libft		\
+			$(SRC_DIR)			\
+			$(SRC_DIR)/parsing
+
 LIB_DIRS = $(LIBFT)
 LIB_FILES = ftc readline
 
@@ -28,27 +32,28 @@ RM = rm -f
 MD = mkdir -p
 AR = ar rcs
 
-C_FILES =	parsing/ft_token.c	\
-			parsing/tokenizer.c	\
-			parsing/ast/init.c			\
-			parsing/ast/parse_binop.c	\
-			parsing/ast/parse_expr.c	\
-			parsing/ast/parse_rd.c		\
-			parsing/expansion/tk_expander.c			\
-			parsing/expansion/wildcards_expander.c	\
-			parsing/expansion/wildcards_replace.c	\
-			parsing/expansion/wspace_expander.c	\
+C_FILES =	main.c	\
+			env/init.c		\
+			env/wrappers.c	\
+			error/print_err.c	\
+			heredoc/hd_tokeniser.c		\
+			heredoc/hd_writer.c			\
+			parsing/ast/ast_init.c		\
 			parsing/expansion/argword_builder.c		\
-			parsing/expansion/argword_sort.c		\
 			parsing/expansion/ft_argword.c			\
-			parsing/here_doc.c	\
-			parsing/hd_token.c	\
-			parsing/utils.c		\
-			parsing/print_err.c	\
-			env/init.c			\
-			env/wrappers.c		\
-			minishell.c			\
-			test/print_ast.c	
+			parsing/expansion/expander.c			\
+			parsing/expansion/wildcards.c			\
+			parsing/expansion/withespace_split.c	\
+			parsing/lexer/ft_token.c	\
+			parsing/lexer/tokeniser.c	\
+			parsing/parser/parse_binop.c	\
+			parsing/parser/parse_expr.c		\
+			parsing/parser/parse_rd.c		\
+			parsing/input.c				\
+			utils/argword_utils.c	\
+			utils/parse_utils.c		\
+			utils/string_utils.c	\
+			test/print_ast.c
 
 #* Colors
 

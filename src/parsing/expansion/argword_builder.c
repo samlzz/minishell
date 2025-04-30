@@ -6,12 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 14:20:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:56:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
-#include "env.h"
+#include "expander.h"
+#include "env/env.h"
 #include <stdlib.h>
 
 /**

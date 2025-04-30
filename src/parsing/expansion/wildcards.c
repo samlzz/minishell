@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wildcards_expander.c                               :+:      :+:    :+:   */
+/*   wildcards.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:41:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:54:19 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "expander.h"
 #include <dirent.h>
 #include <stdlib.h>
 
@@ -104,7 +104,9 @@ static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
  * Performs matching against the current directory, skipping hidden files unless pattern starts with '.'.
  *
  * @param arg The wildcard argument to expand.
- * @return t_argword* List of matched argwords or NULL on error.
+ * @return t_argword* List of matched argwords or NULL on error. List is sorted by their values.
+ * 
+ * @see ft_strcmp
  */
 t_argword	*expand_wildcards(t_argword *arg)
 {
@@ -132,5 +134,41 @@ t_argword	*expand_wildcards(t_argword *arg)
 	}
 	if (dir)
 		closedir(dir);
-	return (argword_sort_alpha(&match), match);
+	return (argword_sort(&match), match);
+}
+
+/**
+ * @brief Replace each argword with wildcard by its expanded list of matches.
+ *
+ * Preserves nodes without wildcards. On error, fallback to original.
+ * r
+ *
+ * @param head Head of argword list.
+ * @return t_argword* Updated argword list.
+ */
+t_argword	*replace_by_wild_expanded(t_argword *head)
+{
+	t_argword	**cursor;
+	t_argword	*expanded;
+	t_argword	*next;
+
+	cursor = &head;
+	while (*cursor)
+	{
+		if ((*cursor)->wild_offsets.len == 0)
+		{
+			cursor = &(*cursor)->next;
+			continue ;
+		}
+		next = argword_detach_next(*cursor);
+		expanded = expand_wildcards(*cursor);
+		if (!expanded)
+		{
+			(*cursor)->next = next;
+			cursor = &(*cursor)->next;
+			continue ;
+		}
+		cursor = argword_insert(cursor, next, expanded);
+	}
+	return (head);
 }

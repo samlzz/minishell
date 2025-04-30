@@ -6,14 +6,18 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/28 19:39:24 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:38:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKEN_H
 # define TOKEN_H
 
-#include "libft.h"
+# include "libft.h"
+
+# ifndef HANDLED_CHAR
+#  define HANDLED_CHAR	"()<>|&'\""
+# endif
 
 typedef enum e_tk_type
 {
@@ -47,10 +51,11 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-t_token		*tokenise(const char *input, int16_t *exit_code);
-t_token		*hd_tokenise(const char *input);
+//* Tokeniser
 
-// ft_token
+t_token		*tokenise(const char *input, int16_t *exit_code);
+
+//* Ft_token
 void		next(t_token **cur);
 t_token 	*token_pop(t_token **lst, t_token *to_retrieve);
 t_token		*token_dup(t_token *og);

@@ -6,25 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:15:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:57:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast.h"
+#include "ast/ast.h"
+#include "utils/utils.h"	
 #include <stdlib.h>
-
-static inline t_redir_type	_get_rd_type(t_tk_type tk)
-{
-	if (tk == TK_REDIR_IN)
-		return RD_IN;
-	if (tk == TK_REDIR_OUT)
-		return RD_OUT;
-	if (tk == TK_REDIR_APPEND)
-		return RD_APPEND;
-	if (tk == TK_HEREDOC)
-		return RD_HEREDOC;
-	return -1;
-}
 
 /**
  * @brief Parse a single redirection from the token stream.
@@ -41,7 +29,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	t_redir_type	type;
 	t_ast			*redir;
 
-	type = _get_rd_type((*cur)->type);
+	type = get_rd_type((*cur)->type);
 	next(cur);
 	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);

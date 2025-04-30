@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wspace_expander.c                                  :+:      :+:    :+:   */
+/*   withespace_split.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:44:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 16:54:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "expander.h"
 
 /**
  * @brief Adjust wildcard offsets for a substring.

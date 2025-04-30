@@ -1,16 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*   tokeniser.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:52:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/04/30 17:57:05 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parser.h"
+#include "token.h"
+#include "error/error.h"
+#include "utils/utils.h"
 #include <stdlib.h>
 
 static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)

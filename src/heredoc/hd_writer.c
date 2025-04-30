@@ -1,17 +1,17 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   here_doc.c                                         :+:      :+:    :+:   */
+/*   hd_writer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/28 12:36:25 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 12:50:21 by sliziard         ###   ########.fr       */
+/*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
+/*   Updated: 2025/04/30 17:17:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast.h"
-#include "env.h"
+#include "here_doc.h"
+#include "env/env.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -153,29 +153,30 @@ static inline int16_t	_create_heredoc(t_hmap *env, t_redir *redir)
 /**
  * @brief Traverse the AST and handle all heredoc redirections recursively.
  *
- * Creates temp files and expands content as needed.
+ * Read user entry until limiter founded, then write to a temporary files
+ * and expands content as needed.
  *
  * @param env Environment hashmap.
  * @param node AST node to inspect.
  * @return int16_t 0 on success, 1 if an error occurred.
  */
-int16_t	handle_heredocs(t_hmap *env, t_ast *node)
+int16_t	write_heredocs(t_hmap *env, t_ast *node)
 {
 	if (!node)
 		return (0);
 	else if (node->type == ND_REDIR && node->u_data.rd.redir_type == RD_HEREDOC)
 	{
-		if (handle_heredocs(env, node->u_data.rd.child))
+		if (write_heredocs(env, node->u_data.rd.child))
 			return (1);
 		return (_create_heredoc(env, &node->u_data.rd));
 	}
 	else if (node->type == ND_PIPE || node->type == ND_AND || node->type == ND_OR)
 	{
-		if (handle_heredocs(env, node->u_data.op.left))
+		if (write_heredocs(env, node->u_data.op.left))
 			return (1);
-		return (handle_heredocs(env, node->u_data.op.right));
+		return (write_heredocs(env, node->u_data.op.right));
 	}
 	else if (node->type == ND_SUBSHELL)
-		return (handle_heredocs(env, node->u_data.s_subsh.child));
+		return (write_heredocs(env, node->u_data.s_subsh.child));
 	return (0);
 }
