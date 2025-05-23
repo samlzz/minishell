@@ -1,5 +1,6 @@
 **/**.swp
 .vscode/*
+.cache/*
 
 **/ign_*
 
@@ -9,3 +10,6 @@ build/*
 *.map
 *.a
 *.out
+
+/minishell
+/compile_commands.json
