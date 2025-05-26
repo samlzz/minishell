@@ -3,100 +3,354 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
+#    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/11/05 19:03:59 by sliziard          #+#    #+#              #
-#    Updated: 2025/04/11 13:20:52 by sliziard         ###   ########.fr        #
+#    Created: 2025/05/24 23:07:20 by mle-flem          #+#    #+#              #
+#    Updated: 2025/05/26 10:57:56 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-#* VARIABLES
-NAME =		libft.a
+# **************************************************************************** #
+#                                    Config                                    #
+# **************************************************************************** #
 
-#TODO: Folders name must end with '\'
-SRC_DIR =
-OBJ_DIR =
-INCL_DIR =
+NAME	= libft.a
+AUTHORS	= sliziard, mle-flem
+CC		= cc
+AR		= ar
+RM		= rm -f
+CFLAGS	= -Wall -Wextra
+DFLAGS	= -MMD -MP -MF $(@:.o=.d)
+ARFLAGS	= rcs
 
-CC = gcc
-CFLAGS := -Wall -Wextra -Werror
-RM = rm -f
-MD = mkdir -p
-AR = ar rcs
+# **************************************************************************** #
+#                                Program's srcs                                #
+# **************************************************************************** #
 
-C_FILES =	ft_char.c			\
-			ft_convert.c		\
-			ft_convert_base.c	\
-			ft_is.c 			\
-			ft_mem.c 			\
-			ft_output.c			\
-			ft_split.c			\
-			ft_safe_str.c		\
-			ft_str_alloc.c		\
-			ft_str_iter.c		\
-			ft_str.c			\
-			ft_utils.c			\
-			private/ft_convert_utils.c	\
-			
-#* Colors
+SRC_DIR		= ./
+BUILD_DIR	= build
 
-ESC = \033[
-DEF_COLOR = $(ESC)0;39m
-GRAY = $(ESC)0;90m
-RED = $(ESC)0;91m
-GREEN = $(ESC)0;92m
-YELLOW = $(ESC)0;93m
-BLUE = $(ESC)0;94m
-MAGENTA = $(ESC)0;95m
-CYAN = $(ESC)0;96m
-UNDERLINE = $(ESC)4m
+INCLUDES =	./
 
-COLOR_PRINT = @printf "$(1)$(2)$(DEF_COLOR)\n"
+SRCS =	ft_char.c					\
+		ft_convert.c				\
+		ft_convert_base.c			\
+		ft_is.c 					\
+		ft_mem.c 					\
+		ft_output.c					\
+		ft_split.c					\
+		ft_safe_str.c				\
+		ft_str_alloc.c				\
+		ft_str_iter.c				\
+		ft_str.c					\
+		ft_utils.c					\
+		private/ft_convert_utils.c	\
 
+OBJS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))
+DEPS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.d))
 
-#* Automatic
+# **************************************************************************** #
+#                                Makefile  vars                                #
+# **************************************************************************** #
 
-ifdef INCL_DIR
-	CFLAGS += -I$(INCL_DIR)
+SHELL	:= bash
+
+ifeq ($(origin MAKE_COLOR), undefined)
+	MAKE_COLOR	:= $(if $(CI),,$(if $(MAKE_TERMOUT),1,))
 endif
 
-SRCS = $(addprefix $(SRC_DIR), $(C_FILES))
-OBJS := $(patsubst $(SRC_DIR)%.c, $(OBJ_DIR)%.o, $(SRCS))
-O_DIRS := $(sort $(dir $(OBJS)))
+ifeq ($(origin NOPROGRESS), undefined)
+	NOPROGRESS	:= $(if $(CI),1,$(if $(MAKE_TERMOUT),,1))
+endif
 
-#? cmd for make final file
-ifeq ($(suffix $(NAME)), .a)
-	LINK_CMD = $(AR) $(NAME) $(OBJS)
+NOPRETTY	?=
+
+ifeq ($(OS),Windows_NT)
+    MAKE_OS := Windows
 else
-	LINK_CMD = $(CC) $(CFLAGS) $(OBJS) -o $(NAME)
+    MAKE_OS := $(shell sh -c 'uname 2>/dev/null || echo Unknown')
 endif
 
-#* Rules
+ifneq ($(MAKE_COLOR),)
+	CLR_COM		= \033[0;34m
+	CLR_OBJ		= \033[0;36m
+	CLR_OK		= \033[0;32m
+	CLR_ERROR	= \033[0;31m
+	CLR_WARN	= \033[0;33m
+	CLR_RESET	= \033[0m
+endif
 
-all:	$(NAME)
+MAKE_WIDTH = 80
 
-$(NAME): $(O_DIRS) $(OBJS)
-	@printf "$(GRAY)"
-	$(LINK_CMD)
-	$(call COLOR_PRINT,$(GREEN)$(UNDERLINE),$(NAME) compiled !)
+ifeq ($(MAKE_ROOT),)
+	MAKE_ROOT=$(CURDIR)
+endif
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c
-	$(call COLOR_PRINT,$(YELLOW),Compiling: $<)
-	@$(CC) $(CFLAGS) -c $< -o $@
+ifeq ($(NOPRETTY),)
+	MAKEFLAGS += --no-print-directory
+	MAKEFLAGS += --silent
+	MAKE_INDENT := $(shell printf "%$$(($(MAKELEVEL)*4))b" '')
+	MAKE_INDENT_INNER := $(shell printf "%$$(($(MAKELEVEL)*4+4))b" '')
+endif
 
-$(O_DIRS):
-	@$(MD) $@
+ifeq ($(shell git rev-parse HEAD &>/dev/null; echo $$?),0)
+	DATE	:= $(shell git log -1 --date=format:"%Y/%m/%d %T" --format="%ad")
+	HASH	:= $(shell git rev-parse --short HEAD)
+endif
 
-clean:
-	@$(RM) $(OBJS)
-	@$(RM) -r $(OBJ_DIR)
-	@$(RM) libft_obj.txt
-	$(call COLOR_PRINT,$(BLUE),$(NAME) object files cleaned!)
+ifeq ($(MAKE_OS),Darwin)
+	RUN_CMD = script -q '$@.log' '$(2)'' >/dev/null; \
+			  RESULT=$$?
+else ifeq ($(MAKE_OS),Linux)	
+	RUN_CMD = script -q -e -c '$(2)' '$@.log' >/dev/null; \
+			  RESULT=$$?; \
+			  sed -i '1d' '$@.log'; \
+			  sed -i "$$(($$(wc -l < $@.log)-1)),\$$d" '$@.log'
+else
+	RUN_CMD = $(2) 2> $@.log; \
+			  RESULT=$$?
+endif
 
-fclean:		clean
-	@$(RM) $(NAME)
+# **************************************************************************** #
+#                                Makefile logic                                #
+# **************************************************************************** #
 
-re:		fclean all
-	$(call COLOR_PRINT,$(GREEN),Cleaned and rebuilt everything for $(NAME)!)
+define run_and_test
+	if [ ! -z '$(NOPRETTY)' ]; then \
+		echo '$(2)'; \
+		$(RUN_CMD); \
+		if [ $$RESULT -ne 0 ]; then \
+			$(RM) .files_changed; \
+		fi; \
+		cat $@.log >&2; \
+		$(RM) $@.log; \
+		exit $$RESULT; \
+	fi; \
+	len=`printf '%b' "$(MAKE_INDENT)$(1)" | wc -m`; \
+	true_len=`printf '%b' "$(MAKE_INDENT)$(1)" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
+	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" "$(MAKE_INDENT)$(1)"; \
+	$(RUN_CMD); \
+	if [ $$RESULT -ne 0 ]; then \
+		printf '%b\n' '$(CLR_ERROR)[✖]$(CLR_RESET)'; \
+		$(RM) .files_changed; \
+		if [ -z "$(NOPROGRESS)" ]; then \
+			tput sc; \
+			printf '%$(MAKE_WIDTH)b' ''; \
+			tput rc; \
+		fi; \
+	elif [ -s $@.log ]; then \
+		printf '%b\n' '$(CLR_WARN)[⚠]$(CLR_RESET)'; \
+	else \
+		printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'; \
+	fi; \
+	cat $@.log >&2; \
+	$(RM) $@.log; \
+	exit $$RESULT
+endef
 
-.PHONY:		all clean fclean re
+define run_make_and_test
+	if [ ! -z '$(NOPRETTY)' ]; then \
+		echo '$(2)'; \
+		$(2); \
+		RESULT=$$?; \
+		if [ $$RESULT -ne 0 ]; then \
+			$(RM) .files_changed; \
+		fi; \
+		exit $$RESULT; \
+	fi; \
+	if [ ! -z '$(1)' ]; then \
+		len=`printf '%b' '$(MAKE_INDENT)$(1)' | wc -m`; \
+		true_len=`printf '%b' '$(MAKE_INDENT)$(1)' | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
+		printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
+		echo; \
+	fi; \
+	( set -o pipefail; ( set -o pipefail; $(2) MAKE_ROOT="$(MAKE_ROOT)" MAKE_PARENT="$(CURDIR)" | tee $(@F).log ) 3>&1 1>&2 2>&3 | tee $(@F).err.log ) 3>&1 1>&2 2>&3; \
+	RESULT=$$?; \
+	if [ ! -z '$(1)' ]; then \
+		CUR=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
+		MAX=$$((`tput lines` - 2)); \
+		OUT_LINES=`wc -l < $(@F).log`; \
+		if [ $$OUT_LINES -gt 1 ]; then \
+			((OUT_LINES=$$OUT_LINES/2)); \
+		fi; \
+		ERR_LINES=`wc -l < $(@F).err.log`; \
+		LINE=$$(($$CUR - $$OUT_LINES - $$ERR_LINES - 1)); \
+		tput sc; \
+		tput cup $$LINE $$(($(MAKE_WIDTH) - 3)); \
+		if [ $$RESULT -ne 0 ]; then \
+			printf '%b\n' '$(CLR_ERROR)[✖]$(CLR_RESET)'; \
+			$(RM) .files_changed; \
+		elif [ -s $(@F).err.log ]; then \
+			printf '%b\n' '$(CLR_WARN)[⚠]$(CLR_RESET)'; \
+		else \
+			printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'; \
+		fi; \
+		tput rc; \
+		tput cr; \
+	elif [ $$RESULT -ne 0 ]; then \
+		$(RM) .files_changed; \
+	fi; \
+	$(RM) $(@F).log $(@F).err.log; \
+	exit $$RESULT
+endef
+
+define save_files_changed
+	SRCS=`echo $(SRCS)`; \
+	OBJS=`find $(BUILD_DIR) -type f -name '*.o' 2>/dev/null | sed 's/$(BUILD_DIR)\///'`; \
+	MISSING=`echo $$SRCS | wc -w`; \
+	for SRC in $$SRCS; do \
+		for OBJ in $$OBJS; do \
+			if [ $${SRC%.c} != $${OBJ%.o} ] || [ $(SRC_DIR)/$$SRC -nt $(BUILD_DIR)/$$OBJ ]; then \
+				continue; \
+			fi; \
+			DEP=`echo $(BUILD_DIR)/$${OBJ%.o}.d`; \
+			HEADS=`< $$DEP tr ' ' '\n' | sort -u | grep '.h$$'`; \
+			RECOMP=0; \
+			for HEAD in $$HEADS; do \
+				if [ -f $$HEAD ] && [ $$HEAD -nt $(BUILD_DIR)/$$OBJ ]; then \
+					RECOMP=1; \
+					break; \
+				fi; \
+			done; \
+			if [ $$RECOMP -eq 0 ]; then \
+				((MISSING=$$MISSING-1)); \
+			fi; \
+		done; \
+	done; \
+	echo 0/$$MISSING > .files_changed
+endef
+
+define draw_bar
+	TOTAL=`cat .files_changed | cut -d'/' -f2`; \
+	DONE=`cat .files_changed | cut -d'/' -f1`; \
+	if [ $$TOTAL -eq 0 ]; then \
+		TOTAL=1; \
+		DONE=1; \
+	fi; \
+	TOTAL_WIDTH=`printf '%b' "$$TOTAL" | wc -m`; \
+	BAR_WIDTH=$$(($(MAKE_WIDTH)-6-$$TOTAL_WIDTH*2)); \
+	RES=`echo "scale=2; $$DONE/$$TOTAL*$$BAR_WIDTH" | bc`; \
+	RES=`echo $${RES%%.*}`; \
+	printf '%b' '$(CLR_OBJ)[$(CLR_RESET)'; \
+	i=0; \
+	while [ $$i -lt $$BAR_WIDTH ]; do \
+		if [ $$i -lt $$RES ]; then \
+			printf '%b' '$(CLR_OK)█$(CLR_RESET)'; \
+		else \
+			printf '%b' '$(CLR_OK)▒$(CLR_RESET)'; \
+		fi; \
+		((i=$$i+1)); \
+	done; \
+	printf '%b' '$(CLR_OBJ)]$(CLR_RESET)'; \
+	printf "%b%$${TOTAL_WIDTH}b%b%$${TOTAL_WIDTH}b%b" ' ($(CLR_COM)' "$$DONE" '$(CLR_RESET)/$(CLR_COM)' "$$TOTAL" '$(CLR_RESET))'; \
+	printf '%b' ' '; \
+	((DONE=$$DONE+1)); \
+	echo $$DONE/$$TOTAL > .files_changed
+endef
+
+define display_progress_bar
+	if [ ! -z '$(NOPROGRESS)' ] || [ ! -z '$(NOPRETTY)' ]; then \
+		exit 0; \
+	fi; \
+	line=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
+	max=`tput lines`; \
+	((max=$$max-2)); \
+	new_line=0; \
+	tput sc; \
+	printf '%$(MAKE_WIDTH)b' ''; \
+	tput rc; \
+	if [ $$line -gt $$max ]; then \
+		new_line=1; \
+		echo; \
+	elif [ $$line -lt $$max ]; then \
+		((line=$$line+1)); \
+	fi; \
+	tput sc; \
+	tput cup $$line; \
+	$(draw_bar); \
+	if [ $$new_line -eq 1 ]; then \
+		((line=$$line-1)); \
+		tput cup $$line; \
+	else \
+		echo; \
+		tput rc; \
+	fi
+endef
+
+# **************************************************************************** #
+#                                Makefile rules                                #
+# **************************************************************************** #
+
+all:	header setup $(NAME)
+	@$(RM) .files_changed
+
+header:
+ifeq ($(MAKELEVEL),0)
+ifeq ($(NOPRETTY),)
+	@printf '%b' '$(CLR_OK)'
+	@echo '01001101 01101001 01101110 01101001 01110011 01101000 01100101 01101100 01101100'
+	@echo '                                                                                '
+	@echo '                                                                                '
+	@echo '0                     ██▓     ██▓ ▄▄▄▄     █████▒▄▄▄█████▓                     0'
+	@echo '0                    ▓██▒    ▓██▒▓█████▄ ▓██   ▒ ▓  ██▒ ▓▒                     0'
+	@echo '1                    ▒██░    ▒██▒▒██▒ ▄██▒████ ░ ▒ ▓██░ ▒░                     1'
+	@echo '0                    ▒██░    ░██░▒██░█▀  ░▓█▒  ░ ░ ▓██▓ ░                      0'
+	@echo '1                    ░██████▒░██░░▓█  ▀█▓░▒█░      ▒██▒ ░                      1'
+	@echo '0                    ░ ▒░▓  ░░▓  ░▒▓███▀▒ ▒ ░      ▒ ░░                        0'
+	@echo '1                    ░ ░ ▒  ░ ▒ ░▒░▒   ░  ░          ░                         1'
+	@echo '0                      ░ ░    ▒ ░ ░    ░  ░ ░      ░                           0'
+	@echo '                                                                                '
+	@echo '                                                                                '
+	@echo '01001101 01101001 01101110 01101001 01110011 01101000 01100101 01101100 01101100'
+	@printf '%b' '$(CLR_RESET)'
+	@echo
+	@echo
+ifneq ($(HASH),)
+	@printf '%b' '$(CLR_OBJ)Name: $(CLR_WARN)$(NAME)@$(HASH)\n'
+else
+	@printf '%b' '$(CLR_OBJ)Name: $(CLR_WARN)$(NAME)\n'
+endif
+	@printf '%b' '$(CLR_OBJ)Authors: $(CLR_WARN)$(AUTHORS)\n'
+ifneq ($(DATE),)
+	@printf '%b' '$(CLR_OBJ)Date: $(CLR_WARN)$(DATE)\n'
+endif
+	@printf '%b' '$(CLR_OBJ)CC: $(CLR_WARN)$(CC)\n'
+	@printf '%b' '$(CLR_OBJ)AR: $(CLR_WARN)$(AR)\n'
+	@printf '%b' '$(CLR_OBJ)CFLAGS: $(CLR_WARN)$(CFLAGS)\n'
+	@printf '%b' '$(CLR_OBJ)ARFLAGS: $(CLR_WARN)$(ARFLAGS)\n'
+	@printf '%b' '$(CLR_RESET)\n'
+endif
+endif
+
+-include $(DEPS)
+
+$(NAME):	$(OBJS)
+	@$(call display_progress_bar)
+	@$(call run_and_test,$(CLR_COM)Archiving $(CLR_OBJ)$@$(CLR_RESET),$(AR) $(ARFLAGS) $@ $(OBJS))
+
+$(BUILD_DIR)/%.o:	$(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@$(call display_progress_bar)
+	@$(call run_and_test,$(CLR_COM)Compiling $(CLR_OBJ)$(@F)$(CLR_RESET),$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -c $< -o $@)
+
+setup:
+	@$(call save_files_changed)
+
+clean:	header
+	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)libft,$(RM) -r $(BUILD_DIR))
+
+ifeq ($(MAKELEVEL),0)
+
+fclean:	header clean
+	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)libft,$(RM) $(NAME))
+
+else
+
+fclean:	header
+	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)libft,$(RM) $(NAME))
+
+endif
+
+re:	fclean all
+
+.PHONY:	all header setup clean fclean re

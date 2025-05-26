@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/05/24 23:02:58 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/05/26 09:09:25 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -96,17 +96,17 @@ ifneq ($(MAKE_COLOR),)
 endif
 
 MAKE_WIDTH = 80
-MAKE_SILENCE =
+
+ifeq ($(MAKE_ROOT),)
+	MAKE_ROOT=$(CURDIR)
+endif
 
 ifeq ($(NOPRETTY),)
 	MAKEFLAGS += --no-print-directory
 	MAKEFLAGS += --silent
-	MAKE_SILENCE = >/dev/null
+	MAKE_INDENT := $(shell printf "%$$(($(MAKELEVEL)*4))b" '')
+	MAKE_INDENT_INNER := $(shell printf "%$$(($(MAKELEVEL)*4+4))b" '')
 endif
-
-# **************************************************************************** #
-#                                Makefile logic                                #
-# **************************************************************************** #
 
 ifeq ($(shell git rev-parse HEAD &>/dev/null; echo $$?),0)
 	DATE	:= $(shell git log -1 --date=format:"%Y/%m/%d %T" --format="%ad")
@@ -126,6 +126,10 @@ else
 			  RESULT=$$?
 endif
 
+# **************************************************************************** #
+#                                Makefile logic                                #
+# **************************************************************************** #
+
 define run_and_test
 	if [ ! -z '$(NOPRETTY)' ]; then \
 		echo '$(2)'; \
@@ -133,27 +137,75 @@ define run_and_test
 		if [ $$RESULT -ne 0 ]; then \
 			$(RM) .files_changed; \
 		fi; \
-		cat $@.log; \
+		cat $@.log >&2; \
 		$(RM) $@.log; \
 		exit $$RESULT; \
 	fi; \
-	len=`printf '%b' '$(1)' | wc -m`; \
-	true_len=`printf '%b' '$(1)' | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
-	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(1)'; \
+	len=`printf '%b' "$(MAKE_INDENT)$(1)" | wc -m`; \
+	true_len=`printf '%b' "$(MAKE_INDENT)$(1)" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
+	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" "$(MAKE_INDENT)$(1)"; \
 	$(RUN_CMD); \
 	if [ $$RESULT -ne 0 ]; then \
 		printf '%b\n' '$(CLR_ERROR)[✖]$(CLR_RESET)'; \
 		$(RM) .files_changed; \
 		if [ -z "$(NOPROGRESS)" ]; then \
-			echo; \
+			tput sc; \
+			printf '%$(MAKE_WIDTH)b' ''; \
+			tput rc; \
 		fi; \
 	elif [ -s $@.log ]; then \
 		printf '%b\n' '$(CLR_WARN)[⚠]$(CLR_RESET)'; \
 	else \
 		printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'; \
 	fi; \
-	cat $@.log; \
+	fold -s -w $$(($(MAKE_WIDTH) - $(MAKELEVEL) * 4 - 4)) $@.log | sed 's/^/$(MAKE_INDENT_INNER)/' >&2; \
 	$(RM) $@.log; \
+	exit $$RESULT
+endef
+
+define run_make_and_test
+	if [ ! -z '$(NOPRETTY)' ]; then \
+		echo '$(2)'; \
+		$(2); \
+		RESULT=$$?; \
+		if [ $$RESULT -ne 0 ]; then \
+			$(RM) .files_changed; \
+		fi; \
+		exit $$RESULT; \
+	fi; \
+	if [ ! -z '$(1)' ]; then \
+		len=`printf '%b' '$(MAKE_INDENT)$(1)' | wc -m`; \
+		true_len=`printf '%b' '$(MAKE_INDENT)$(1)' | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
+		printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
+		echo; \
+	fi; \
+	( set -o pipefail; ( set -o pipefail; $(2) MAKE_ROOT="$(MAKE_ROOT)" MAKE_PARENT="$(CURDIR)" | tee $(@F).log ) 3>&1 1>&2 2>&3 | tee $(@F).err.log ) 3>&1 1>&2 2>&3; \
+	RESULT=$$?; \
+	if [ ! -z '$(1)' ]; then \
+		CUR=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
+		MAX=$$((`tput lines` - 2)); \
+		OUT_LINES=`wc -l < $(@F).log`; \
+		if [ $$OUT_LINES -gt 1 ]; then \
+			((OUT_LINES=$$OUT_LINES/2)); \
+		fi; \
+		ERR_LINES=`wc -l < $(@F).err.log`; \
+		LINE=$$(($$CUR - $$OUT_LINES - $$ERR_LINES - 1)); \
+		tput sc; \
+		tput cup $$LINE $$(($(MAKE_WIDTH) - 3)); \
+		if [ $$RESULT -ne 0 ]; then \
+			printf '%b\n' '$(CLR_ERROR)[✖]$(CLR_RESET)'; \
+			$(RM) .files_changed; \
+		elif [ -s $(@F).err.log ]; then \
+			printf '%b\n' '$(CLR_WARN)[⚠]$(CLR_RESET)'; \
+		else \
+			printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'; \
+		fi; \
+		tput rc; \
+		tput cr; \
+	elif [ $$RESULT -ne 0 ]; then \
+		$(RM) .files_changed; \
+	fi; \
+	$(RM) $(@F).log $(@F).err.log; \
 	exit $$RESULT
 endef
 
@@ -220,16 +272,12 @@ define display_progress_bar
 	((max=$$max-2)); \
 	new_line=0; \
 	tput sc; \
-	i=0; \
-	while [ $$i -lt $(MAKE_WIDTH) ]; do \
-		printf '%b' ' '; \
-		((i=$$i+1)); \
-	done; \
+	printf '%$(MAKE_WIDTH)b' ''; \
 	tput rc; \
 	if [ $$line -gt $$max ]; then \
 		new_line=1; \
 		echo; \
-	else \
+	elif [ $$line -lt $$max ]; then \
 		((line=$$line+1)); \
 	fi; \
 	tput sc; \
@@ -239,6 +287,7 @@ define display_progress_bar
 		((line=$$line-1)); \
 		tput cup $$line; \
 	else \
+		echo; \
 		tput rc; \
 	fi
 endef
@@ -251,6 +300,7 @@ all:	header setup $(NAME)
 	@$(RM) .files_changed
 
 header:
+ifeq ($(MAKELEVEL),0)
 ifeq ($(NOPRETTY),)
 	@printf '%b' '$(CLR_OK)'
 	@echo '01001101 01101001 01101110 01101001 01110011 01101000 01100101 01101100 01101100'
@@ -285,6 +335,7 @@ endif
 	@printf '%b' '$(CLR_OBJ)LDFLAGS: $(CLR_WARN)$(LDFLAGS)\n'
 	@printf '%b' '$(CLR_RESET)\n'
 endif
+endif
 
 -include $(DEPS)
 
@@ -298,19 +349,28 @@ $(BUILD_DIR)/%.o:	$(SRC_DIR)/%.c
 	@$(call run_and_test,$(CLR_COM)Compiling $(CLR_OBJ)$(@F)$(CLR_RESET),$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -c $< -o $@)
 
 $(LIBFT_DIR)/libftc.a:
-	@$(call display_progress_bar)
-	@$(call run_and_test,$(CLR_COM)Making $(CLR_OBJ)$(@F)$(CLR_RESET),$(MAKE) -C $(LIBFT_DIR) $(MAKE_SILENCE))
+	@$(call run_make_and_test,$(CLR_COM)Making $(CLR_OBJ)$(@F)$(CLR_RESET),$(MAKE) -C $(LIBFT_DIR))
 
 setup:
 	@$(call save_files_changed)
 
 clean:	header
-	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)libftc,$(MAKE) -C $(LIBFT_DIR) clean $(MAKE_SILENCE))
 	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)minishell,$(RM) -r $(BUILD_DIR))
+	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) clean)
+
+ifeq ($(MAKELEVEL),0)
 
 fclean:	header clean
-	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)libftc,$(MAKE) -C $(LIBFT_DIR) fclean $(MAKE_SILENCE))
 	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)minishell,$(RM) $(NAME))
+	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) fclean)
+
+else
+
+fclean:	header
+	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)minishell,$(RM) $(NAME))
+	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) fclean)
+
+endif
 
 re:	fclean all
 
