@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/05/31 02:11:17 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/05/31 03:28:42 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -389,7 +389,9 @@ ifneq ($(DATE),)
 	@printf '%b' '$(CLR_OBJ)Date: $(CLR_WARN)$(DATE)\n'
 endif
 	@printf '%b' '$(CLR_OBJ)CC: $(CLR_WARN)$(CC)\n'
+	@printf '%b' '$(CLR_OBJ)AR: $(CLR_WARN)$(AR)\n'
 	@printf '%b' '$(CLR_OBJ)CFLAGS: $(CLR_WARN)$(CFLAGS)\n'
+	@printf '%b' '$(CLR_OBJ)ARFLAGS: $(CLR_WARN)$(ARFLAGS)\n'
 	@printf '%b' '$(CLR_OBJ)LDLIBS: $(CLR_WARN)$(LDLIBS)\n'
 	@printf '%b' '$(CLR_OBJ)LDFLAGS: $(CLR_WARN)$(LDFLAGS)\n'
 	@printf '%b' '$(CLR_RESET)\n'
