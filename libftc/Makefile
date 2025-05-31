@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/24 23:07:20 by mle-flem          #+#    #+#              #
-#    Updated: 2025/05/31 02:06:09 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/05/31 02:11:18 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -251,12 +251,22 @@ define save_files_changed
 			fi; \
 		done; \
 	done; \
-	echo 0/$$MISSING > .files_changed
+	[ $$MISSING -lt 1 ] && MISSING=1; \
+	printf '0/%d\n' "$$MISSING" > .files_changed; \
+	i=$(MAKELEVEL); \
+	while [ $(MAKELEVEL) -ne 0 ] && [ $$i -ge 0 ]; do \
+		DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$((i+1))"`; \
+		CUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
+		MAX=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f2 || echo 0`; \
+		((MAX=$$MAX+$$MISSING+($$MISSING == `echo $$SRCS | wc -w`))); \
+		printf '%d/%d\n' "$$CUR" "$$MAX" > "$$DIR/.files_changed"; \
+		((i=$$i-1)); \
+	done
 endef
 
 define draw_bar
-	TOTAL=`cat .files_changed | cut -d'/' -f2`; \
-	DONE=`cat .files_changed | cut -d'/' -f1`; \
+	TOTAL=`cat "$(MAKE_ROOT)/.files_changed" | cut -d'/' -f2`; \
+	DONE=`cat "$(MAKE_ROOT)/.files_changed" | cut -d'/' -f1`; \
 	if [ $$TOTAL -eq 0 ]; then \
 		TOTAL=1; \
 		DONE=1; \
@@ -279,7 +289,13 @@ define draw_bar
 	printf "%b%$${TOTAL_WIDTH}b%b%$${TOTAL_WIDTH}b%b" ' ($(CLR_COM)' "$$DONE" '$(CLR_RESET)/$(CLR_COM)' "$$TOTAL" '$(CLR_RESET))'; \
 	printf '%b' ' '; \
 	((DONE=$$DONE+1)); \
-	echo $$DONE/$$TOTAL > .files_changed
+	echo $$DONE/$$TOTAL > "$(MAKE_ROOT)/.files_changed"; \
+	if [ $(MAKELEVEL) -ne 0 ]; then \
+		TOTAL=`cat .files_changed | cut -d'/' -f2`; \
+		DONE=`cat .files_changed | cut -d'/' -f1`; \
+		((DONE=$$DONE+1)); \
+		echo $$DONE/$$TOTAL > .files_changed; \
+	fi
 endef
 
 define display_progress_bar
