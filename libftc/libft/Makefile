@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/24 23:07:20 by mle-flem          #+#    #+#              #
-#    Updated: 2025/05/29 05:22:26 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/05/31 02:08:11 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,6 +29,8 @@ ARFLAGS	= rcs
 
 SRC_DIR		= ./
 BUILD_DIR	= build
+
+DEP_PREFIX	= libft/
 
 INCLUDES =	./
 
@@ -310,6 +312,15 @@ define display_progress_bar
 	fi
 endef
 
+define generate_deps
+	printf '%b' '$(DEP_PREFIX)$(NAME): $$(wildcard ' > $@.d.tmp; \
+	cat $(DEPS) | sed -e 's/[:\t\\\)]//g' -e 's/$$(wildcard//g' | tr ' ' '\n' | sed -e '/^$$/d' -e '/.[ao]$$/d' | sort -u | sed 's|^|$(DEP_PREFIX)|' | tr '\n' ' ' >> $@.d.tmp; \
+	printf '%b' ')' >> $@.d.tmp; \
+	sed -i 's/ )$$/)/' $@.d.tmp; \
+	cat $@.d.tmp | fold -w $$((80-4*2-2)) -s | sed -e '$$!s/$$/\\/' -e '2,$$s/^/\t\t/' > $@.d; \
+	$(RM) $@.d.tmp
+endef
+
 # **************************************************************************** #
 #                                Makefile rules                                #
 # **************************************************************************** #
@@ -360,6 +371,7 @@ endif
 $(NAME):	$(OBJS)
 	@$(call display_progress_bar)
 	@$(call run_and_test,$(CLR_COM)Archiving $(CLR_OBJ)$@$(CLR_RESET),$(AR) $(ARFLAGS) $@ $(OBJS))
+	@$(call generate_deps)
 
 $(BUILD_DIR)/%.o:	$(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
@@ -370,7 +382,7 @@ setup:
 	@$(call save_files_changed)
 
 clean:	header
-	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)libft,$(RM) -r $(BUILD_DIR))
+	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)libft,$(RM) -r $(BUILD_DIR) .files_changed $(NAME).d)
 
 ifeq ($(MAKELEVEL),0)
 

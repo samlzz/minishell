@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/05/29 05:22:49 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/05/31 02:04:12 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,6 +32,8 @@ ARFLAGS	= rcs
 LIBFT_DIR	= libftc
 SRC_DIR		= src
 BUILD_DIR	= build
+
+DEP_PREFIX	=
 
 INCLUDES =	$(LIBFT_DIR)/include/	\
 			$(LIBFT_DIR)/libft/		\
@@ -62,7 +64,7 @@ SRCS =	main.c									\
 		test/print_ast.c
 
 OBJS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))
-DEPS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.d))
+DEPS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.d)) $(LIBFT_DIR)/libftc.a.d
 
 # **************************************************************************** #
 #                                Makefile  vars                                #
@@ -325,6 +327,15 @@ define display_progress_bar
 	fi
 endef
 
+define generate_deps
+	printf '%b' '$(DEP_PREFIX)$(NAME): $$(wildcard ' > $@.d.tmp; \
+	cat $(DEPS) | sed -e 's/[:\t\\\)]//g' -e 's/$$(wildcard//g' | tr ' ' '\n' | sed -e '/^$$/d' -e '/.[ao]$$/d' | sort -u | sed 's|^|$(DEP_PREFIX)|' | tr '\n' ' ' >> $@.d.tmp; \
+	printf '%b' ')' >> $@.d.tmp; \
+	sed -i 's/ )$$/)/' $@.d.tmp; \
+	cat $@.d.tmp | fold -w $$((80-4*2-2)) -s | sed -e '$$!s/$$/\\/' -e '2,$$s/^/\t\t/' > $@.d; \
+	$(RM) $@.d.tmp
+endef
+
 # **************************************************************************** #
 #                                Makefile rules                                #
 # **************************************************************************** #
@@ -375,6 +386,7 @@ endif
 $(NAME):	$(LIBFT_DIR)/libftc.a $(OBJS)
 	@$(call display_progress_bar)
 	@$(call run_and_test,$(CLR_COM)Linking $(CLR_OBJ)$@$(CLR_RESET),$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -o $@ $(OBJS) $(LDFLAGS) $(LDLIBS))
+	@$(call generate_deps)
 
 $(BUILD_DIR)/%.o:	$(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
@@ -388,7 +400,7 @@ setup:
 	@$(call save_files_changed)
 
 clean:	header
-	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)minishell,$(RM) -r $(BUILD_DIR))
+	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)minishell,$(RM) -r $(BUILD_DIR) .files_changed $(NAME).d)
 	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) clean)
 
 ifeq ($(MAKELEVEL),0)
