@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/24 23:07:20 by mle-flem          #+#    #+#              #
-#    Updated: 2025/06/01 14:31:53 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/06/01 14:46:26 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -352,6 +352,31 @@ define update_sources
 	len=`printf '%b' "$(MAKE_INDENT)$(1)" | wc -c`; \
 	true_len=`printf '%b' "$(MAKE_INDENT)$(1)" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
 	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
+	if [ -z '$(NOPROGRESS)' ]; then \
+		LINE=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
+		DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$(($(MAKELEVEL)+1))"`; \
+		SCUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
+		tput sc; \
+		i=$(MAKELEVEL); \
+		while [ $$i -gt 0 ]; do \
+			DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$((i+1))"`; \
+			CUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
+			MAX=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f2 || echo 0`; \
+			if [ $$i -ne $(MAKELEVEL) ] && [ $$(($$MAX+$$CUR)) -eq 0 ]; then \
+				tput cup $$LINE $$((($$i-1)*4+1)); \
+				printf '%b' ' '; \
+			fi; \
+			if [ $$i -eq $(MAKELEVEL) ] && [ $$CUR -gt 1 ] && [ $$((CUR-1)) -le $$MAX ] && [ $$MAX -ne 0 ]; then \
+				tput cup $$(($$LINE-1)) $$((($$i-1)*4+1)); \
+				printf '%b' '$(CLR_GUIDE)┣'; \
+			elif [ $$i -ne $(MAKELEVEL) ] && [ $$CUR -ge 0 ] && [ $$((CUR-1)) -le $$MAX ] && [ $$MAX -ne 0 ] && [ $$SCUR -le 1 ]; then \
+				tput cup $$(($$LINE-1)) $$((($$i-1)*4+1)); \
+				printf '%b' '$(CLR_GUIDE)┣'; \
+			fi; \
+			((i=$$i-1)); \
+		done; \
+		tput rc; \
+	fi; \
 	export LC_ALL=C; \
 	traverse() { \
 		find "$$1" -mindepth 1 -maxdepth 1 -type f -name '*.c' -not -name '_*' \
