@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/05/31 05:35:21 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/06/01 14:31:37 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -40,28 +40,30 @@ INCLUDES =	$(LIBFT_DIR)/include/	\
 			$(SRC_DIR)/ 			\
 			$(SRC_DIR)/parsing/
 
-SRCS =	main.c									\
-		env/init.c								\
-		env/wrappers.c							\
-		error/print_err.c						\
-		heredoc/hd_tokeniser.c					\
-		heredoc/hd_writer.c						\
-		parsing/ast/ast_init.c					\
-		parsing/expansion/argword_builder.c		\
-		parsing/expansion/ft_argword.c			\
-		parsing/expansion/expander.c			\
-		parsing/expansion/wildcards.c			\
-		parsing/expansion/withespace_split.c	\
-		parsing/lexer/ft_token.c				\
-		parsing/lexer/tokeniser.c				\
-		parsing/parser/parse_binop.c			\
-		parsing/parser/parse_expr.c				\
-		parsing/parser/parse_rd.c				\
-		parsing/input.c							\
-		utils/argword_utils.c					\
-		utils/parse_utils.c						\
-		utils/string_utils.c					\
-		test/print_ast.c
+##begin: SRCS
+SRCS =	main.c \
+		env/init.c \
+		env/wrappers.c \
+		error/print_err.c \
+		heredoc/hd_tokeniser.c \
+		heredoc/hd_writer.c \
+		parsing/input.c \
+		parsing/ast/ast_init.c \
+		parsing/expansion/argword_builder.c \
+		parsing/expansion/expander.c \
+		parsing/expansion/ft_argword.c \
+		parsing/expansion/wildcards.c \
+		parsing/expansion/withespace_split.c \
+		parsing/lexer/ft_token.c \
+		parsing/lexer/tokeniser.c \
+		parsing/parser/parse_binop.c \
+		parsing/parser/parse_expr.c \
+		parsing/parser/parse_rd.c \
+		test/print_ast.c \
+		utils/argword_utils.c \
+		utils/parse_utils.c \
+		utils/string_utils.c
+##end: SRCS
 
 OBJS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))
 DEPS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.d)) $(LIBFT_DIR)/libftc.a.d
@@ -71,6 +73,8 @@ DEPS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.d)) $(LIBFT_DIR)/libftc.a.d
 # **************************************************************************** #
 
 SHELL	:= bash
+
+MK_FILE	= $(firstword $(MAKEFILE_LIST))
 
 ifeq ($(origin MAKE_COLOR), undefined)
 	MAKE_COLOR	:= $(if $(CI),,$(if $(MAKE_TERMOUT),1,))
@@ -360,6 +364,37 @@ define generate_deps
 	$(RM) $@.d.tmp
 endef
 
+define update_sources
+	len=`printf '%b' "$(MAKE_INDENT)$(1)" | wc -c`; \
+	true_len=`printf '%b' "$(MAKE_INDENT)$(1)" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
+	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
+	export LC_ALL=C; \
+	traverse() { \
+		find "$$1" -mindepth 1 -maxdepth 1 -type f -name '*.c' -not -name '_*' \
+			| git check-ignore -nv --stdin | awk '/^::\t/ { print $$2 }' \
+			| sort \
+			| sed 's|^\./||'; \
+		find "$$1" -mindepth 1 -maxdepth 1 -type d \
+			| git check-ignore -nv --stdin \
+			| awk '/^::\t/ { print $$2 }' \
+			| sort \
+			| while read -r sub; do \
+				traverse "$$sub"; \
+			done \
+	}; \
+	FILES=`( cd "$(SRC_DIR)" && traverse '.' ) 2>/dev/null \
+		| sed -e 's/^/\t\t/' -e '$$!s/$$/ \\\\/' -e '1s/^\t\t/SRCS =\t/'`; \
+	awk -v files="$${FILES//$$'\n'/\\\\n}" ' \
+		BEGIN { inblock = 0 } \
+		$$0 == "##begin: SRCS" { print; print files; inblock = 1; next } \
+		$$0 == "##end: SRCS" { print; inblock = 0; next } \
+		inblock == 0 { print } \
+	' "$(MK_FILE)" > "$(MK_FILE).tmp" && \
+		mv "$(MK_FILE).tmp" "$(MK_FILE)"; \
+	$(RM) "$(MK_FILE).tmp"; \
+	printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'
+endef
+
 # **************************************************************************** #
 #                                Makefile rules                                #
 # **************************************************************************** #
@@ -445,4 +480,8 @@ endif
 
 re:	fclean all
 
-.PHONY:	all header setup clean fclean re
+update-srcs:	header
+	@$(call update_sources,$(CLR_COM)Updating sources of $(CLR_OBJ)$(NAME))
+	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) update-srcs)
+
+.PHONY:	all header setup clean fclean re update-srcs
