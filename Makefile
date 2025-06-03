@@ -6,7 +6,7 @@
 #    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/06/01 14:46:23 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/06/03 13:15:58 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,14 +16,29 @@
 
 NAME	= minishell
 AUTHORS	= sliziard, mle-flem
-CC		= cc
-AR		= ar
-RM		= rm -f
-CFLAGS	= -Wall -Wextra -Werror
+
+ifeq ($(MAKELEVEL),0)
+	ifeq ($(origin CC), default)
+		CC	= cc
+	endif
+	ifeq ($(origin AR), default)
+		AR	= ar
+	endif
+	ifeq ($(origin RM), default)
+		RM	= rm -f
+	endif
+	CFLAGS	+= -Wall -Wextra -Werror
+	LDLIBS	+= -lftc -lreadline
+	LDFLAGS	+= -L$(LIBFT_DIR)
+	ARFLAGS	= rcs
+endif
 DFLAGS	= -MMD -MP -MF $(@:.o=.d)
-LDLIBS	= -lftc -lreadline
-LDFLAGS	= -L$(LIBFT_DIR)
-ARFLAGS	= rcs
+
+export CC
+export AR
+export RM
+export CFLAGS
+export ARFLAGS
 
 # **************************************************************************** #
 #                                Program's srcs                                #
@@ -113,18 +128,8 @@ override MAKE_PARENT := $(if $(MAKE_PARENT),$(MAKE_PARENT):,)$(CURDIR)
 ifeq ($(NOPRETTY),)
 	MAKEFLAGS += --no-print-directory
 	MAKEFLAGS += --silent
-	ifneq ($(NOPROGRESS),)
-		ifneq ($(MAKELEVEL),0)
-			MAKE_INDENT := $(shell printf '    %.0s' {1..$(MAKELEVEL)})
-		endif
-	else
-		ifneq ($(MAKELEVEL),0)
-			ifneq ($(MAKELEVEL),1)
-				MAKE_INDENT := $(shell printf '$(CLR_GUIDE) ┃  %.0s' {1..$$(($(MAKELEVEL)-1))})
-			endif
-			MAKE_INDENT := $(MAKE_INDENT)$(shell printf '%b' "$(CLR_GUIDE) ┗━ ")
-		endif
-		MAKE_INDENT_INNER := $(shell printf "%$$(($(MAKELEVEL)*4+4))b" '')
+	ifneq ($(MAKELEVEL),0)
+		MAKE_INDENT := $(shell printf ' ┃  %.0s' {0..$(MAKELEVEL)})
 	endif
 endif
 
@@ -150,84 +155,59 @@ endif
 #                                Makefile logic                                #
 # **************************************************************************** #
 
-define run_and_test
-	if [ ! -z '$(NOPRETTY)' ]; then \
-		echo '$(2)'; \
-		$(RUN_CMD); \
-		if [ $$RESULT -ne 0 ]; then \
-			$(RM) .files_changed; \
+define print_with_indent
+	IFS=':' read -r -a DIRS <<< "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))"; \
+	content='$(CLR_GUIDE)'; \
+	i=$(MAKELEVEL); \
+	while [ $$i -gt 0 ]; do \
+		DIR="$${DIRS[$$i]}"; \
+		if [ -f "$$DIR/.files_changed" ]; then \
+			IFS='/' read CUR MAX < "$$DIR/.files_changed"; \
+		else \
+			CUR=0; MAX=0; \
 		fi; \
-		cat $@.log >&2; \
-		$(RM) $@.log; \
-		exit $$RESULT; \
-	fi; \
-	len=`printf '%b' "$(MAKE_INDENT)$(1)" | wc -c`; \
-	true_len=`printf '%b' "$(MAKE_INDENT)$(1)" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
-	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
-	if [ -z '$(NOPROGRESS)' ]; then \
-		LINE=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
-		DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$(($(MAKELEVEL)+1))"`; \
-		SCUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
-		tput sc; \
-		i=$(MAKELEVEL); \
-		while [ $$i -gt 0 ]; do \
-			DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$((i+1))"`; \
-			CUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
-			MAX=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f2 || echo 0`; \
-			if [ $$i -ne $(MAKELEVEL) ] && [ $$(($$MAX+$$CUR)) -eq 0 ]; then \
-				tput cup $$LINE $$((($$i-1)*4+1)); \
-				printf '%b' ' '; \
-			fi; \
-			if [ $$i -eq $(MAKELEVEL) ] && [ $$CUR -gt 1 ] && [ $$((CUR-1)) -le $$MAX ] && [ $$MAX -ne 0 ]; then \
-				tput cup $$(($$LINE-1)) $$((($$i-1)*4+1)); \
-				printf '%b' '$(CLR_GUIDE)┣'; \
-			elif [ $$i -ne $(MAKELEVEL) ] && [ $$CUR -ge 0 ] && [ $$((CUR-1)) -le $$MAX ] && [ $$MAX -ne 0 ] && [ $$SCUR -le 1 ]; then \
-				tput cup $$(($$LINE-1)) $$((($$i-1)*4+1)); \
-				printf '%b' '$(CLR_GUIDE)┣'; \
-			fi; \
-			((i=$$i-1)); \
-		done; \
-		tput rc; \
-	fi; \
+		if [ $$i -ne $(MAKELEVEL) -a $$MAX -eq 0 ]; then \
+			content="    $$content"; \
+		elif [ $$i -ne $(MAKELEVEL) -a $$CUR -le $$MAX ]; then \
+			content=" ┃  $$content"; \
+		elif [ $$i -eq $(MAKELEVEL) -a $$CUR -lt $$MAX -a $$MAX -ne 0 ]; then \
+			content=" ┣━ $$content"; \
+		elif [ $$i -eq $(MAKELEVEL) -a $$CUR -ge $$MAX ]; then \
+			content=" ┗━ $$content"; \
+		fi; \
+		((i=$$i-1)); \
+	done; \
+	content="$(CLR_GUIDE)$$content$(CLR_RESET)$(1)$(CLR_RESET)"; \
+	len=`printf '%b' "$$content" | wc -c`; \
+	true_len=`printf '%b' "$$content" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
+	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b$(2)" "$$content"
+endef
+
+define run_and_test
+	$(call print_with_indent,$(1)); \
 	$(RUN_CMD); \
 	if [ $$RESULT -ne 0 ]; then \
 		printf '%b\n' '$(CLR_ERROR)[✖]$(CLR_RESET)'; \
 		$(RM) .files_changed; \
-		if [ -z "$(NOPROGRESS)" ]; then \
-			tput sc; \
-			printf '%$(MAKE_WIDTH)b' ''; \
-			tput rc; \
-		fi; \
+		[ -z "$(NOPROGRESS)" ] && printf '%b' '\x1b[2K'; \
 	elif [ -s $@.log ]; then \
 		printf '%b\n' '$(CLR_WARN)[⚠]$(CLR_RESET)'; \
 	else \
 		printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'; \
 	fi; \
-	cat $@.log >&2; \
+	cat $@.log | awk '{ print "$(CLR_GUIDE)$(MAKE_INDENT)$(CLR_RESET)" $$0 }' >&2; \
 	$(RM) $@.log; \
 	exit $$RESULT
 endef
 
 define run_make_and_test
-	if [ ! -z '$(NOPRETTY)' ]; then \
-		echo '$(2)'; \
-		$(2); \
-		RESULT=$$?; \
-		if [ $$RESULT -ne 0 ]; then \
-			$(RM) .files_changed; \
-		fi; \
-		exit $$RESULT; \
-	fi; \
 	if [ ! -z '$(1)' ]; then \
-		len=`printf '%b' '$(MAKE_INDENT)$(1)' | wc -c`; \
-		true_len=`printf '%b' '$(MAKE_INDENT)$(1)' | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
-		printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
-		echo; \
+		$(call print_with_indent,$(1),\n); \
 	fi; \
-	( set -o pipefail; ( set -o pipefail; $(2) MAKE_ROOT="$(MAKE_ROOT)" MAKE_PARENT="$(MAKE_PARENT)" | tee $(@F).log ) 3>&1 1>&2 2>&3 | tee $(@F).err.log ) 3>&1 1>&2 2>&3; \
+	( set -o pipefail; ( set -o pipefail; $(2) MAKE_ROOT="$(MAKE_ROOT)" MAKE_PARENT="$(MAKE_PARENT)" | tee $(@F).log ) 3>&1 1>&2 2>&3- | tee $(@F).err.log ) 3>&1 1>&2 2>&3-; \
 	RESULT=$$?; \
 	if [ -z $(NOPROGRESS) ] && [ ! -z '$(1)' ]; then \
-		CUR=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
+		CUR=`oldstty=$$(stty -g); stty raw -echo min 0; printf '\x1b[6n' > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $${pos[0]:2}`; \
 		MAX=$$((`tput lines` - 2)); \
 		OUT_LINES=`wc -l < $(@F).log`; \
 		if [ $$OUT_LINES -gt 1 ]; then \
@@ -236,21 +216,14 @@ define run_make_and_test
 		TERM_WIDTH=$$(tput cols); \
 		ERR_LINES=`cat $(@F).err.log | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | fold -w "$$TERM_WIDTH" | wc -l`; \
 		LINE=$$(($$CUR - $$OUT_LINES - $$ERR_LINES - 1)); \
-		tput sc; \
-		tput cup $$LINE $$(($(MAKE_WIDTH) - 3)); \
 		if [ $$RESULT -ne 0 ]; then \
-			printf '%b\n' '$(CLR_ERROR)[✖]$(CLR_RESET)'; \
+			printf '%b' "\x1b7\x1b[$$LINE;$$(($(MAKE_WIDTH)-2))H$(CLR_ERROR)[✖]$(CLR_RESET)\n\x1b8"; \
 			$(RM) .files_changed; \
 		elif [ -s $(@F).err.log ]; then \
-			printf '%b\n' '$(CLR_WARN)[⚠]$(CLR_RESET)'; \
+			printf '%b' "\x1b7\x1b[$$LINE;$$(($(MAKE_WIDTH)-2))H$(CLR_WARN)[⚠]$(CLR_RESET)\n\x1b8"; \
 		else \
-			printf '%b\n' '$(CLR_OK)[✓]$(CLR_RESET)'; \
+			printf '%b' "\x1b7\x1b[$$LINE;$$(($(MAKE_WIDTH)-2))H$(CLR_OK)[✓]$(CLR_RESET)\n\x1b8"; \
 		fi; \
-		tput rc; \
-		tput cr; \
-	fi; \
-	if [ $$RESULT -ne 0 ]; then \
-		$(RM) .files_changed; \
 	fi; \
 	$(RM) $(@F).log $(@F).err.log; \
 	exit $$RESULT
@@ -280,12 +253,15 @@ define save_files_changed
 		done; \
 	done; \
 	[ $$MISSING -lt 1 ] && MISSING=1; \
-	printf '0/%d\n' "$$MISSING" > .files_changed; \
+	IFS=':' read -r -a DIRS <<< "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))"; \
 	i=$(MAKELEVEL); \
-	while [ $(MAKELEVEL) -ne 0 ] && [ $$i -ge 0 ]; do \
-		DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$((i+1))"`; \
-		CUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
-		MAX=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f2 || echo 0`; \
+	while [ $$i -ge 0 ]; do \
+		DIR="$${DIRS[$$i]}"; \
+		if [ -f "$$DIR/.files_changed" ]; then \
+			IFS='/' read CUR MAX < "$$DIR/.files_changed"; \
+		else \
+			CUR=0; MAX=0; \
+		fi; \
 		((MAX=$$MAX+$$MISSING+($$MISSING == `echo $$SRCS | wc -w`))); \
 		printf '%d/%d\n' "$$CUR" "$$MAX" > "$$DIR/.files_changed"; \
 		((i=$$i-1)); \
@@ -293,65 +269,49 @@ define save_files_changed
 endef
 
 define draw_bar
-	TOTAL=`cat "$(MAKE_ROOT)/.files_changed" | cut -d'/' -f2`; \
-	DONE=`cat "$(MAKE_ROOT)/.files_changed" | cut -d'/' -f1`; \
-	if [ $$TOTAL -eq 0 ]; then \
-		TOTAL=1; \
-		DONE=1; \
+	IFS=':' read -r -a DIRS <<< "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))"; \
+	DIR="$${DIRS[0]}"; \
+	if [ -f "$$DIR/.files_changed" ]; then \
+		IFS='/' read DONE TOTAL < "$$DIR/.files_changed"; \
+	else \
+		DONE=1; TOTAL=1; \
 	fi; \
 	TOTAL_WIDTH=`printf '%b' "$$TOTAL" | wc -m`; \
 	BAR_WIDTH=$$(($(MAKE_WIDTH)-6-$$TOTAL_WIDTH*2)); \
 	RES=`echo "scale=2; $$DONE/$$TOTAL*$$BAR_WIDTH" | bc`; \
 	RES=`echo $${RES%%.*}`; \
-	printf '%b' '$(CLR_OBJ)[$(CLR_RESET)'; \
-	i=0; \
-	while [ $$i -lt $$BAR_WIDTH ]; do \
-		if [ $$i -lt $$RES ]; then \
-			printf '%b' '$(CLR_OK)█$(CLR_RESET)'; \
+	BAR_DONE=`printf '█%.0s' $$(seq 1 $$RES)`; \
+	BAR_TODO=`printf '▒%.0s' $$(seq 1 $$(($$BAR_WIDTH-$$RES)))`; \
+	printf '$(CLR_OBJ)[$(CLR_OK)%s%s$(CLR_OBJ)] $(CLR_RESET)($(CLR_COM)%d$(CLR_RESET)/$(CLR_COM)%d$(CLR_RESET))' "$$BAR_DONE" "$$BAR_TODO" "$$DONE" "$$TOTAL"; \
+	i=$(MAKELEVEL); \
+	while [ $$i -ge 0 ]; do \
+		DIR="$${DIRS[$$i]}"; \
+		if [ -f "$$DIR/.files_changed" ]; then \
+			IFS='/' read DONE TOTAL < "$$DIR/.files_changed"; \
 		else \
-			printf '%b' '$(CLR_OK)▒$(CLR_RESET)'; \
+			DONE=0; TOTAL=0; \
 		fi; \
-		((i=$$i+1)); \
-	done; \
-	printf '%b' '$(CLR_OBJ)]$(CLR_RESET)'; \
-	printf "%b%$${TOTAL_WIDTH}b%b%$${TOTAL_WIDTH}b%b" ' ($(CLR_COM)' "$$DONE" '$(CLR_RESET)/$(CLR_COM)' "$$TOTAL" '$(CLR_RESET))'; \
-	printf '%b' ' '; \
-	((DONE=$$DONE+1)); \
-	echo $$DONE/$$TOTAL > "$(MAKE_ROOT)/.files_changed"; \
-	if [ $(MAKELEVEL) -ne 0 ]; then \
-		TOTAL=`cat .files_changed | cut -d'/' -f2`; \
-		DONE=`cat .files_changed | cut -d'/' -f1`; \
-		((DONE=$$DONE+1)); \
-		echo $$DONE/$$TOTAL > .files_changed; \
-	fi
+		printf '%d/%d\n' "$$(($$DONE+1))" "$$TOTAL" > "$$DIR/.files_changed"; \
+		((i=$$i-1)); \
+	done
 endef
 
 define display_progress_bar
-	if [ ! -z '$(NOPROGRESS)' ] || [ ! -z '$(NOPRETTY)' ]; then \
+	if [ ! -z '$(NOPROGRESS)' ]; then \
 		exit 0; \
 	fi; \
-	line=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
+	line=`oldstty=$$(stty -g); stty raw -echo min 0; printf '\x1b[6n' > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $${pos[0]:2}`; \
 	max=`tput lines`; \
-	((max=$$max-2)); \
-	new_line=0; \
-	tput sc; \
-	printf '%$(MAKE_WIDTH)b' ''; \
-	tput rc; \
-	if [ $$line -gt $$max ]; then \
-		new_line=1; \
-		echo; \
-	elif [ $$line -lt $$max ]; then \
-		((line=$$line+1)); \
-	fi; \
-	tput sc; \
-	tput cup $$line; \
+	((max=$$max-1)); \
+	new_line=$$(($$line>$$max)); \
+	((line=$$line+($$line<$$max))); \
+	printf '%b%b%b' '\x1b[2K' "$$([ $$line -gt $$max ] && printf '\\n')" "\x1b7\x1b[$$line;1H"; \
 	$(draw_bar); \
 	if [ $$new_line -eq 1 ]; then \
 		((line=$$line-1)); \
-		tput cup $$line; \
+		printf '%b' "\x1b[$$line;1H"; \
 	else \
-		echo; \
-		tput rc; \
+		printf '%b' "\n\x1b8"; \
 	fi
 endef
 
@@ -365,34 +325,7 @@ define generate_deps
 endef
 
 define update_sources
-	len=`printf '%b' "$(MAKE_INDENT)$(1)" | wc -c`; \
-	true_len=`printf '%b' "$(MAKE_INDENT)$(1)" | sed -r 's/\x1b\[[0-9;]*[a-zA-Z]//g' | wc -m`; \
-	printf "%-$$(($(MAKE_WIDTH)-3+$$len-$$true_len))b" '$(MAKE_INDENT)$(1)'; \
-	if [ -z '$(NOPROGRESS)' ]; then \
-		LINE=`oldstty=$$(stty -g); stty raw -echo min 0; tput u7 > /dev/tty; IFS=';' read -r -d R -a pos; stty $$oldstty; echo $$(($${pos[0]:2}-1))`; \
-		DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$(($(MAKELEVEL)+1))"`; \
-		SCUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
-		tput sc; \
-		i=$(MAKELEVEL); \
-		while [ $$i -gt 0 ]; do \
-			DIR=`echo "$(if $(MAKE_PARENT),$(MAKE_PARENT),$(CURDIR))" | cut -d':' -f "$$((i+1))"`; \
-			CUR=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f1 || echo 0`; \
-			MAX=`[ -f "$$DIR/.files_changed" ] && head -n1 < "$$DIR/.files_changed" | cut -d'/' -f2 || echo 0`; \
-			if [ $$i -ne $(MAKELEVEL) ] && [ $$(($$MAX+$$CUR)) -eq 0 ]; then \
-				tput cup $$LINE $$((($$i-1)*4+1)); \
-				printf '%b' ' '; \
-			fi; \
-			if [ $$i -eq $(MAKELEVEL) ] && [ $$CUR -gt 1 ] && [ $$((CUR-1)) -le $$MAX ] && [ $$MAX -ne 0 ]; then \
-				tput cup $$(($$LINE-1)) $$((($$i-1)*4+1)); \
-				printf '%b' '$(CLR_GUIDE)┣'; \
-			elif [ $$i -ne $(MAKELEVEL) ] && [ $$CUR -ge 0 ] && [ $$((CUR-1)) -le $$MAX ] && [ $$MAX -ne 0 ] && [ $$SCUR -le 1 ]; then \
-				tput cup $$(($$LINE-1)) $$((($$i-1)*4+1)); \
-				printf '%b' '$(CLR_GUIDE)┣'; \
-			fi; \
-			((i=$$i-1)); \
-		done; \
-		tput rc; \
-	fi; \
+	$(call print_with_indent,$(1)); \
 	export LC_ALL=C; \
 	traverse() { \
 		find "$$1" -mindepth 1 -maxdepth 1 -type f -name '*.c' -not -name '_*' \
@@ -424,8 +357,16 @@ endef
 #                                Makefile rules                                #
 # **************************************************************************** #
 
+ifeq ($(NOPRETTY),)
+
 all:	header setup $(NAME)
 	@$(RM) .files_changed
+
+else
+
+all:	$(NAME)
+
+endif
 
 header:
 ifeq ($(MAKELEVEL),0)
@@ -470,36 +411,63 @@ endif
 -include $(DEPS)
 
 $(NAME):	$(LIBFT_DIR)/libftc.a $(OBJS)
+ifeq ($(NOPRETTY),)
 	@$(call display_progress_bar)
-	@$(call run_and_test,$(CLR_COM)Linking $(CLR_OBJ)$@$(CLR_RESET),$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -o $@ $(OBJS) $(LDFLAGS) $(LDLIBS))
+	@$(call run_and_test,$(CLR_COM)Linking $(CLR_OBJ)$@,$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -o $@ $(OBJS) $(LDFLAGS) $(LDLIBS))
+else
+	$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -o $@ $(OBJS) $(LDFLAGS) $(LDLIBS)
+endif
 	@$(call generate_deps)
 
 $(BUILD_DIR)/%.o:	$(SRC_DIR)/%.c
 	@mkdir -p $(dir $@)
+ifeq ($(NOPRETTY),)
 	@$(call display_progress_bar)
-	@$(call run_and_test,$(CLR_COM)Compiling $(CLR_OBJ)$(@F)$(CLR_RESET),$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -c $< -o $@)
+	@$(call run_and_test,$(CLR_COM)Compiling $(CLR_OBJ)$(@F),$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -c $< -o $@)
+else
+	$(CC) $(CFLAGS) $(DFLAGS) $(INCLUDES:%=-I%) -c $< -o $@
+endif
 
 $(LIBFT_DIR)/libftc.a:
-	@$(call run_make_and_test,$(CLR_COM)Making $(CLR_OBJ)$(@F)$(CLR_RESET),$(MAKE) -C $(LIBFT_DIR))
+ifeq ($(NOPRETTY),)
+	@$(call run_make_and_test,$(CLR_COM)Making $(CLR_OBJ)$(@F),$(MAKE) -C $(LIBFT_DIR))
+else
+	$(MAKE) -C $(LIBFT_DIR)
+endif
 
 setup:
 	@$(call save_files_changed)
 
 clean:	header
+ifeq ($(NOPRETTY),)
 	@$(call run_and_test,$(CLR_COM)clean $(CLR_OBJ)minishell,$(RM) -r $(BUILD_DIR) .files_changed $(NAME).d)
 	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) clean)
+else
+	$(RM) -r $(BUILD_DIR) $(NAME).d
+	$(MAKE) -C $(LIBFT_DIR) clean
+endif
 
 ifeq ($(MAKELEVEL),0)
 
 fclean:	header clean
+ifeq ($(NOPRETTY),)
 	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)minishell,$(RM) $(NAME))
 	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) fclean)
+else
+	$(RM) $(NAME)
+	$(MAKE) -C $(LIBFT_DIR) fclean
+endif
 
 else
 
 fclean:	header
+ifeq ($(NOPRETTY),)
 	@$(call run_and_test,$(CLR_COM)fclean $(CLR_OBJ)minishell,$(RM) $(NAME))
 	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) fclean)
+else
+	$(RM) $(NAME)
+	$(MAKE) -C $(LIBFT_DIR) fclean
+endif
 
 endif
 
