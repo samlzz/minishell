@@ -60,6 +60,7 @@ SRCS =	main.c \
 		env/init.c \
 		env/wrappers.c \
 		error/print_err.c \
+		exec/exec.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_writer.c \
 		parsing/input.c \

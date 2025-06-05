@@ -6,10 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 18:38:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/05 10:49:27 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exec/exec.h"
 #include "minishell.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -55,7 +56,7 @@ void	main_loop(t_hmap *env)
 		{
 			ast = parse_line(env, input);
 			if (ast)
-				EXEC(ast);
+				exec_node_wrapper(env, ast);
 			ast_free(ast);
 		}
 		free(input);
