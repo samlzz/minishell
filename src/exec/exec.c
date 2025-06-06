@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 21:23:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/06 08:05:42 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/06 09:09:17 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,6 +271,8 @@ int32_t	exec_node_flow_exec(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[
 	return (ret);
 }
 
+void	exec_preprocess_ast(t_ast **root);
+
 void	exec_preprocess_ast_reverse_pipes(t_ast **root)
 {
 	t_ast	*cur;
@@ -289,6 +291,29 @@ void	exec_preprocess_ast_reverse_pipes(t_ast **root)
 		prev = cur;
 		cur = next;
 	}
+	if (prev && prev->u_data.op.right)
+		exec_preprocess_ast(&prev->u_data.op.right);
+	*root = prev;
+}
+
+void	exec_preprocess_ast_reverse_redirs(t_ast **root)
+{
+	t_ast	*cur;
+	t_ast	*prev;
+	t_ast	*next;
+
+	cur = *root;
+	while (cur && cur->type == ND_REDIR)
+		cur = cur->u_data.rd.child;
+	prev = cur;
+	cur = *root;
+	while (cur && cur->type == ND_REDIR)
+	{
+		next = cur->u_data.rd.child;
+		cur->u_data.rd.child = prev;
+		prev = cur;
+		cur = next;
+	}
 	*root = prev;
 }
 
@@ -296,6 +321,8 @@ void	exec_preprocess_ast(t_ast **root)
 {
 	if ((*root)->type == ND_PIPE)
 		exec_preprocess_ast_reverse_pipes(root);
+	else if ((*root)->type == ND_REDIR)
+		exec_preprocess_ast_reverse_redirs(root);
 	else if ((*root)->type == ND_SUBSHELL)
 		exec_preprocess_ast(&(*root)->u_data.s_subsh.child);
 	else if ((*root)->type == ND_AND || (*root)->type == ND_OR)
