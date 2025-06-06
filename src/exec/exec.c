@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 21:23:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/05 16:57:17 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/06 08:05:42 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ char	**dup_argv(char **av)
 	return (ret);
 }
 
-pid_t	exec_node_flow_command(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[2])
+pid_t	exec_node_flow_command(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[3])
 {
 	pid_t	pid;
 	int32_t	fd;
@@ -134,6 +134,8 @@ pid_t	exec_node_flow_command(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds
 				close(fds[0]);
 			if (fds[1] != STDOUT_FILENO)
 				close(fds[1]);
+			if (fds[2] != -1)
+				close(fds[2]);
 			argv = dup_argv(node->u_data.s_cmd.argv);
 			if (!argv)
 				return (ast_free(root), -1);
@@ -181,7 +183,7 @@ pid_t	exec_node_flow_command(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds
 	return (pid);
 }
 
-pid_t	exec_node_flow_pipe(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[2])
+pid_t	exec_node_flow_pipe(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[3])
 {
 	int32_t	fds_[2];
 	pid_t	ret;
@@ -193,12 +195,12 @@ pid_t	exec_node_flow_pipe(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[2]
 		if (pipe(fds_) == -1)
 			return (perror("exec: exec_node_flow_pipe"), ast_free(root), -1);
 		exec_node_flow_pipe(envp, root, node->u_data.op.left,
-				(int32_t[2]){fds[0], fds_[1]});
+				(int32_t[3]){fds[0], fds_[1], fds_[0]});
 		close(fds_[1]);
 		if (fds[0] != STDIN_FILENO)
 			close(fds[0]);
 		ret = exec_node_flow_pipe(envp, root, node->u_data.op.right,
-			(int32_t[2]){fds_[0], fds[1]});
+			(int32_t[3]){fds_[0], fds[1], -1});
 		close(fds_[0]);
 	}
 	else if (node->type == ND_SUBSHELL)
