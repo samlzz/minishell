@@ -18,6 +18,13 @@
 
 # define HANDLED_CHAR	"()<>|&'\""
 
+typedef enum e_parse_lvl
+{
+	LVL_LOGICAL,
+	LVL_PIPE,
+	LVL_EXPR
+}	t_parse_lvl;
+
 //? Forward declaration
 typedef struct s_ast		t_ast;
 typedef enum e_node_type	t_node_type;
@@ -25,6 +32,7 @@ typedef enum e_node_type	t_node_type;
 // Parser
 
 t_ast	*binop_parser(t_token **cur, t_node_type bin_op, t_token **errtok);
+t_ast	*new_binop_parser(t_token **cur, t_parse_lvl prior, t_token **errtok);
 t_ast	*redir_parser(t_token **cur, t_token **errtok);
 t_ast	*primary_parser(t_token **cur, t_token **errtok);
 
