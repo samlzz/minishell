@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 21:23:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/06 09:09:17 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/06 09:26:13 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 #include "exec/exec.h"
 
 void	print_ast_ascii(t_ast *node);
-int32_t	exec_node_flow_exec(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[2]);
+int32_t	exec_node_flow_exec(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[3]);
 
 static inline char	*_concat_path_cmd(char *path, char *cmd)
 {
@@ -238,7 +238,7 @@ int32_t	exec_node_wait(t_ast *node, pid_t last)
 	return (ret);
 }
 
-int32_t	exec_node_flow_exec(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[2])
+int32_t	exec_node_flow_exec(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[3])
 {
 	int32_t	ret;
 	pid_t	pid;
@@ -336,6 +336,6 @@ void	exec_node_wrapper(t_hmap *envp, t_ast *node)
 {
 	exec_preprocess_ast(&node);
 	print_ast_ascii(node);
-	exec_node_flow_exec(envp, node, node, (int32_t[2]){STDIN_FILENO,
-		STDOUT_FILENO});
+	exec_node_flow_exec(envp, node, node, (int32_t[3]){STDIN_FILENO,
+		STDOUT_FILENO, -1});
 }
