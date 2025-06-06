@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:57:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/06 16:12:49 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,9 +96,15 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 
 	if (!expr)
 		return (primary_parser(cur, errtok));
-	if (!*cur || (*cur)->type != TK_WORD || \
-		expr->type != ND_CMD || !expr->u_data.s_cmd.argv)
-		return ((*errtok = *cur), ast_free(expr), NULL);
+	if ((*cur)->type != TK_WORD || expr->type != ND_CMD)
+	{
+		if ((*cur)->type == TK_LPAREN && expr->type == ND_CMD && \
+		!expr->u_data.s_cmd.argv[1])
+			*errtok = (*cur)->next;
+		else
+			*errtok = *cur;
+		return (ast_free(expr), NULL);
+	}
 	new = collect_argv(cur, errtok);
 	if (!new)
 		return (ast_free(expr), NULL);
