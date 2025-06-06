@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 21:23:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/06 09:26:13 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/06 09:37:35 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,9 +145,9 @@ pid_t	exec_node_flow_command(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds
 			if (!cmd)
 				return (-1);
 			if (access(cmd, F_OK))
-				return (perror("Command not found"), free(cmd), 127);
+				return (perror("Command not found"), free(cmd), ft_splitfree(argv, 0), ft_hmap_free(envp, free), exit(127), -1);
 			if (access(cmd, X_OK))
-				return (perror("Command not executable"), free(cmd), 126);
+				return (perror("Command not executable"), free(cmd), ft_splitfree(argv, 0), ft_hmap_free(envp, free), exit(126), -1);
 			execve(cmd, argv, get_envp(envp));
 			perror("exec: exec_node_flow_command: execve");
 			exit(-1);
