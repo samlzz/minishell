@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 15:57:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 18:38:34 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/06 13:07:02 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,10 +45,11 @@ t_ast	*parse_line(t_hmap *env, const char *input)
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);
+	if (!res)
+		return (print_err(errcode, errtok), NULL);
 	if (write_heredocs(env, res))
 	{
 		token_clear(errtok);
-		errtok = NULL;
 		print_err(PARSE_ERR, NULL);
 		ast_free(res);
 		return (NULL);

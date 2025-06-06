@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 16:05:22 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/06 14:32:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,11 +128,11 @@ t_ast	*primary_parser(t_token **cur, t_token **errtok)
 
 	if (*cur && (*cur)->type == TK_LPAREN)
 	{
-		*cur = (*cur)->next;
+		next(cur);
 		subexpr = binop_parser(cur, ND_OR, errtok);
-		if (!*cur || (*cur)->type != TK_RPAREN)
-			return (*errtok = *cur, ast_free(subexpr), NULL);
-		*cur = (*cur)->next;
+		if (!*cur || !subexpr || (*cur)->type != TK_RPAREN)
+			return (ast_free(subexpr), NULL);
+		next(cur);
 		subshell = ft_calloc(1, sizeof(t_ast));
 		if (!subshell)
 			return (ast_free(subexpr), NULL);
