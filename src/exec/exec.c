@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 21:23:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/06 09:37:35 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/06 11:22:52 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,7 +204,7 @@ pid_t	exec_node_flow_pipe(t_hmap *envp, t_ast *root, t_ast *node, int32_t fds[3]
 		close(fds_[0]);
 	}
 	else if (node->type == ND_SUBSHELL)
-		ret = exec_node_flow_pipe(envp, root, node->u_data.s_subsh.child, fds);
+		ret = exec_node_flow_exec(envp, root, node->u_data.s_subsh.child, fds);
 	else
 		ret = exec_node_flow_command(envp, root, node, fds);
 	return (ret);
