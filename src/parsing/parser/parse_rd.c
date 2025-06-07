@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/06 16:12:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/07 08:34:49 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,34 +52,6 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 }
 
 /**
- * @brief Wrap multiple redirections around a command or expression.
- * 
- * Applies right-to-left nesting: each redirection wraps the next.
- * 
- * @param cur Pointer to the token cursor.
- * @param inner The AST to wrap.
- * @param errtok Error token on failure.
- * @return t_ast* Resulting AST or NULL on error.
- */
-static t_ast	*_collect_redirs(t_token **cur, t_ast *inner, t_token **errtok)
-{
-	t_ast	*redir;
-
-	while (*cur && is_redirection((*cur)->type))
-	{
-		redir = _parse_single_redir(cur, errtok);
-		if (!redir)
-		{
-			ast_free(inner);
-			return (NULL);
-		}
-		redir->u_data.rd.child = inner;
-		inner = redir;
-	}
-	return (inner);
-}
-
-/**
  * @brief Create NC_CMD node or append TK_WORD tokens to it.
  * 
  * Add args when redirections appear before the end of the command.
@@ -117,47 +89,45 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 	return (expr);
 }
 
-/**
- * @brief Parse a command with possible redirections and groupings.
- * 
- * Combines redirection and primary parsing.
- * 
- * @param cur Pointer to the token stream.
- * @param errtok Output error token.
- * @return t_ast* Final AST subtree.
- * 
- * @see primary_parser
- */
-t_ast	*redir_parser(t_token **cur, t_token **errtok)
+static void	_rd_add_last(t_ast **subtree, t_ast *leaf)
 {
-	t_ast	*rd_list;
-	t_ast	*expr;
 	t_ast	*last;
 
-	rd_list = NULL;
+	if (!*subtree)
+	{
+		*subtree = leaf;
+		return ;
+	}
+	last = *subtree;
+	while (last && last->type == ND_REDIR && last->u_data.rd.child)
+		last = last->u_data.rd.child;
+	last->u_data.rd.child = leaf;
+}
+
+t_ast	*redir_parser(t_token **cur, t_token **errtok)
+{
+	t_ast	*rd_subtree;
+	t_ast	*expr;
+	t_ast	*new;
+
+	rd_subtree = NULL;
 	expr = NULL;
 	while (*cur && ((*cur)->type == TK_WORD \
 		|| (*cur)->type == TK_LPAREN \
 		|| is_redirection((*cur)->type)))
 	{
 		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)
-		{
-			expr = _collect_command(cur, expr, errtok);
-			if (!expr)
-				return (ast_free(rd_list), NULL);
-		}
+			new = _collect_command(cur, expr, errtok);
 		else
-		{
-			rd_list = _collect_redirs(cur, rd_list, errtok);
-			if (!rd_list)
-				return (ast_free(expr), NULL);
-		}
+			new = _parse_single_redir(cur, errtok);
+		if (!new)
+			return (ast_free(rd_subtree), NULL);
+		if (new->type == ND_REDIR)
+			_rd_add_last(&rd_subtree, new);
+		else
+			expr = new;
 	}
-	if (!rd_list)
-		return (expr);
-	last = rd_list;
-	while (last->type == ND_REDIR && last->u_data.rd.child)
-		last = last->u_data.rd.child;
-	last->u_data.rd.child = expr;
-	return (rd_list);
+	if (expr)
+		_rd_add_last(&rd_subtree, expr);
+	return (rd_subtree);
 }
