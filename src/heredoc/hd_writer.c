@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:17:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/07 08:59:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -170,6 +170,8 @@ int16_t	write_heredocs(t_hmap *env, t_ast *node)
 			return (1);
 		return (_create_heredoc(env, &node->u_data.rd));
 	}
+	else if (node->type == ND_REDIR)
+		return (write_heredocs(env, node->u_data.rd.child));
 	else if (node->type == ND_PIPE || node->type == ND_AND || node->type == ND_OR)
 	{
 		if (write_heredocs(env, node->u_data.op.left))
