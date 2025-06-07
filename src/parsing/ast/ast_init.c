@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/06 17:25:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/07 08:30:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 	t_token	*cursor;
 
 	cursor = tokens;
-	ast = new_binop_parser(&cursor, LVL_LOGICAL, errtok);
+	ast = logical_parser(&cursor, errtok);
 	if (!ast)
 		return (NULL);
 	if (cursor && cursor->type != TK_EOF)

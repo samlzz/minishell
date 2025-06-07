@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/06 17:26:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/07 08:30:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,7 +129,7 @@ t_ast	*primary_parser(t_token **cur, t_token **errtok)
 	if (*cur && (*cur)->type == TK_LPAREN)
 	{
 		next(cur);
-		subexpr = new_binop_parser(cur, LVL_LOGICAL, errtok);
+		subexpr = logical_parser(cur, errtok);
 		if (!*cur || !subexpr || (*cur)->type != TK_RPAREN)
 			return (ast_free(subexpr), NULL);
 		next(cur);
