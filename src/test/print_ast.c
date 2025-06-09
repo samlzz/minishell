@@ -24,6 +24,8 @@ static void	print_prefix(const char *prefix, int is_last)
 	printf("%s── ", is_last ? "└" : "├");
 }
 
+void	short_print_tokens(t_token *tokens);
+
 static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 {
 	char new_prefix[256];
@@ -41,8 +43,7 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 	if (node->type == ND_CMD)
 	{
 		printf(YELLOW "CMD:" RESET);
-		for (int i = 0; node->u_data.s_cmd.argv && node->u_data.s_cmd.argv[i]; i++)
-			printf(" '%s'", node->u_data.s_cmd.argv[i]);
+		short_print_tokens(node->u_data.cmd.args->tk);
 		printf("\n");
 	}
 	else if (node->type == ND_PIPE)
@@ -70,16 +71,15 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 		expand_hd = "";
 		if (node->u_data.rd.redir_type == RD_HEREDOC)
 			expand_hd = node->u_data.rd.hd_expand ? "[expand]" : "[no-expand]";
-		printf(RED "REDIR (%s)%s -> '%s'" RESET "\n",
-			redir_str(node->u_data.rd.redir_type),
-			expand_hd,
-			node->u_data.rd.filename);
+		printf(RED "REDIR (%s)%s ->", redir_str(node->u_data.rd.redir_type), expand_hd);
+		short_print_tokens(node->u_data.rd.filename.tk);
+		printf(RESET "\n");
 		print_ast_rec(node->u_data.rd.child, new_prefix, 1);
 	}
 	else if (node->type == ND_SUBSHELL)
 	{
 		printf(CYAN "SUBSHELL" RESET "\n");
-		print_ast_rec(node->u_data.s_subsh.child, new_prefix, 1);
+		print_ast_rec(node->u_data.subsh.child, new_prefix, 1);
 	}
 }
 

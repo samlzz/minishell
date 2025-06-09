@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "parser.h"
+#include "parser/parser.h"
 
 const char	*token_type_str(t_tk_type type)
 {
@@ -41,6 +41,29 @@ void	print_tokens(t_token *tokens)
 			printf("Token: %-23s | Value: \"%s\"\n",
 				token_type_str(tokens->type),
 				tokens->value);
+		tokens = tokens->next;
+	}
+}
+
+void	short_print_tokens(t_token *tokens)
+{
+	while (tokens)
+	{
+		if (tokens->type == TK_WORD)
+		{
+			printf(" %s(\"%s\"", token_type_str(tokens->type), tokens->value);
+			if (tokens->unexpanded && tokens->unexpanded[0])
+				printf(" | unexp: '%s'", tokens->unexpanded);
+			if (tokens->quote != QUOTE_NONE)
+				printf(" | %s", quote_type_str(tokens->quote));
+			if (tokens->glued)
+				printf(" | glued");
+			printf(")");
+		}
+		else
+		{
+			printf(" %s(\"%s\")", token_type_str(tokens->type), tokens->value);
+		}
 		tokens = tokens->next;
 	}
 }

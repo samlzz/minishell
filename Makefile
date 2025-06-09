@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+         #
+#    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/06/03 13:15:58 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/06/09 14:58:05 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,7 +62,6 @@ SRCS =	main.c \
 		error/print_err.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_writer.c \
-		parsing/input.c \
 		parsing/ast/ast_init.c \
 		parsing/expansion/argword_builder.c \
 		parsing/expansion/expander.c \
@@ -75,6 +74,7 @@ SRCS =	main.c \
 		parsing/parser/parse_expr.c \
 		parsing/parser/parse_rd.c \
 		test/print_ast.c \
+		test/print_token.c \
 		utils/argword_utils.c \
 		utils/parse_utils.c \
 		utils/string_utils.c
