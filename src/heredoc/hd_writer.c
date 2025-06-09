@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/07 08:59:47 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:09:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,12 @@
  * Tries to use `/dev/urandom`, falls back to a counter if not available.
  *
  * @param dest Output buffer to write the generated filename into.
+ * @return fd of the unique file that was generated
  */
-static void	_gen_rd_filename(char *dest)
+static int32_t	_gen_rd_filename(char *dest)
 {
 	static int	fallback_counter;
-	int			fd;
+	int32_t		fd;
 	uint8_t		buf[8];
 	int32_t		i;
 	
@@ -50,6 +51,7 @@ static void	_gen_rd_filename(char *dest)
 	while (++i < 8)
 		dest[HD_FN_LEN + i] = HD_CHARSET[buf[i] % HD_CHARSET_LEN];
 	dest[HD_FN_LEN + i] = '\0';
+	return (open(dest, O_WRONLY | O_CREAT | O_TRUNC, 0600));
 }
 
 /**
@@ -76,7 +78,7 @@ static inline t_token	*_init_expand_vars(t_hmap *env, t_dynbuf *dest, \
 	tokens = hd_tokenise(line);
 	if (!tokens)
 		return (ft_dynbuf_free(dest), NULL);
-	expanded = expand_token_list(env, tokens);
+	expanded = expand_token_list(env, tokens, ND_CMD);
 	token_clear(tokens);
 	if (!expanded)
 		return (ft_dynbuf_free(dest), NULL);
@@ -120,21 +122,25 @@ static void _expand_line(t_hmap *env, char **line)
  * @param env Environment hashmap.
  * @param redir Pointer to the heredoc redirection node.
  * @return int16_t 0 on success, 1 on failure.
+ * @note Expansion must be done, it will use `char *` value not `t_token` from `filename`
  */
 static inline int16_t	_create_heredoc(t_hmap *env, t_redir *redir)
 {
 	char	filename[PATH_MAX];
-	int		fd;
+	int32_t fd;
 	char	*line;
 
-	_gen_rd_filename(filename);
-	fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	fd = _gen_rd_filename(filename);
+	redir->fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
 	if (fd == -1)
 		return (perror("minishell: open"), 1);
+	if (redir->fd == -1)
+		return (perror("minishell: open"), close(fd), 1);
+	unlink(filename);
 	while (1)
 	{
 		line = readline(HD_PROMPT);
-		if (!line || ft_strcmp(line, redir->filename) == 0)
+		if (!line || ft_strcmp(line, redir->filename.expanded) == 0)
 		{
 			free(line);
 			break;
@@ -144,10 +150,7 @@ static inline int16_t	_create_heredoc(t_hmap *env, t_redir *redir)
 		ft_putendl_fd(line, fd);
 		free(line);
 	}
-	close(fd);
-	free(redir->filename);
-	redir->filename = ft_strdup(filename);
-	return (0);
+	return (close(fd), 0);
 }
 
 /**
@@ -179,6 +182,6 @@ int16_t	write_heredocs(t_hmap *env, t_ast *node)
 		return (write_heredocs(env, node->u_data.op.right));
 	}
 	else if (node->type == ND_SUBSHELL)
-		return (write_heredocs(env, node->u_data.s_subsh.child));
+		return (write_heredocs(env, node->u_data.subsh.child));
 	return (0);
 }
