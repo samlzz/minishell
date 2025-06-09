@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 18:38:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:58:21 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ void	main_loop(t_hmap *env)
 	char	*input;
 	t_ast	*ast;
 
+	(void)env;
 	while (1)
 	{
 		input = readline(CMD_PROMPT);
@@ -53,10 +54,11 @@ void	main_loop(t_hmap *env)
 			add_history(input);
 		if (!_skipable(input))
 		{
-			ast = parse_line(env, input);
+			ast = parse_ast(input);
 			if (ast)
 				EXEC(ast);
-			ast_free(ast);
+			// TODO: use true when expand are called in exec
+			ast_free(ast, false);
 		}
 		free(input);
 	}
