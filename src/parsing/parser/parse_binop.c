@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/07 08:36:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/09 14:22:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static inline void	*_set_errtok_quit(t_token **errtok, t_token *cur, t_ast *to_f
 	if (!*errtok)
 		*errtok = cur;
 	if (to_free)
-		ast_free(to_free);
+		ast_free(to_free, false);
 	return (NULL);
 }
 
@@ -35,7 +35,7 @@ t_ast	*pipe_parser(t_token **cur, t_token **errtok)
 	next(cur);
 	node = ft_calloc(1, sizeof (t_ast));
 	if (!node)
-		return (ast_free(left), NULL);
+		return (ast_free(left, false), NULL);
 	node->type = ND_PIPE;
 	node->u_data.op.left = left;
 	node->u_data.op.right = pipe_parser(cur, errtok);
@@ -62,7 +62,7 @@ t_ast	*logical_parser(t_token **cur, t_token **errtok)
 	{
 		node = ft_calloc(1, sizeof (t_ast));
 		if (!node)
-			return (ast_free(left), NULL);
+			return (ast_free(left, false), NULL);
 		if ((*cur)->type == TK_AND)
 			node->type = ND_AND;
 		else

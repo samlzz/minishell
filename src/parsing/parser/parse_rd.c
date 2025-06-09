@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/07 08:34:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:14:02 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,29 +25,24 @@
  */
 static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 {
-	t_token			*fname;
+	t_token			*file;
 	t_redir_type	type;
 	t_ast			*redir;
 
 	type = get_rd_type((*cur)->type);
 	next(cur);
-	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
+	file = *cur;
+	if (!file || file->type != TK_WORD || !*file->value)
 		return ((*errtok = *cur), NULL);
-	fname = *cur;
-	if (fname->unexpanded && fname->next && fname->next->unexpanded && \
-		ft_strcmp(fname->unexpanded, fname->next->unexpanded) == 0)
-		return ((*errtok = fname), NULL);
 	next(cur);
 	redir = ft_calloc(1, sizeof(t_ast));
 	if (!redir)
 		return (NULL);
 	redir->type = ND_REDIR;
 	redir->u_data.rd.redir_type = type;
-	if (type == RD_HEREDOC && fname->quote == QUOTE_NONE)
-		redir->u_data.rd.hd_expand = true;
-	redir->u_data.rd.filename = ft_strdup(fname->value);
-	if (!redir->u_data.rd.filename)
-		return (ast_free(redir), NULL);
+	redir->u_data.rd.filename.tk = token_dup(file);
+	if (!redir->u_data.rd.filename.tk)
+		return (ast_free(redir, false), NULL);
 	return (redir);
 }
 
@@ -63,29 +58,25 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
  */
 static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 {
-	char	**new;
-	char	**tmp;
+	t_words	*new;
+	t_token	*last;
 
 	if (!expr)
 		return (primary_parser(cur, errtok));
 	if ((*cur)->type != TK_WORD || expr->type != ND_CMD)
 	{
-		if ((*cur)->type == TK_LPAREN && expr->type == ND_CMD && \
-		!expr->u_data.s_cmd.argv[1])
-			*errtok = (*cur)->next;
-		else
-			*errtok = *cur;
-		return (ast_free(expr), NULL);
+		*errtok = *cur;
+		ast_free(expr, false);
+		return (NULL);
 	}
-	new = collect_argv(cur, errtok);
+	new = collect_args(cur, errtok);
 	if (!new)
-		return (ast_free(expr), NULL);
-	tmp = join_argv(expr->u_data.s_cmd.argv, new);
-	if (!tmp)
-		return (ft_splitfree(new, 0), ast_free(expr), NULL);
+		return (ast_free(expr, false), NULL);
+	last = expr->u_data.cmd.args->tk;
+	while (last && last->next)
+		last = last->next;
+	last->next = new->tk;
 	free(new);
-	free(expr->u_data.s_cmd.argv);
-	expr->u_data.s_cmd.argv = tmp;
 	return (expr);
 }
 
@@ -121,7 +112,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 		else
 			new = _parse_single_redir(cur, errtok);
 		if (!new)
-			return (ast_free(rd_subtree), NULL);
+			return (ast_free(rd_subtree, false), NULL);
 		if (new->type == ND_REDIR)
 			_rd_add_last(&rd_subtree, new);
 		else

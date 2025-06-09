@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:36:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:00:39 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include "parser/parser.h"
 # include "expansion/expander.h"
+# include "error/error.h"
+# include <sys/types.h>
 
 //* Types
 
@@ -36,11 +38,18 @@ typedef enum e_redir_type
 	RD_APPEND
 }	t_redir_type;
 
+typedef	union u_words
+{
+	t_token	*tk;
+	char	*expanded;
+}	t_words;
+
 // Data(redir)
 typedef struct s_redir
 {
 	t_redir_type	redir_type;
-	char			*filename;
+	t_words			filename;
+	int32_t			fd;
 	bool			hd_expand;
 	struct s_ast	*child;
 }	t_redir;
@@ -52,27 +61,43 @@ typedef struct s_binop
 	struct s_ast	*right;
 }	t_binop;
 
+typedef struct s_expr
+{
+	int32_t	ret;
+	pid_t	pid;
+}	t_expr;
+
+// Data (cmd)
+typedef struct s_cmd
+{
+	t_words	*args;
+	t_expr	exec_infos;
+}	t_cmd;
+
+// Data (subshell)
+typedef struct s_subshell
+{
+	struct s_ast	*child;
+	t_expr			exec_infos;
+}	t_subshell;
+
 typedef struct s_ast
 {
 	t_node_type	type;
 	union
 	{
-		t_redir	rd;
-		t_binop	op;
-		struct
-		{
-			char	**argv;
-		}		s_cmd;
-		struct
-		{
-			struct s_ast	*child;
-		}		s_subsh;
+		t_redir		rd;
+		t_binop		op;
+		t_cmd		cmd;
+		t_subshell	subsh;
 	}	u_data;
 }	t_ast;
 
 //* Functions
 
+t_ast	*parse_ast(const char *input);
+
 t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode);
-void	ast_free(t_ast	*node);
+void	ast_free(t_ast *node, bool expand);
 
 #endif

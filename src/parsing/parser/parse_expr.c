@@ -6,82 +6,40 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/07 08:30:46 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/09 16:12:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast/ast.h"
 #include <stdlib.h>
 
-/**
- * @brief Join two argv arrays into a single null-terminated array.
- * 
- * Does not duplicate strings, just merges two pointer arrays.
- * 
- * @param og First argv array.
- * @param new Second argv array.
- * @return char** New merged argv array (allocated).
- */
-char	**join_argv(char **og, char **new)
+t_words	*collect_args(t_token **cur, t_token **errtok)
 {
-	int32_t	second;
-	int32_t	first;
-	int32_t	i;
-	char	**dest;
+	t_words	*args;
+	t_token	*new;
 
-	first = 0;
-	while (og[first])
-		first++;
-	second = 0;
-	while (new[second])
-		second++;
-	dest = malloc((first + second + 1) * sizeof (char *));
-	if (!dest)
+	args = ft_calloc(1, sizeof (t_words));
+	if (!args)
 		return (NULL);
-	i = -1;
-	while (++i < first)
-		dest[i] = og[i];
-	i = -1;
-	while (++i < second)
-		dest[first + i] = new[i];
-	dest[first + i] = NULL;
-	return (dest);
-}
-
-/**
- * @brief Collect a sequence of TK_WORD tokens into an argv array.
- * 
- * Steals ownership of token values (sets them to NULL).
- * 
- * @param cur Current token cursor.
- * @param errtok Output error token if parsing fails.
- * @return char** Array of arguments or NULL on error.
- */
-char	**collect_argv(t_token **cur, t_token **errtok)
-{
-	char	**argv;
-	size_t	size;
-	size_t	i;
-	t_token	*cursor;
-
-	size = 0;
-	cursor = *cur;
-	while (cursor && cursor->type == TK_WORD)
-		(size++, (cursor = cursor->next));
-	if (!size)
-		return ((*errtok = cursor), NULL);
-	argv = malloc(sizeof (char *) * (size + 1));
-	if (!argv)
-		return (NULL);
-	i = 0;
-	while (i < size)
+	while (*cur && (*cur)->type == TK_WORD)
 	{
-		argv[i++] = (*cur)->value;
-		(*cur)->value = NULL;
+		new = token_dup(*cur);
+		if (!new)
+		{
+			token_clear(args->tk);
+			free(args);
+			return (NULL);
+		}
+		token_addback(&args->tk, new);
 		next(cur);
 	}
-	argv[i] = NULL;
-	return (argv);
+	if (!args->tk)
+	{
+		*errtok = *cur;
+		free(args);
+		return (NULL);
+	}
+	return (args);
 }
 
 /**
@@ -101,8 +59,8 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 	if (!node)
 		return (NULL);
 	node->type = ND_CMD;
-	node->u_data.s_cmd.argv = collect_argv(cur, errtok);
-	if (!node->u_data.s_cmd.argv)
+	node->u_data.cmd.args = collect_args(cur, errtok);
+	if (!node->u_data.cmd.args)
 		return (free(node), NULL);
 	return (node);
 }
@@ -131,13 +89,13 @@ t_ast	*primary_parser(t_token **cur, t_token **errtok)
 		next(cur);
 		subexpr = logical_parser(cur, errtok);
 		if (!*cur || !subexpr || (*cur)->type != TK_RPAREN)
-			return (ast_free(subexpr), NULL);
+			return (ast_free(subexpr, false), NULL);
 		next(cur);
 		subshell = ft_calloc(1, sizeof(t_ast));
 		if (!subshell)
-			return (ast_free(subexpr), NULL);
+			return (ast_free(subexpr, false), NULL);
 		subshell->type = ND_SUBSHELL;
-		subshell->u_data.s_subsh.child = subexpr;
+		subshell->u_data.subsh.child = subexpr;
 		return (subshell);
 	}
 	return (cmd_parser(cur, errtok));
