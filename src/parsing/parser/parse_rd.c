@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 10:17:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:15:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,14 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 		return (NULL);
 	redir->type = ND_REDIR;
 	redir->u_data.rd.redir_type = type;
-	while (*cur)
+	while (*cur && (*cur)->type == TK_WORD)
 	{
 		new = token_dup(*cur);
 		if (!new)
 			return (ast_free(redir, false), NULL);
-		token_addback(&redir->u_data.rd.filename.tk, *cur);
+		token_addback(&redir->u_data.rd.filename.tk, new);
 		next(cur);
-		if (!(*cur)->glued)
+		if (!*cur || !(*cur)->glued)
 			break;
 	}
 	return (redir);
