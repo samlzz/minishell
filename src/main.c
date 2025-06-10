@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/09 16:58:21 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:06:12 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,9 @@
 #include <readline/history.h>
 
 //TODO: tmp
-void	print_ast_ascii(t_ast *node);
-#define EXEC(node)	print_ast_ascii(node)
+
+void	print_ast_ascii(t_ast *node, bool expanded);
+#define EXEC(node, env)	exec_simu(node, env); print_ast_ascii(node, true)
 
 static inline bool	_skipable(const char *input)
 {
@@ -36,12 +37,45 @@ static inline bool	_skipable(const char *input)
 	return (!input[i]);
 }
 
+void	exec_simu(t_ast	*head, t_hmap *env)
+{
+	if (!head)
+		return ;
+	t_token	*errtok = NULL;
+
+	if (head->type == ND_AND || head->type == ND_OR || head->type == ND_PIPE)
+	{
+		exec_simu(head->u_data.op.left, env);
+		exec_simu(head->u_data.op.right, env);
+	}
+	else if (head->type == ND_SUBSHELL)
+	{
+		exec_simu(head->u_data.subsh.child, env);
+	}
+	else if (head->type == ND_CMD)
+	{
+		if (expand_node(head, env, &errtok))
+		{
+			err_print(PARSE_OK, errtok);
+			printf("CMD_ERROR: expand ('%s')\n", head->u_data.cmd.args->expanded);
+		}
+	}
+	else if (head->type == ND_REDIR)
+	{
+		if (expand_node(head, env, &errtok))
+		{
+			err_print(PARSE_OK, errtok);
+			printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.filename.expanded);
+		}
+		exec_simu(head->u_data.rd.child, env);
+	}
+}
+
 void	main_loop(t_hmap *env)
 {
 	char	*input;
 	t_ast	*ast;
 
-	(void)env;
 	while (1)
 	{
 		input = readline(CMD_PROMPT);
@@ -56,9 +90,12 @@ void	main_loop(t_hmap *env)
 		{
 			ast = parse_ast(input);
 			if (ast)
-				EXEC(ast);
+			{
+				print_ast_ascii(ast, false);
+				EXEC(ast, env);
+			}
 			// TODO: use true when expand are called in exec
-			ast_free(ast, false);
+			ast_free(ast, true);
 		}
 		free(input);
 	}

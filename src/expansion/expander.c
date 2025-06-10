@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 12:05:50 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 15:14:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,8 @@ int16_t	expand_redir(t_ast *rd, t_hmap *env, t_token **errtok)
 	}
 	token_clear(rd->u_data.rd.filename.tk);
 	rd->u_data.rd.filename.expanded = file->value;
+	file->value = NULL;
+	argword_clear(file);
 	return (0);
 }
 
@@ -60,7 +62,7 @@ static inline void	_construct_argv(t_words **dest, t_argword *args)
 	size = argword_size(args);
 	if (!size)
 		return ;
-	*dest = malloc((size + 1) * sizeof(t_words));
+	*dest = ft_calloc(size + 1, sizeof(t_words));
 	if (!*dest)
 		return ;
 	i = 0;
@@ -68,8 +70,8 @@ static inline void	_construct_argv(t_words **dest, t_argword *args)
 	{
 		(*dest)[i++].expanded = args->value;
 		args->value = NULL;
+		args = args->next;
 	}
-	(*dest)[i].expanded = NULL;
 }
 
 int16_t	expand_command(t_ast *cmd, t_hmap *env)
@@ -90,11 +92,12 @@ int16_t	expand_command(t_ast *cmd, t_hmap *env)
 	token_clear(cmd->u_data.cmd.args->tk);
 	free(cmd->u_data.cmd.args);
 	cmd->u_data.cmd.args = NULL;
-	_construct_argv(&cmd->u_data.cmd.args, field);
+	_construct_argv(&cmd->u_data.cmd.args, args);
+	argword_clear(args);
 	return (!cmd->u_data.cmd.args);
 }
 
-int16_t	expand_node(t_ast *node, t_hmap * env, t_token **errtok)
+int16_t	expand_node(t_ast *node, t_hmap *env, t_token **errtok)
 {
 	if (node->type == ND_CMD)
 	{

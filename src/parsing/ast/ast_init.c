@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 12:06:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 14:39:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,16 +16,18 @@
 
 static inline void	_words_free(t_words *val, bool expand, bool allocated)
 {
+	size_t	i;
+
 	if (!val)
 		return ;
 	if (expand)
 	{
-		while (val)
+		i = 0;
+		while (val[i].expanded)
 		{
-			free(val->expanded);
+			free(val[i++].expanded);
 			if (!allocated)
 				break;
-			val++;
 		}
 	}
 	else
