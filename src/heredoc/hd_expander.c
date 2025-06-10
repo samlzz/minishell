@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:40:16 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 16:42:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 17:23:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "here_doc.h"
+#include <stdlib.h>
 
 int16_t	expand_heredoc(t_ast *node)
 {
@@ -25,6 +26,7 @@ int16_t	expand_heredoc(t_ast *node)
 		tmp = ft_strappend(filename, cur->value);
 		if (!tmp)
 			return (free(filename), 1);
+		filename = tmp;
 		cur = cur->next;
 		if (!cur || !cur->glued)
 			break ;

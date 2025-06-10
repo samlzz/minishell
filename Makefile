@@ -66,6 +66,7 @@ SRCS =	main.c \
 		expansion/field_splitting.c \
 		expansion/ft_argword.c \
 		expansion/wildcards.c \
+		heredoc/hd_expander.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_writer.c \
 		parsing/ast/ast_init.c \
