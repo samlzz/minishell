@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/18 09:54:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 09:24:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,11 @@
 
 # include "env/env.h"
 # include "ast/ast.h"
-# include "heredoc/here_doc.h"
+
+// TODO: tmp (for debug)
+# ifdef DEBUG_MODE
+#  include "test/test.h"
+# endif
 
 # define CMD_PROMPT	"minishell> "
 

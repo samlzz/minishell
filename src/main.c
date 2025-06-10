@@ -6,13 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/18 10:05:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 09:23:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "heredoc/here_doc.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -82,10 +82,44 @@ static void	_launch_exec(t_hmap *env, const char *input)
 	ast_free(ast, true);
 }
 
-void	main_loop(t_hmap *env)
+static void	_launch_exec(t_hmap *env, const char *input)
 {
+	t_ast	*ast;
+
+	ast = parse_ast(input);
+	if (!ast)
+		return ;
+	# ifdef DEBUG_MODE
+	if (PRINT_AST || PRINT_AST_NO_EXPAND)
+		print_ast_ascii(ast, false);
+	# endif
+	expander_simu(ast, env);
+	# ifdef DEBUG_MODE
+	if (PRINT_AST || PRINT_AST_EXPAND)
+		print_ast_ascii(ast, true);
+	# endif
+	if (!write_heredocs(ast))
+		EXEC(ast);
+	ast_free(ast, true);
+}
+
+# ifdef DEBUG_MODE
+
+# endif
+
+int	main(int argc, char const *argv[], char **envp)
+{
+	t_hmap	env;
 	char	*input;
 
+	(void)argc;
+	env = env_init(envp, argv[0]);
+	if (!env.__entries)
+		return (1);
+	# ifdef DEBUG_MODE
+	if (PRINT_ENV)
+		ft_hmap_iter(&env, &print_entry);
+	# endif
 	while (1)
 	{
 		input = readline(CMD_PROMPT);
@@ -97,20 +131,9 @@ void	main_loop(t_hmap *env)
 		if (*input)
 			add_history(input);
 		if (!_skipable(input))
-			_launch_exec(env, input);
+			_launch_exec(&env, input);
 		free(input);
 	}
-}
-
-int	main(int argc, char const *argv[], char **envp)
-{
-	t_hmap	env;
-
-	(void)argc;
-	env = env_init(envp, argv[0]);
-	if (!env.__entries)
-		return (1);
-	main_loop(&env);
 	ft_hmap_free(&env, &free);
 	return (0);
 }
