@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 16:59:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 10:01:45 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static inline const char	*token_type_str(t_token *errtok)
 	return (stringify[errtok->type]);
 }
 
-static inline void	_print_ambiguous_redirect(const char *raw)
+void	err_print_ambigous(const char *raw)
 {
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(raw, 2);
@@ -65,8 +65,6 @@ static void	_print_syntax_error(t_token *tok, char *input_tk)
 		tk = input_tk;
 	else if (!tok)
 		tk = "newline";
-	else if (tok->unexpanded)
-		return (_print_ambiguous_redirect(tok->unexpanded));
 	else if (tok->value)
 		tk = tok->value;
 	else
@@ -84,7 +82,7 @@ static void	_print_syntax_error(t_token *tok, char *input_tk)
  * @param errcode The error code to report.
  * @param errtok The token where the error occurred (may be NULL).
  */
-void	print_err(int16_t errcode, t_token *errtok)
+void	err_print(int16_t errcode, t_token *errtok)
 {
 	if (errcode == PARSE_ERR)
 		ft_putendl_fd("minishell: internal error occurs", 2);

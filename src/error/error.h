@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:59:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 18:00:19 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 10:01:40 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 # define PARSE_ERR_SOLO_AND		-6
 # define PARSE_ERR_EOF			-5
 
-void	print_err(int16_t errcode, t_token *errtok);
+void	err_print_ambigous(const char *raw);
+void	err_print(int16_t errcode, t_token *errtok);
 
 #endif

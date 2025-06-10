@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/09 14:46:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 12:06:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,15 @@ static inline void	_words_free(t_words *val, bool expand, bool allocated)
 	if (!val)
 		return ;
 	if (expand)
-		free(val->expanded);
+	{
+		while (val)
+		{
+			free(val->expanded);
+			if (!allocated)
+				break;
+			val++;
+		}
+	}
 	else
 		token_clear(val->tk);
 	if (allocated)
@@ -107,11 +115,11 @@ t_ast	*parse_ast(const char *input)
 	errtok = NULL;
 	tk_lst = tokenise(input, &errcode);
 	if (!tk_lst)
-		return (print_err(errcode, errtok), NULL);
+		return (err_print(errcode, errtok), NULL);
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);
 	if (!res)
-		return (print_err(errcode, errtok), NULL);
+		return (err_print(errcode, errtok), NULL);
 	return (res);
 }
