@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 16:30:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 19:03:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,7 +131,8 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 		else
 			new = _parse_single_redir(cur, errtok);
 		if (!new)
-			return (ast_free(rd_subtree, false), NULL);
+			return (ast_free(rd_subtree, false),\
+					ast_free(expr, false), NULL);
 		if (new->type == ND_REDIR)
 			_rd_add_last(&rd_subtree, new);
 		else
