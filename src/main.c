@@ -6,13 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 09:23:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 09:25:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "heredoc/here_doc.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
