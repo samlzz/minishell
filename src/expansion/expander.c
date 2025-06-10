@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 15:14:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:49:41 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
+#include "heredoc/here_doc.h"
 #include <stdlib.h>
 
 t_argword	*expand_word(t_token **cur, bool split, t_hmap *env)
@@ -109,6 +110,8 @@ int16_t	expand_node(t_ast *node, t_hmap *env, t_token **errtok)
 	{
 		if (!node->u_data.rd.filename.tk)
 			return (1);
+		if (node->u_data.rd.redir_type == RD_HEREDOC)
+			return (expand_heredoc(node));
 		return (expand_redir(node, env, errtok));
 	}
 	return (1);
