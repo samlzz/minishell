@@ -6,18 +6,16 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 19:45:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 23:19:22 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 #include "heredoc/here_doc.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-
-// TODO: tmp
-#include <stdio.h>
 
 # ifndef DEBUG_MODE
 void	print_ast_ascii(t_ast *node, bool expanded);
