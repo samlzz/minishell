@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:18:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 12:03:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@
 
 //* Functions
 
-int16_t	write_heredocs(t_hmap *env, t_ast *node);
+int16_t	write_heredocs(t_ast *node);
+void	expand_line(t_hmap *env, char **line);
 
 t_token	*hd_tokenise(const char *input);
 
