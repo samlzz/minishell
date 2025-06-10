@@ -6,13 +6,27 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 15:15:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:30:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast/ast.h"
 #include "utils/utils.h"	
 #include <stdlib.h>
+
+static inline t_ast	*_new_redir(t_redir_type type)
+{
+	t_ast	*rd;
+
+	rd = ft_calloc(1, sizeof(t_ast));
+	if (!rd)
+		return (NULL);
+	rd->type = ND_REDIR;
+	rd->u_data.rd.redir_type = type;
+	if (type == RD_HEREDOC)
+		rd->u_data.rd.hd_expand = true;
+	return (rd);
+}
 
 /**
  * @brief Parse a single redirection from the token stream.
@@ -33,16 +47,16 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	next(cur);
 	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
-	redir = ft_calloc(1, sizeof(t_ast));
+	redir = _new_redir(type);
 	if (!redir)
 		return (NULL);
-	redir->type = ND_REDIR;
-	redir->u_data.rd.redir_type = type;
 	while (*cur && (*cur)->type == TK_WORD)
 	{
 		new = token_dup(*cur);
 		if (!new)
 			return (ast_free(redir, false), NULL);
+		if (type == RD_HEREDOC && new->quote != QUOTE_NONE)
+			redir->u_data.rd.hd_expand = false;
 		token_addback(&redir->u_data.rd.filename.tk, new);
 		next(cur);
 		if (!*cur || !(*cur)->glued)

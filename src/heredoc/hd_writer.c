@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 12:03:45 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:23:24 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,7 +97,7 @@ static inline int16_t	_create_heredoc(t_redir *redir)
 	fd = _gen_rd_filename(filename);
 	if (fd == -1)
 		return (perror("minishell: open"), 1);
-	redir->fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0600);
+	redir->fd = open(filename, O_RDONLY);
 	unlink(filename);
 	if (redir->fd == -1)
 		return (perror("minishell: open"), close(fd), 1);
