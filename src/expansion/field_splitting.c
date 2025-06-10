@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   withespace_split.c                                 :+:      :+:    :+:   */
+/*   field_splitting.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 16:54:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:03:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
  * @param arg Original argword.
  * @return t_argword* List of split argwords or NULL.
  */
-t_argword	*split_withespace(t_argword *arg)
+t_argword	*split_withespaces(t_argword *field)
 {
 	t_argword	*lst;
 	size_t		i;
@@ -87,17 +87,19 @@ t_argword	*split_withespace(t_argword *arg)
 	i = 0;
 	start = 0;
 	lst = NULL;
-	if (!arg->value || !*arg->value)
-		return (_add_word(&lst, arg, 0, 0), lst);
-	while (i < arg->space_offsets.len)
+	if (!field->value || !*field->value)
+		return (_add_word(&lst, field, 0, 0), lst);
+	while (i < field->space_offsets.len)
 	{
-		len = arg->space_offsets.data[i] - start;
-		if (len > 0 && !_add_word(&lst, arg, start, len))
+		len = field->space_offsets.data[i] - start;
+		if (len > 0 && !_add_word(&lst, field, start, len))
 				return (argword_clear(lst), NULL);
-		start = arg->space_offsets.data[i++] + 1;
+		start = field->space_offsets.data[i++] + 1;
 	}
-	if (arg->value[start] && \
-		!_add_word(&lst, arg, start, ft_strlen(arg->value) - start))
-			return (argword_clear(lst), NULL);
+	if (field->value[start] && \
+		!_add_word(&lst, field, start, ft_strlen(field->value) - start))
+	{
+		return (argword_clear(lst), NULL);
+	}
 	return (lst);
 }

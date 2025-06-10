@@ -6,12 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:43:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:55:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 12:07:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "utils.h"
 #include "expansion/expander.h"
+#include <stdlib.h>
 
 t_argword	*argword_detach_next(t_argword *node)
 {
@@ -37,73 +38,68 @@ t_argword	**argword_insert(t_argword **cur, t_argword *next, t_argword *node)
 }
 
 /**
- * @brief Merge two sorted argword lists.
+ * @brief Check for spaces and wildcards in the argument and record offsets.
  * 
- * @param a First sorted list.
- * @param b Second sorted list.
- * @return t_argword* Merged sorted list.
+ * This is use to later know witch char need to be expanded 
+ * (or splited for space).
+ * 
+ * @param node Target argword node.
+ * @param arg Input argument string.
+ * @return int16_t 1 on success, 0 on failure.
+ * 
+ * @note This only runs for unquoted text.
  */
-static t_argword	*_merge(t_argword *a, t_argword *b)
+static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
 {
-	t_argword *result;
+	size_t	val_len;
+	size_t	i;
 
-	if (!a)
-		return (b);
-	if (!b)
-		return (a);
-	if (ft_strcmp(a->value, b->value) <= 0)
-	{
-		result = a;
-		result->next = _merge(a->next, b);
-	}
+	i = 0;
+	if (node->value)
+		val_len = ft_strlen(node->value);
 	else
+		val_len = 0;
+	while (arg[i])
 	{
-		result = b;
-		result->next = _merge(a, b->next);
+		if (ft_isspace(arg[i])) 
+		{
+			if (!ft_dynint_append(&node->space_offsets, val_len + i))
+				return (0);
+		}
+		if (arg[i] == '*')
+		{
+			if (!ft_dynint_append(&node->wild_offsets, val_len + i))
+				return (0);
+		}
+		i++;
 	}
-	return (result);
+	return (1);
 }
 
 /**
- * @brief Split an argword list into two halves for merge sort.
+ * @brief Append a new value segment to an argword node.
  * 
- * @param src The source list to split.
- * @param front Output pointer to front half.
- * @param back Output pointer to back half.
+ * If not quoted, updates space and wildcard tracking offsets.
+ * 
+ * @param node Target argword.
+ * @param cur_arg The value string to append.
+ * @param cur_quote Quote context of the string.
+ * @return int16_t 1 on success, 0 on failure.
  */
-static void	_split(t_argword *src, t_argword **front, t_argword **back)
+int16_t	argword_append_value(t_argword *node, const char *cur_arg, \
+	t_quote_type cur_quote)
 {
-	t_argword	*fast;
-	t_argword	*slow;
+	char	*new_arg;
 
-	fast = src->next;
-	slow = src;
-	while (fast && fast->next)
+	if (cur_quote == QUOTE_NONE)
 	{
-		slow = slow->next;
-		fast = fast->next->next;
+		if (!_check_split_and_wild(node, cur_arg))
+			return (0);
 	}
-	*front = src;
-	*back = slow->next;
-	slow->next = NULL;
-}
-
-/**
- * @brief Sort an argword list alphabetically using merge sort.
- * 
- * Modifies the list in-place.
- * 
- * @param head Pointer to the head of the list.
- */
-void	argword_sort(t_argword **head)
-{
-	t_argword	*a;
-	t_argword	*b;
-
-	if (!head || !*head || !(*head)->next)
-		return ;
-	_split(*head, &a, &b);
-	argword_sort(&a);
-	argword_sort(&b);
-	*head = _merge(a, b);
+	new_arg = ft_strappend(node->value, cur_arg);
+	if (!new_arg)
+		return (0);
+	free(node->value);
+	node->value = new_arg;
+	return (1);
 }

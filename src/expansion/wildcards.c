@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 16:54:19 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 11:03:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static inline bool	_is_wildcard(t_dynint wild_offsets, int32_t i)
  *
  * @return true if `txt` matches the wildcard pattern `wpat`, false otherwise.
  */
-static bool	_match_wilds(const char *wpat, const char *txt, t_dynint woffsets)
+static bool	_globbing_match(const char *wpat, const char *txt, t_dynint woffsets)
 {
 	int32_t	*p_t;
 	int32_t	*lasts;
@@ -114,13 +114,12 @@ t_argword	*expand_wildcards(t_argword *arg)
 	struct dirent	*strm;
 	t_argword		*match;
 	t_argword		*new;
-	bool			is_hide;
 
 	strm = _init_vars(&dir, &match);
 	while (strm)
 	{
-		is_hide = *strm->d_name == '.' && *arg->value != '.';
-		if (!is_hide && _match_wilds(arg->value, strm->d_name, arg->wild_offsets))
+		if (!(*strm->d_name == '.' && *arg->value != '.') && \
+			_globbing_match(arg->value, strm->d_name, arg->wild_offsets))
 		{
 			new = argword_new();
 			if (!new)
@@ -134,19 +133,19 @@ t_argword	*expand_wildcards(t_argword *arg)
 	}
 	if (dir)
 		closedir(dir);
-	return (argword_sort(&match), match);
+	argword_sort(&match);
+	return (match);
 }
 
 /**
  * @brief Replace each argword with wildcard by its expanded list of matches.
  *
  * Preserves nodes without wildcards. On error, fallback to original.
- * r
  *
  * @param head Head of argword list.
  * @return t_argword* Updated argword list.
  */
-t_argword	*replace_by_wild_expanded(t_argword *head)
+t_argword	*replace_wildcards(t_argword *head)
 {
 	t_argword	**cursor;
 	t_argword	*expanded;

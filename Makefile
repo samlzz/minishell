@@ -60,14 +60,15 @@ SRCS =	main.c \
 		env/init.c \
 		env/wrappers.c \
 		error/print_err.c \
+		expansion/argword_fill.c \
+		expansion/argword_sort.c \
+		expansion/expander.c \
+		expansion/field_splitting.c \
+		expansion/ft_argword.c \
+		expansion/wildcards.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_writer.c \
 		parsing/ast/ast_init.c \
-		parsing/expansion/argword_builder.c \
-		parsing/expansion/expander.c \
-		parsing/expansion/ft_argword.c \
-		parsing/expansion/wildcards.c \
-		parsing/expansion/withespace_split.c \
 		parsing/lexer/ft_token.c \
 		parsing/lexer/tokeniser.c \
 		parsing/parser/parse_binop.c \
