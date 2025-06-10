@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/09 16:14:02 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 10:17:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,24 +25,29 @@
  */
 static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 {
-	t_token			*file;
+	t_token			*new;
 	t_redir_type	type;
 	t_ast			*redir;
 
 	type = get_rd_type((*cur)->type);
 	next(cur);
-	file = *cur;
-	if (!file || file->type != TK_WORD || !*file->value)
+	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
-	next(cur);
 	redir = ft_calloc(1, sizeof(t_ast));
 	if (!redir)
 		return (NULL);
 	redir->type = ND_REDIR;
 	redir->u_data.rd.redir_type = type;
-	redir->u_data.rd.filename.tk = token_dup(file);
-	if (!redir->u_data.rd.filename.tk)
-		return (ast_free(redir, false), NULL);
+	while (*cur)
+	{
+		new = token_dup(*cur);
+		if (!new)
+			return (ast_free(redir, false), NULL);
+		token_addback(&redir->u_data.rd.filename.tk, *cur);
+		next(cur);
+		if (!(*cur)->glued)
+			break;
+	}
 	return (redir);
 }
 
