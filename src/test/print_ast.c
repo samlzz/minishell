@@ -26,7 +26,7 @@ static void	print_prefix(const char *prefix, int is_last)
 
 void	short_print_tokens(t_token *tokens);
 
-static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
+static void	print_ast_rec(t_ast *node, const char *prefix, int is_last, bool expand)
 {
 	char new_prefix[256];
 
@@ -43,26 +43,32 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 	if (node->type == ND_CMD)
 	{
 		printf(YELLOW "CMD:" RESET);
-		short_print_tokens(node->u_data.cmd.args->tk);
+		if (expand)
+		{
+			for (size_t i = 0; node->u_data.cmd.args[i].expanded != NULL; i++)
+				printf(" %s", node->u_data.cmd.args[i].expanded);
+		}
+		else
+			short_print_tokens(node->u_data.cmd.args->tk);
 		printf("\n");
 	}
 	else if (node->type == ND_PIPE)
 	{
 		printf(BLUE "PIPE" RESET "\n");
-		print_ast_rec(node->u_data.op.left, new_prefix, 0);
-		print_ast_rec(node->u_data.op.right, new_prefix, 1);
+		print_ast_rec(node->u_data.op.left, new_prefix, 0, expand);
+		print_ast_rec(node->u_data.op.right, new_prefix, 1, expand);
 	}
 	else if (node->type == ND_AND)
 	{
 		printf(GREEN "AND" RESET "\n");
-		print_ast_rec(node->u_data.op.left, new_prefix, 0);
-		print_ast_rec(node->u_data.op.right, new_prefix, 1);
+		print_ast_rec(node->u_data.op.left, new_prefix, 0, expand);
+		print_ast_rec(node->u_data.op.right, new_prefix, 1, expand);
 	}
 	else if (node->type == ND_OR)
 	{
 		printf(MAGENTA "OR" RESET "\n");
-		print_ast_rec(node->u_data.op.left, new_prefix, 0);
-		print_ast_rec(node->u_data.op.right, new_prefix, 1);
+		print_ast_rec(node->u_data.op.left, new_prefix, 0, expand);
+		print_ast_rec(node->u_data.op.right, new_prefix, 1, expand);
 	}
 	else if (node->type == ND_REDIR)
 	{
@@ -72,19 +78,23 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 		if (node->u_data.rd.redir_type == RD_HEREDOC)
 			expand_hd = node->u_data.rd.hd_expand ? "[expand]" : "[no-expand]";
 		printf(RED "REDIR (%s)%s ->", redir_str(node->u_data.rd.redir_type), expand_hd);
-		short_print_tokens(node->u_data.rd.filename.tk);
+		if (expand)
+			printf(" %s", node->u_data.rd.filename.expanded);
+		else
+			short_print_tokens(node->u_data.rd.filename.tk);
 		printf(RESET "\n");
-		print_ast_rec(node->u_data.rd.child, new_prefix, 1);
+		print_ast_rec(node->u_data.rd.child, new_prefix, 1, expand);
 	}
 	else if (node->type == ND_SUBSHELL)
 	{
 		printf(CYAN "SUBSHELL" RESET "\n");
-		print_ast_rec(node->u_data.subsh.child, new_prefix, 1);
+		print_ast_rec(node->u_data.subsh.child, new_prefix, 1, expand);
 	}
 }
 
-void	print_ast_ascii(t_ast *node)
+void	print_ast_ascii(t_ast *node, bool expanded)
 {
 	print_ast_rec(node, "", \
-		node->type == ND_AND || node->type == ND_OR || node->type == ND_PIPE);
+		node->type == ND_AND || node->type == ND_OR || node->type == ND_PIPE,\
+		expanded);
 }
