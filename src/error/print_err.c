@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 10:01:45 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 16:56:10 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ static inline const char	*token_type_str(t_token *errtok)
 	return (stringify[errtok->type]);
 }
 
-void	err_print_ambigous(const char *raw)
+void	err_print_expand(t_token *errtok)
 {
 	ft_putstr_fd("minishell: ", 2);
-	ft_putstr_fd(raw, 2);
+	ft_putstr_fd(errtok->value, 2);
 	ft_putstr_fd(": ambiguous redirect\n", 2);
+	token_clear(errtok);
 }
 
 static inline void	_print_unclosed_quote(int16_t errcode)
@@ -85,11 +86,11 @@ static void	_print_syntax_error(t_token *tok, char *input_tk)
 void	err_print(int16_t errcode, t_token *errtok)
 {
 	if (errcode == PARSE_ERR)
-		ft_putendl_fd("minishell: internal error occurs", 2);
+		ft_putstr_fd("minishell: internal error occurs\n", 2);
 	else if (errcode == PARSE_ERR_SQUOTE || errcode == PARSE_ERR_DQUOTE)
 		_print_unclosed_quote(errcode);
 	else if (errcode == PARSE_ERR_MALFORMED)
-		ft_putendl_fd("minishell: wrong input", 2);
+		ft_putstr_fd("minishell: wrong input\n", 2);
 	else if (errcode == PARSE_ERR_SOLO_AND)
 		_print_syntax_error(errtok, "&");
 	else
