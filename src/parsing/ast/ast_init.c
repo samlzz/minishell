@@ -6,13 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 14:39:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 19:45:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast.h"
 #include <stdlib.h>
 #include <unistd.h>
+// TODO: for debug
+#include "minishell.h"
 
 static inline void	_words_free(t_words *val, bool expand, bool allocated)
 {
@@ -118,6 +120,10 @@ t_ast	*parse_ast(const char *input)
 	tk_lst = tokenise(input, &errcode);
 	if (!tk_lst)
 		return (err_print(errcode, errtok), NULL);
+	# ifdef DEBUG_MODE
+	if (PRINT_TOKENS)
+		print_tokens(tk_lst);
+	# endif
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);

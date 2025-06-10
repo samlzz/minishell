@@ -6,20 +6,24 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 15:06:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/10 19:45:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include "heredoc/here_doc.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
-//TODO: tmp
+// TODO: tmp
+#include <stdio.h>
 
+# ifndef DEBUG_MODE
 void	print_ast_ascii(t_ast *node, bool expanded);
-#define EXEC(node, env)	exec_simu(node, env); print_ast_ascii(node, true)
+# endif
+#define EXEC(node) print_ast_ascii(node, true)
+
 
 static inline bool	_skipable(const char *input)
 {
@@ -37,7 +41,7 @@ static inline bool	_skipable(const char *input)
 	return (!input[i]);
 }
 
-void	exec_simu(t_ast	*head, t_hmap *env)
+void	expander_simu(t_ast	*head, t_hmap *env)
 {
 	if (!head)
 		return ;
@@ -45,12 +49,12 @@ void	exec_simu(t_ast	*head, t_hmap *env)
 
 	if (head->type == ND_AND || head->type == ND_OR || head->type == ND_PIPE)
 	{
-		exec_simu(head->u_data.op.left, env);
-		exec_simu(head->u_data.op.right, env);
+		expander_simu(head->u_data.op.left, env);
+		expander_simu(head->u_data.op.right, env);
 	}
 	else if (head->type == ND_SUBSHELL)
 	{
-		exec_simu(head->u_data.subsh.child, env);
+		expander_simu(head->u_data.subsh.child, env);
 	}
 	else if (head->type == ND_CMD)
 	{
@@ -67,15 +71,48 @@ void	exec_simu(t_ast	*head, t_hmap *env)
 			err_print(PARSE_OK, errtok);
 			printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.filename.expanded);
 		}
-		exec_simu(head->u_data.rd.child, env);
+		expander_simu(head->u_data.rd.child, env);
 	}
 }
 
-void	main_loop(t_hmap *env)
+static void	_launch_exec(t_hmap *env, const char *input)
 {
-	char	*input;
 	t_ast	*ast;
 
+	ast = parse_ast(input);
+	if (!ast)
+		return ;
+	# ifdef DEBUG_MODE
+	if (PRINT_AST || PRINT_AST_NO_EXPAND)
+		print_ast_ascii(ast, false);
+	# endif
+	expander_simu(ast, env);
+	# ifdef DEBUG_MODE
+	if (PRINT_AST || PRINT_AST_EXPAND)
+		print_ast_ascii(ast, true);
+	# endif
+	if (!write_heredocs(ast))
+		EXEC(ast);
+	ast_free(ast, true);
+}
+
+# ifdef DEBUG_MODE
+
+# endif
+
+int	main(int argc, char const *argv[], char **envp)
+{
+	t_hmap	env;
+	char	*input;
+
+	(void)argc;
+	env = env_init(envp, argv[0]);
+	if (!env.__entries)
+		return (1);
+	# ifdef DEBUG_MODE
+	if (PRINT_ENV)
+		ft_hmap_iter(&env, &print_entry);
+	# endif
 	while (1)
 	{
 		input = readline(CMD_PROMPT);
@@ -87,40 +124,9 @@ void	main_loop(t_hmap *env)
 		if (*input)
 			add_history(input);
 		if (!_skipable(input))
-		{
-			ast = parse_ast(input);
-			if (ast)
-			{
-				print_ast_ascii(ast, false);
-				EXEC(ast, env);
-			}
-			// TODO: use true when expand are called in exec
-			ast_free(ast, true);
-		}
+			_launch_exec(&env, input);
 		free(input);
 	}
-}
-
-// TODO: tmp
-#include <stdio.h>
-void	print_entry(char *key, void *val)
-{
-	if (*key == '@')
-		printf("(INTERNAL):");
-	printf("[%s]: %s\n", key, (char *)val);
-}
-
-int	main(int argc, char const *argv[], char **envp)
-{
-	t_hmap	env;
-
-	(void)argc;
-	env = env_init(envp, argv[0]);
-	if (PRINT_ENV)
-		ft_hmap_iter(&env, &print_entry);
-	if (!env.__entries)
-		return (1);
-	main_loop(&env);
 	ft_hmap_free(&env, &free);
 	return (0);
 }
