@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 16:49:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/13 03:15:54 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ int16_t	expand_redir(t_ast *rd, t_hmap *env, t_token **errtok)
 	}
 	token_clear(rd->u_data.rd.filename.tk);
 	rd->u_data.rd.filename.expanded = file->value;
+	rd->u_data.rd.is_expanded = true;
 	file->value = NULL;
 	argword_clear(file);
 	return (0);
@@ -93,6 +94,7 @@ int16_t	expand_command(t_ast *cmd, t_hmap *env)
 	token_clear(cmd->u_data.cmd.args->tk);
 	free(cmd->u_data.cmd.args);
 	cmd->u_data.cmd.args = NULL;
+	cmd->u_data.cmd.is_expanded = true;
 	_construct_argv(&cmd->u_data.cmd.args, args);
 	argword_clear(args);
 	return (!cmd->u_data.cmd.args);

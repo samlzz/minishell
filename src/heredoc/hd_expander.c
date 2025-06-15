@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:40:16 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 17:23:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/13 03:14:52 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,6 @@ int16_t	expand_heredoc(t_ast *node)
 	}
 	token_clear(node->u_data.rd.filename.tk);
 	node->u_data.rd.filename.expanded = filename;
+	node->u_data.rd.is_expanded = true;
 	return (0);
 }
