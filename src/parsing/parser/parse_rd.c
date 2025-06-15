@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 19:03:30 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/13 03:50:17 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	{
 		new = token_dup(*cur);
 		if (!new)
-			return (ast_free(redir, false), NULL);
+			return (ast_free(redir), NULL);
 		if (type == RD_HEREDOC && new->quote != QUOTE_NONE)
 			redir->u_data.rd.hd_expand = false;
 		token_addback(&redir->u_data.rd.filename.tk, new);
@@ -85,12 +85,12 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 	if ((*cur)->type != TK_WORD || expr->type != ND_CMD)
 	{
 		*errtok = *cur;
-		ast_free(expr, false);
+		ast_free(expr);
 		return (NULL);
 	}
 	new = collect_args(cur, errtok);
 	if (!new)
-		return (ast_free(expr, false), NULL);
+		return (ast_free(expr), NULL);
 	last = expr->u_data.cmd.args->tk;
 	while (last && last->next)
 		last = last->next;
@@ -131,8 +131,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 		else
 			new = _parse_single_redir(cur, errtok);
 		if (!new)
-			return (ast_free(rd_subtree, false),\
-					ast_free(expr, false), NULL);
+			return (ast_free(rd_subtree), ast_free(expr), NULL);
 		if (new->type == ND_REDIR)
 			_rd_add_last(&rd_subtree, new);
 		else
