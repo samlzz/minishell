@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/04 15:20:37 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/11 13:20:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/16 01:27:09 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,27 @@ char	*ft_itoa(int32_t n)
 	n_in_base10 = dest->content;
 	free(dest);
 	return (n_in_base10);
+}
+
+void	ft_itoa_str(char *dst, int32_t n)
+{
+	t_mem	mem;
+	int32_t	n_;
+
+	n_ = n;
+	mem.content = dst;
+	mem.size = 0;
+	if (n_ <= 0)
+	{
+		mem.size++;
+		n_ = -n_;
+	}
+	while (n_ != 0)
+	{
+		n_ /= 10;
+		mem.size++;
+	}
+	_nb_to_asciistr(n, &mem, "0123456789", 10);
 }
 
 char	*ft_ltoa(int64_t n)
