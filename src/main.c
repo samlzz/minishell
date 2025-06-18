@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/18 20:45:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 20:46:09 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,10 +103,6 @@ static void	_launch_exec(t_hmap *env, const char *input)
 		EXEC(ast);
 	ast_free(ast, true);
 }
-
-# ifdef DEBUG_MODE
-
-# endif
 
 int	main(int argc, char const *argv[], char **envp)
 {

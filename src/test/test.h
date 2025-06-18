@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 19:29:22 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 19:46:02 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 09:50:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,12 +26,7 @@
 # define PRINT_AST_NO_EXPAND	0
 # define PRINT_AST_EXPAND		0
 
-static inline void	print_entry(char *key, void *val)
-{
-	if (*key == '@')
-		printf("(INTERNAL):");
-	printf("[%s]: %s\n", key, (char *)val);
-}
+void	print_entry(char *key, void *val);
 
 void	print_tokens(t_token *tokens);
 void	short_print_tokens(t_token *tokens);
