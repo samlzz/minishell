@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 16:40:16 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 17:23:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 11:06:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,8 +24,9 @@ int16_t	expand_heredoc(t_ast *node)
 	while (cur)
 	{
 		tmp = ft_strappend(filename, cur->value);
+		free(filename);
 		if (!tmp)
-			return (free(filename), 1);
+			return (1);
 		filename = tmp;
 		cur = cur->next;
 		if (!cur || !cur->glued)
@@ -33,5 +34,6 @@ int16_t	expand_heredoc(t_ast *node)
 	}
 	token_clear(node->u_data.rd.filename.tk);
 	node->u_data.rd.filename.expanded = filename;
+	node->u_data.rd.expanded = true;
 	return (0);
 }

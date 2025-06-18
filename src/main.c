@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/18 10:22:30 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:45:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,17 +52,18 @@ int16_t	expander_simu(t_ast	*head, t_hmap *env)
 		return (expander_simu(head->u_data.subsh.child, env));
 	else if (head->type == ND_CMD && expand_node(head, env, &errtok))
 	{
-		err_print_expand(errtok);
 		printf("CMD_ERROR: expand ('%s')\n", head->u_data.cmd.args->expanded);
-		return (1);
+		return (err_print_expand(errtok), 1);
 	}
 	else if (head->type == ND_REDIR)
 	{
 		if (expand_node(head, env, &errtok))
 		{
-			err_print_expand(errtok);
-			printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.u_rd_data.s_rd.filename.tk->value);
-			return (1);
+			if (head->u_data.rd.expanded)
+				printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.filename.expanded);
+			else
+				printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.filename.tk->value);
+			return (err_print_expand(errtok), 1);
 		}
 		return (expander_simu(head->u_data.rd.child, env));
 	}
@@ -79,7 +80,7 @@ static void	_launch_exec(t_hmap *env, const char *input)
 	expander_simu(ast, env);
 	if (!write_heredocs(ast))
 		EXEC(ast);
-	ast_free(ast, true);
+	ast_free(ast);
 }
 
 void	main_loop(t_hmap *env)
