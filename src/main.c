@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 15:06:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:05:09 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,10 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-//TODO: tmp
-
 void	print_ast_ascii(t_ast *node, bool expanded);
-#define EXEC(node, env)	exec_simu(node, env); print_ast_ascii(node, true)
+
+// TODO: tmp
+#define EXEC(node) print_ast_ascii(node, true)
 
 static inline bool	_skipable(const char *input)
 {
@@ -37,44 +37,54 @@ static inline bool	_skipable(const char *input)
 	return (!input[i]);
 }
 
-void	exec_simu(t_ast	*head, t_hmap *env)
+int16_t	expander_simu(t_ast	*head, t_hmap *env)
 {
-	if (!head)
-		return ;
 	t_token	*errtok = NULL;
 
+	if (!head)
+		return (0);
 	if (head->type == ND_AND || head->type == ND_OR || head->type == ND_PIPE)
-	{
-		exec_simu(head->u_data.op.left, env);
-		exec_simu(head->u_data.op.right, env);
-	}
+		return (
+			expander_simu(head->u_data.op.left, env), 
+			expander_simu(head->u_data.op.right, env)
+		);
 	else if (head->type == ND_SUBSHELL)
+		return (expander_simu(head->u_data.subsh.child, env));
+	else if (head->type == ND_CMD && expand_node(head, env, &errtok))
 	{
-		exec_simu(head->u_data.subsh.child, env);
-	}
-	else if (head->type == ND_CMD)
-	{
-		if (expand_node(head, env, &errtok))
-		{
-			err_print(PARSE_OK, errtok);
-			printf("CMD_ERROR: expand ('%s')\n", head->u_data.cmd.args->expanded);
-		}
+		err_print_expand(errtok);
+		printf("CMD_ERROR: expand ('%s')\n", head->u_data.cmd.args->expanded);
+		return (1);
 	}
 	else if (head->type == ND_REDIR)
 	{
 		if (expand_node(head, env, &errtok))
 		{
-			err_print(PARSE_OK, errtok);
+			err_print_expand(errtok);
 			printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.filename.expanded);
+			return (1);
 		}
-		exec_simu(head->u_data.rd.child, env);
+		return (expander_simu(head->u_data.rd.child, env));
 	}
+	return (0);
+}
+
+static void	_launch_exec(t_hmap *env, const char *input)
+{
+	t_ast	*ast;
+
+	ast = parse_ast(input);
+	if (!ast)
+		return ;
+	expander_simu(ast, env);
+	if (!write_heredocs(ast))
+		EXEC(ast);
+	ast_free(ast, true);
 }
 
 void	main_loop(t_hmap *env)
 {
 	char	*input;
-	t_ast	*ast;
 
 	while (1)
 	{
@@ -87,27 +97,9 @@ void	main_loop(t_hmap *env)
 		if (*input)
 			add_history(input);
 		if (!_skipable(input))
-		{
-			ast = parse_ast(input);
-			if (ast)
-			{
-				print_ast_ascii(ast, false);
-				EXEC(ast, env);
-			}
-			// TODO: use true when expand are called in exec
-			ast_free(ast, true);
-		}
+			_launch_exec(env, input);
 		free(input);
 	}
-}
-
-// TODO: tmp
-#include <stdio.h>
-void	print_entry(char *key, void *val)
-{
-	if (*key == '@')
-		printf("(INTERNAL):");
-	printf("[%s]: %s\n", key, (char *)val);
 }
 
 int	main(int argc, char const *argv[], char **envp)
@@ -116,8 +108,6 @@ int	main(int argc, char const *argv[], char **envp)
 
 	(void)argc;
 	env = env_init(envp, argv[0]);
-	if (PRINT_ENV)
-		ft_hmap_iter(&env, &print_entry);
 	if (!env.__entries)
 		return (1);
 	main_loop(&env);
