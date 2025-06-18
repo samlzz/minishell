@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 14:39:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:32:59 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,25 +45,27 @@ static inline void	_words_free(t_words *val, bool expand, bool allocated)
  * @param node A pointer to the root of the AST subtree to free.
  * @param expand A boolean to know wich value is used for t_words
  */
-void	ast_free(t_ast *node, bool expand)
+void	ast_free(t_ast *node)
 {
 	if (!node)
 		return ;
 	if (node->type == ND_CMD)
-		_words_free(node->u_data.cmd.args, expand, true);
+		_words_free(node->u_data.cmd.args, node->u_data.cmd.expanded, true);
 	else if (node->type == ND_REDIR)
 	{
-		_words_free(&node->u_data.rd.filename, expand, false);
-		ast_free(node->u_data.rd.child, expand);
+		_words_free(&node->u_data.rd.filename, node->u_data.rd.expanded, false);
+		if (node->u_data.rd.redir_type == RD_HEREDOC)
+			close(node->u_data.rd.fd);
+		ast_free(node->u_data.rd.child);
 	}
 	else if (node->type == ND_PIPE || \
 		node->type == ND_AND || node->type == ND_OR)
 	{
-		ast_free(node->u_data.op.left, expand);
-		ast_free(node->u_data.op.right, expand);
+		ast_free(node->u_data.op.left);
+		ast_free(node->u_data.op.right);
 	}
 	else if (node->type == ND_SUBSHELL)
-		ast_free(node->u_data.subsh.child, expand);
+		ast_free(node->u_data.subsh.child);
 	free(node);
 }
 
@@ -100,7 +102,7 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 		*errcode = PARSE_ERR_EOF;
 		if (!*errtok)
 			*errtok = cursor;
-		ast_free(ast, false);
+		ast_free(ast);
 		return (NULL);
 	}
 	return (ast);

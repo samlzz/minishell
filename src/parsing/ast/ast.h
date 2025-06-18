@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/09 16:00:39 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:33:10 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ typedef struct s_redir
 {
 	t_redir_type	redir_type;
 	t_words			filename;
+	bool			expanded;
 	int32_t			fd;
 	bool			hd_expand;
 	struct s_ast	*child;
@@ -71,6 +72,7 @@ typedef struct s_expr
 typedef struct s_cmd
 {
 	t_words	*args;
+	bool	expanded;
 	t_expr	exec_infos;
 }	t_cmd;
 
@@ -98,6 +100,6 @@ typedef struct s_ast
 t_ast	*parse_ast(const char *input);
 
 t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode);
-void	ast_free(t_ast *node, bool expand);
+void	ast_free(t_ast *node);
 
 #endif

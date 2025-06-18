@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/18 10:05:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/18 10:22:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ int16_t	expander_simu(t_ast	*head, t_hmap *env)
 		if (expand_node(head, env, &errtok))
 		{
 			err_print_expand(errtok);
-			printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.filename.expanded);
+			printf("RD_ERROR: expand ('%s')\n", head->u_data.rd.u_rd_data.s_rd.filename.tk->value);
 			return (1);
 		}
 		return (expander_simu(head->u_data.rd.child, env));
