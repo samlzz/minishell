@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 16:23:24 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/20 18:06:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,31 @@ void	expand_line(t_hmap *env, char **line)
 	}
 	free(*line);
 	*line = dest.data;
+}
+
+static int16_t	_expand_heredoc(t_ast *node)
+{
+	char	*filename;
+	char	*tmp;
+	t_token	*cur;
+	
+	filename = NULL;
+	cur = node->u_data.rd.filename.tk;
+	while (cur)
+	{
+		tmp = ft_strappend(filename, cur->value);
+		free(filename);
+		if (!tmp)
+			return (1);
+		filename = tmp;
+		cur = cur->next;
+		if (!cur || !cur->glued)
+			break ;
+	}
+	token_clear(node->u_data.rd.filename.tk);
+	node->u_data.rd.filename.expanded = filename;
+	node->u_data.rd.is_expanded = true;
+	return (0);
 }
 
 /**
@@ -129,9 +154,9 @@ int16_t	write_heredocs(t_ast *node)
 		return (0);
 	else if (node->type == ND_REDIR && node->u_data.rd.redir_type == RD_HEREDOC)
 	{
-		if (write_heredocs(node->u_data.rd.child))
+		if (_expand_heredoc(node) || _create_heredoc(&node->u_data.rd))
 			return (1);
-		return (_create_heredoc(&node->u_data.rd));
+		return (write_heredocs(node->u_data.rd.child));
 	}
 	else if (node->type == ND_REDIR)
 		return (write_heredocs(node->u_data.rd.child));
