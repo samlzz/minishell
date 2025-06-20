@@ -6,10 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 23:19:22 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/20 12:08:56 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exec/exec.h"
 #include "minishell.h"
 #include "heredoc/here_doc.h"
 #include <stdlib.h>
@@ -18,9 +19,9 @@
 #include <readline/history.h>
 
 # ifndef DEBUG_MODE
-void	print_ast_ascii(t_ast *node, bool expanded);
+void	print_ast_ascii(t_ast *node);
 # endif
-#define EXEC(node) print_ast_ascii(node, true)
+#define EXEC(node) print_ast_ascii(node)
 
 
 static inline bool	_skipable(const char *input)
@@ -84,19 +85,15 @@ static void	_launch_exec(t_hmap *env, const char *input)
 	if (PRINT_AST || PRINT_AST_NO_EXPAND)
 		print_ast_ascii(ast, false);
 	# endif
-	expander_simu(ast, env);
+	// expander_simu(ast, env);
 	# ifdef DEBUG_MODE
 	if (PRINT_AST || PRINT_AST_EXPAND)
 		print_ast_ascii(ast, true);
 	# endif
 	if (!write_heredocs(ast))
-		EXEC(ast);
-	ast_free(ast, true);
+		exec_wrapper(env, ast);
+	ast_free(ast);
 }
-
-# ifdef DEBUG_MODE
-
-# endif
 
 int	main(int argc, char const *argv[], char **envp)
 {
