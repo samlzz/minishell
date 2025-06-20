@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 19:29:22 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 19:46:02 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/20 19:14:49 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 
 # define PRINT_TOKENS			1
 
-# define PRINT_AST				1 // ? print ast before and after expand
+# define PRINT_AST				1 
 // ? if want to adjust set to 0 ^
 # define PRINT_AST_NO_EXPAND	0
 # define PRINT_AST_EXPAND		0
@@ -36,6 +36,6 @@ static inline void	print_entry(char *key, void *val)
 void	print_tokens(t_token *tokens);
 void	short_print_tokens(t_token *tokens);
 
-void	print_ast_ascii(t_ast *node, bool expanded);
+void	print_ast_ascii(t_ast *node);
 
 #endif
