@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/06/09 14:58:05 by sliziard         ###   ########.fr        #
+#    Updated: 2025/06/20 18:08:21 by sliziard         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -70,7 +70,6 @@ SRCS =	main.c \
 		expansion/field_splitting.c \
 		expansion/ft_argword.c \
 		expansion/wildcards.c \
-		heredoc/hd_expander.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_writer.c \
 		parsing/ast/ast_init.c \
