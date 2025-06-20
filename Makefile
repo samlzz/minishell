@@ -60,6 +60,10 @@ SRCS =	main.c \
 		env/init.c \
 		env/wrappers.c \
 		error/print_err.c \
+		exec/cmd_flow.c \
+		exec/cmd_utils.c \
+		exec/exec_flow.c \
+		exec/pipe_flow.c \
 		expansion/argword_fill.c \
 		expansion/argword_sort.c \
 		expansion/expander.c \

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/13 03:48:54 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/16 22:02:26 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ typedef struct s_binop
 
 typedef struct s_expr
 {
-	int32_t	ret;
+	uint8_t	ret;
 	pid_t	pid;
 }	t_expr;
 

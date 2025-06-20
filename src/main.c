@@ -6,10 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 09:25:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 09:25:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "exec/exec.h"
 #include "minishell.h"
 #include "heredoc/here_doc.h"
 #include <stdlib.h>
@@ -94,19 +95,15 @@ static void	_launch_exec(t_hmap *env, const char *input)
 	if (PRINT_AST || PRINT_AST_NO_EXPAND)
 		print_ast_ascii(ast, false);
 	# endif
-	expander_simu(ast, env);
+	// expander_simu(ast, env);
 	# ifdef DEBUG_MODE
 	if (PRINT_AST || PRINT_AST_EXPAND)
 		print_ast_ascii(ast, true);
 	# endif
 	if (!write_heredocs(ast))
-		EXEC(ast);
-	ast_free(ast, true);
+		exec_wrapper(env, ast);
+	ast_free(ast);
 }
-
-# ifdef DEBUG_MODE
-
-# endif
 
 int	main(int argc, char const *argv[], char **envp)
 {
