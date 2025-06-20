@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/13 03:49:06 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/20 19:08:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,6 +108,8 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 	return (ast);
 }
 
+#ifdef DEBUG_MODE
+
 t_ast	*parse_ast(const char *input)
 {
 	t_ast	*res;
@@ -120,10 +122,8 @@ t_ast	*parse_ast(const char *input)
 	tk_lst = tokenise(input, &errcode);
 	if (!tk_lst)
 		return (err_print(errcode, errtok), NULL);
-	# ifdef DEBUG_MODE
 	if (PRINT_TOKENS)
 		print_tokens(tk_lst);
-	# endif
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);
@@ -131,3 +131,26 @@ t_ast	*parse_ast(const char *input)
 		return (err_print(errcode, errtok), NULL);
 	return (res);
 }
+
+#else
+
+t_ast	*parse_ast(const char *input)
+{
+	t_ast	*res;
+	int16_t	errcode;
+	t_token	*errtok;
+	t_token	*tk_lst;
+
+	errcode = PARSE_OK;
+	errtok = NULL;
+	tk_lst = tokenise(input, &errcode);
+	if (!tk_lst)
+		return (err_print(errcode, errtok), NULL);
+	res = new_ast(tk_lst, &errtok, &errcode);
+	errtok = token_pop(&tk_lst, errtok);
+	token_clear(tk_lst);
+	if (!res)
+		return (err_print(errcode, errtok), NULL);
+	return (res);
+}
+#endif
