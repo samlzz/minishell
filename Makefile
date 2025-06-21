@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/06/20 18:08:21 by sliziard         ###   ########.fr        #
+#    Updated: 2025/06/21 10:05:48 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -283,8 +283,7 @@ define draw_bar
 	fi; \
 	TOTAL_WIDTH=`printf '%b' "$$TOTAL" | wc -m`; \
 	BAR_WIDTH=$$(($(MAKE_WIDTH)-6-$$TOTAL_WIDTH*2)); \
-	RES=`echo "scale=2; $$DONE/$$TOTAL*$$BAR_WIDTH" | bc`; \
-	RES=`echo $${RES%%.*}`; \
+	RES=`echo "$$DONE" "$$TOTAL" "$$BAR_WIDTH" | awk '{printf "%d", $$1 / $$2 * $$3}'`; \
 	BAR_DONE=`printf '█%.0s' $$(seq 1 $$RES)`; \
 	BAR_TODO=`printf '▒%.0s' $$(seq 1 $$(($$BAR_WIDTH-$$RES)))`; \
 	printf '$(CLR_OBJ)[$(CLR_OK)%s%s$(CLR_OBJ)] $(CLR_RESET)($(CLR_COM)%d$(CLR_RESET)/$(CLR_COM)%d$(CLR_RESET))' "$$BAR_DONE" "$$BAR_TODO" "$$DONE" "$$TOTAL"; \
