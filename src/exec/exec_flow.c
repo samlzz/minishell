@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/20 08:19:00 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/21 11:34:11 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@ static void	_exec_wait_set_ret(t_ast *node, pid_t pid, uint8_t ret)
 		_exec_wait_set_ret(node->u_data.op.left, pid, ret);
 		_exec_wait_set_ret(node->u_data.op.right, pid, ret);
 	}
+	else if (node && node->type == ND_REDIR
+		&& node->u_data.rd.exec_infos.pid == pid)
+		node->u_data.rd.exec_infos.ret = ret;
 	else if (node && node->type == ND_REDIR)
 		_exec_wait_set_ret(node->u_data.rd.child, pid, ret);
 	else if (node && node->type == ND_SUBSHELL
@@ -46,8 +49,10 @@ static size_t	_exec_wait_get_count(t_ast *node)
 			+ _exec_wait_get_count(node->u_data.op.right));
 	else if (node && node->type == ND_SUBSHELL)
 		return (node && node->u_data.subsh.exec_infos.pid > 0);
-	else if (node && node->type == ND_REDIR)
+	else if (node && node->type == ND_REDIR && node->u_data.rd.child)
 		return (_exec_wait_get_count(node->u_data.rd.child));
+	else if (node && node->type == ND_REDIR)
+		return (node->u_data.rd.exec_infos.pid > 0);
 	else if (node && node->type == ND_CMD)
 		return (node->u_data.cmd.exec_infos.pid > 0);
 	return (0);

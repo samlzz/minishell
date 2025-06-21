@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/16 22:02:26 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/21 11:29:42 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,12 @@ typedef	union u_words
 	char	*expanded;
 }	t_words;
 
+typedef struct s_expr
+{
+	uint8_t	ret;
+	pid_t	pid;
+}	t_expr;
+
 // Data(redir)
 typedef struct s_redir
 {
@@ -53,6 +59,7 @@ typedef struct s_redir
 	bool			hd_expand;
 	bool			is_expanded;
 	struct s_ast	*child;
+	t_expr			exec_infos;
 }	t_redir;
 
 // Data(binop)
@@ -61,12 +68,6 @@ typedef struct s_binop
 	struct s_ast	*left;
 	struct s_ast	*right;
 }	t_binop;
-
-typedef struct s_expr
-{
-	uint8_t	ret;
-	pid_t	pid;
-}	t_expr;
 
 // Data (cmd)
 typedef struct s_cmd
