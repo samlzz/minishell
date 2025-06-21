@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/21 11:08:21 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/21 11:10:53 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ void	expand_line(t_hmap *env, char **line)
 	if (!tokens)
 		return (ft_dynbuf_free(&dest));
 	cur = tokens;
-	while (cur)
+	while (cur && cur->type != TK_EOF)
 	{
 		expanded = expand_word(&cur, false, env);
 		if (!expanded || !ft_dynbuf_append_str(&dest, expanded->value))
