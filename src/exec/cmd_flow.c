@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/20 08:18:04 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/21 11:04:04 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <unistd.h>
 
 #include "exec/exec.h"
+#include "heredoc/here_doc.h"
 
 static void	_dup_err(int32_t oldfd, int32_t newfd)
 {
@@ -56,7 +57,12 @@ static void _dup_fds(int32_t fds[2])
 static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	t_token	*errtok;
+	char	filename[PATH_MAX];
+	char	*line;
+	FILE	*stream;
+	size_t	n;
 	int32_t	oflags;
+	int32_t	fd;
 
 	errtok = NULL;
 	if (expand_node(node, env, &errtok))
@@ -80,6 +86,37 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 		fds[1] = open(node->u_data.rd.filename.expanded, oflags, 0644);
 		if (fds[1] == -1)
 			return (_open_err(node->u_data.rd.filename.expanded));
+	}
+	else if (node->u_data.rd.redir_type == RD_HEREDOC && node->u_data.rd.hd_expand)
+	{
+		if (fds[0] != STDIN_FILENO)
+			close(fds[0]);
+		fd = gen_heredoc_filename(filename);
+		if (fd == -1)
+			return (_open_err(filename));
+		fds[0] = open(filename, O_RDONLY);
+		if (fds[0] == -1)
+			return (_open_err(filename), (void) close(fd));
+		unlink(filename);
+		line = NULL;
+		n = 0;
+		stream = fdopen(node->u_data.rd.fd, "r");
+		while (getline(&line, &n, stream) != -1) // FIXME: use ft_getline
+		{
+			expand_line(env, &line);
+			if (!line)
+				return (perror("minishell: expand_line"));
+			write(fd, line, ft_strlen(line));
+		}
+		free(line);
+		fclose(stream);
+		close(fd);
+	}
+	else if (node->u_data.rd.redir_type == RD_HEREDOC && !node->u_data.rd.hd_expand)
+	{
+		if (fds[0] != STDIN_FILENO)
+			close(fds[0]);
+		fds[0] = node->u_data.rd.fd;
 	}
 	exec_flow_cmd(env, root, node->u_data.rd.child, fds);
 }
