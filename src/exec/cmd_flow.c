@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/21 11:04:04 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/21 11:37:42 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,10 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 			close(fds[0]);
 		fds[0] = node->u_data.rd.fd;
 	}
-	exec_flow_cmd(env, root, node->u_data.rd.child, fds);
+	if (node->u_data.rd.child)
+		exec_flow_cmd(env, root, node->u_data.rd.child, fds);
+	else
+		exit(0);
 }
 
 static void	_exec_flow_cmd_cmd(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
