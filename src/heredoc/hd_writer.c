@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/20 18:06:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/21 11:08:21 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ static int16_t	_expand_heredoc(t_ast *node)
  * @param dest Output buffer to write the generated filename into.
  * @return fd of the unique file that was generated
  */
-static int32_t	_gen_rd_filename(char *dest)
+int32_t	gen_heredoc_filename(char *dest)
 {
 	static int	fallback_counter;
 	int32_t		fd;
@@ -119,7 +119,7 @@ static inline int16_t	_create_heredoc(t_redir *redir)
 	int32_t fd;
 	char	*line;
 
-	fd = _gen_rd_filename(filename);
+	fd = gen_heredoc_filename(filename);
 	if (fd == -1)
 		return (perror("minishell: open"), 1);
 	redir->fd = open(filename, O_RDONLY);
