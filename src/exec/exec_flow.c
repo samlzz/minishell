@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/21 11:34:11 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/23 07:34:20 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,26 @@
 
 #include "exec/exec.h"
 
-static uint8_t	_exec_wait_get_ret(t_ast *node)
+static t_expr	_exec_wait_get_exec_infos(t_ast *node)
 {
-	(void) node;
-	return (0);
+	t_expr	left;
+
+	if (node->type == ND_PIPE)
+	{
+		left = _exec_wait_get_exec_infos(node->u_data.op.left);
+		if (left.pid == -1 && left.ret == 129)
+			return (left);
+		return (_exec_wait_get_exec_infos(node->u_data.op.right));
+	}
+	else if (node->type == ND_SUBSHELL)
+		return (node->u_data.subsh.exec_infos);
+	else if (node->type == ND_REDIR && node->u_data.rd.child)
+		return (_exec_wait_get_exec_infos(node->u_data.rd.child));
+	else if (node->type == ND_REDIR)
+		return (node->u_data.rd.exec_infos);
+	else if (node->type == ND_CMD)
+		return (node->u_data.cmd.exec_infos);
+	return ((t_expr){-1, -1});
 }
 
 static void	_exec_wait_set_ret(t_ast *node, pid_t pid, uint8_t ret)
@@ -74,7 +90,7 @@ static uint8_t	_exec_wait(t_ast *node)
 			ret = 128 + WTERMSIG(status);
 		_exec_wait_set_ret(node, pid, ret);
 	}
-	return (_exec_wait_get_ret(node));
+	return (_exec_wait_get_exec_infos(node).ret);
 }
 
 uint8_t	exec_flow_exec(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
@@ -111,5 +127,6 @@ uint8_t	exec_wrapper(t_hmap *env, t_ast *node)
 
 	ret = exec_flow_exec(env, node, node, (int32_t[2]){STDIN_FILENO,
 		STDOUT_FILENO});
+	dprintf(2, "Exit code: %d\n", ret);
 	return (ret);
 }
