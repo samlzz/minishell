@@ -96,6 +96,7 @@ static uint8_t	_exec_wait(t_ast *node)
 uint8_t	exec_flow_exec(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	uint8_t	ret;
+	char	*tmp;
 
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
@@ -106,7 +107,12 @@ uint8_t	exec_flow_exec(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
 	}
 	else
 		exec_flow_pipe(env, root, node, (int32_t[3]){fds[0], fds[1], -1});
-	return (_exec_wait(node));
+	ret = _exec_wait(node);
+	tmp = ft_itoa(ret);
+	if (!tmp || env_set(env, "?", tmp))
+		return (perror("minishell: malloc"), free(tmp), ret);
+	dprintf(2, "Exit code: %d\n", ret);
+	return (ret);
 }
 
 uint8_t	exec_wrapper(t_hmap *env, t_ast *node)
@@ -115,6 +121,5 @@ uint8_t	exec_wrapper(t_hmap *env, t_ast *node)
 
 	ret = exec_flow_exec(env, node, node, (int32_t[2]){STDIN_FILENO,
 		STDOUT_FILENO});
-	dprintf(2, "Exit code: %d\n", ret);
 	return (ret);
 }
