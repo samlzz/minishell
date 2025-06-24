@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 07:57:12 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:42:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,26 +56,6 @@ static int16_t	_env_init_from_envp(char **envp, t_hmap *env)
 }
 
 /**
- * @brief Initialize a minimal environment if envp is NULL or empty.
- * 
- * Sets default values for `PWD`, `SHLVL`, and `PATH`.
- * 
- * @param env The target hash map to populate.
- * @return int16_t 0 on success, 1 on failure.
- */
-static int16_t	_env_minimal_init(t_hmap *env)
-{
-	char	pwd[PATH_MAX];
-
-	if (getcwd(pwd, sizeof(pwd)) && env_literal_set(env, "PWD", pwd))
-		return (1);
-	return (
-		env_literal_set(env, "SHLVL", "1") || \
-		env_literal_set(env, ENV_PATH_NM, ENV_DEFAULT_PATH)
-	);
-}
-
-/**
  * @brief Update or set the shell level (SHLVL) in the environment.
  * 
  * Handles overflow or underflow scenarios, and emits a warning if the level is too high.
@@ -112,6 +92,34 @@ static inline int16_t	_init_shlvl(t_hmap *env)
 }
 
 /**
+ * @brief Public entry point to initialize the shell environment.
+ * 
+ * Chooses between full or minimal initialization based on envp and stores argv0.
+ * 
+ * @param envp The environment passed to main.
+ * @return t_hmap The initialized environment map. If an error occurs, an empty map is returned.
+ */
+t_hmap	env_init(char **envp)
+{
+	t_hmap	env;
+	char	pwd[PATH_MAX];
+
+	env = ft_hmap_new(NULL);
+	if (!env.__entries)
+		return (env);
+	if (!getcwd(pwd, sizeof(pwd)) || \
+	env_literal_set(&env, "PWD", pwd) || \
+	_init_shlvl(&env))
+		return (ft_hmap_free(&env, free), env);
+	if (envp && *envp)
+	{
+		if (_env_init_from_envp(envp, &env))
+			ft_hmap_free(&env, free);
+	}
+	return (env);
+}
+
+/**
  * @brief Update or set the process id and last exit in the environment.
  * 
  * Handles overflow or underflow scenarios, and emits a warning if the level is too high.
@@ -138,37 +146,38 @@ static inline int16_t	_init_exec_env(t_hmap *env)
 	return (env_literal_set(env, "?", "127"));
 }
 
-/**
- * @brief Public entry point to initialize the shell environment.
- * 
- * Chooses between full or minimal initialization based on envp and stores argv0.
- * 
- * @param envp The environment passed to main.
- * @param argv0 The name of the program (used for internal storage).
- * @return t_hmap The initialized environment map. If an error occurs, an empty map is returned.
- */
-t_hmap	env_init(char **envp, const char *argv0)
+static inline char	*_ft_getpid(void)
 {
-	t_hmap	env;
+	int32_t	fd;
+	char	str[12];
 
-	env = ft_hmap_new(NULL);
-	if (!env.__entries)
-		return (env);
-	if (env_literal_set(&env, ENV_PRGM_NM, argv0))
-		ft_hmap_free(&env, free);
-	else if (!envp || !*envp)
+	fd = open("/proc/self/stat", O_RDONLY);
+	if (fd == -1)
+		return (NULL);
+	if (read(fd, str, 11) == -1)
+		return (close(fd), NULL);
+	close(fd);
+	str[11] = '\0';
+	return (ft_itoa(ft_atoi(str)));
+}
+
+t_sh_ctx	*context_init(char **envp, const char *argv0)
+{
+	t_sh_ctx	*ctx;
+
+	ctx = ft_calloc(1, sizeof(t_sh_ctx));
+	if (!ctx)
+		return (NULL);
+	ctx->p_name = argv0;
+	ctx->p_id = _ft_getpid();
+	if (!ctx->p_id)
+		return (free(ctx), NULL);
+	ctx->env = env_init(envp);
+	if (!ctx->env.__entries)
 	{
-		if (_env_minimal_init(&env))
-			ft_hmap_free(&env, free);
+		free(ctx->p_id);
+		free(ctx);
+		return (NULL);
 	}
-	else
-	{
-		if (_env_init_from_envp(envp, &env))
-			ft_hmap_free(&env, free);
-		else if (_init_shlvl(&env))
-			ft_hmap_free(&env, free);
-		else if (_init_exec_env(&env))
-			ft_hmap_free(&env, free);
-	}
-	return (env);
+	return (ctx);
 }

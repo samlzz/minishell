@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/21 10:29:39 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:20:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 //* Functions
 
 int16_t	write_heredocs(t_ast *node);
-void	expand_line(t_hmap *env, char **line);
+void	expand_line(t_sh_ctx *ctx, char **line);
 int32_t	gen_heredoc_filename(char *dest);
 
 t_token	*hd_tokenise(const char *input);

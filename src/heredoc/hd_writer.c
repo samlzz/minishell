@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:03:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/21 11:10:53 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:23:45 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include <readline/readline.h>
 #include <stdlib.h>
 
-void	expand_line(t_hmap *env, char **line)
+void	expand_line(t_sh_ctx *ctx, char **line)
 {
 	t_token		*tokens;
 	t_token		*cur;
@@ -36,7 +36,7 @@ void	expand_line(t_hmap *env, char **line)
 	cur = tokens;
 	while (cur && cur->type != TK_EOF)
 	{
-		expanded = expand_word(&cur, false, env);
+		expanded = expand_word(ctx, &cur, false);
 		if (!expanded || !ft_dynbuf_append_str(&dest, expanded->value))
 			return (token_clear(tokens), ft_dynbuf_free(&dest));
 	}

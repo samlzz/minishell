@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:12:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:42:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,24 @@
 # define ENV_SHLVL_MAX		1000
 # define ENV_SHLVL_MIN		0
 
-# define ENV_PRGM_NM		"@ARGV0"
-# define ENV_PATH_NM		"@DEFAULT_PATH"
 # define ENV_DEFAULT_PATH	"/usr/local/sbin:/usr/local/bin:/usr/bin"
+
+typedef struct s_sh_ctx
+{
+	t_hmap		env;
+	uint8_t		lst_exit;
+	const char	*p_name;
+	char		*p_id;
+}	t_sh_ctx;
 
 //* Functions
 
-t_hmap	env_init(char **envp, const char *argv0);
+t_sh_ctx	*context_init(char **envp, const char *argv0);
+t_hmap		env_init(char **envp);
 
 // Wrappers
+void	context_free(t_sh_ctx *ctx);
+
 char	**get_envp(t_hmap *env);
 int16_t	env_set(t_hmap *env, const char *key, char *value);
 int16_t	env_literal_set(t_hmap *env, const char *key, const char *val);

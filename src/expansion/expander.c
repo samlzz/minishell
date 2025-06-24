@@ -6,19 +6,19 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/20 17:58:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:29:12 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
 #include <stdlib.h>
 
-t_argword	*expand_word(t_token **cur, bool split, t_hmap *env)
+t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split)
 {
 	t_argword	*splitted;
 	t_argword	*expanded;
 
-	expanded = fill_argword(env, cur, 0);
+	expanded = fill_argword(ctx, cur);
 	if (!expanded)
 		return (NULL);
 	if (split && expanded->space_offsets.len)
@@ -32,13 +32,13 @@ t_argword	*expand_word(t_token **cur, bool split, t_hmap *env)
 	return (replace_wildcards(expanded));
 }
 
-int16_t	expand_redir(t_ast *rd, t_hmap *env, t_token **errtok)
+int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
 {
 	t_argword	*file;
 	t_token		*cur;
 
 	cur = rd->u_data.rd.filename.tk;
-	file = expand_word(&cur, false, env);
+	file = expand_word(ctx, &cur, false);
 	if (!file)
 		return (1);
 	if (argword_size(file) > 1)
@@ -75,7 +75,7 @@ static inline void	_construct_argv(t_words **dest, t_argword *args)
 	}
 }
 
-int16_t	expand_command(t_ast *cmd, t_hmap *env)
+int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 {
 	t_argword	*args;
 	t_argword	*field;
@@ -85,7 +85,7 @@ int16_t	expand_command(t_ast *cmd, t_hmap *env)
 	cur = cmd->u_data.cmd.args->tk;
 	while (cur)
 	{
-		field = expand_word(&cur, true, env);
+		field = expand_word(ctx, &cur, true);
 		if (!field)
 			return (argword_clear(args), 1);
 		argword_add_back(&args, field);
@@ -99,13 +99,13 @@ int16_t	expand_command(t_ast *cmd, t_hmap *env)
 	return (!cmd->u_data.cmd.args);
 }
 
-int16_t	expand_node(t_ast *node, t_hmap *env, t_token **errtok)
+int16_t	expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok)
 {
 	if (node->type == ND_CMD)
 	{
 		if (!node->u_data.cmd.args || !node->u_data.cmd.args->tk)
 			return (1);
-		return (expand_command(node, env));
+		return (expand_command(node, ctx));
 	}
 	if (node->type == ND_REDIR)
 	{
@@ -113,7 +113,7 @@ int16_t	expand_node(t_ast *node, t_hmap *env, t_token **errtok)
 			return (0);
 		if (!node->u_data.rd.filename.tk)
 			return (1);
-		return (expand_redir(node, env, errtok));
+		return (expand_redir(node, ctx, errtok));
 	}
 	return (1);
 }

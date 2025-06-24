@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_flow.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/24 08:33:08 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:36:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,33 +93,28 @@ static uint8_t	_exec_wait(t_ast *node)
 	return (_exec_wait_get_exec_infos(node).ret);
 }
 
-uint8_t	exec_flow_exec(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
+uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
-	uint8_t	ret;
-	char	*tmp;
-
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
-		ret = exec_flow_exec(env, root, node->u_data.op.left, fds);
-		if ((node->type == ND_AND && !ret) || (node->type == ND_OR && ret))
-			return (exec_flow_exec(env, root, node->u_data.op.right, fds));
-		return (ret);
+		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
+		if ((node->type == ND_AND && !ctx->lst_exit) || \
+		(node->type == ND_OR && ctx->lst_exit))
+			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
+		return (ctx->lst_exit);
 	}
 	else
-		exec_flow_pipe(env, root, node, (int32_t[3]){fds[0], fds[1], -1});
-	ret = _exec_wait(node);
-	tmp = ft_itoa(ret);
-	if (!tmp || env_set(env, "?", tmp))
-		return (perror("minishell: malloc"), free(tmp), ret);
-	dprintf(2, "Exit code: %d\n", ret);
-	return (ret);
+		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+	ctx->lst_exit = _exec_wait(node);
+	dprintf(2, "Exit code: %d\n", ctx->lst_exit);
+	return (ctx->lst_exit);
 }
 
-uint8_t	exec_wrapper(t_hmap *env, t_ast *node)
+uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node)
 {
 	uint8_t	ret;
 
-	ret = exec_flow_exec(env, node, node, (int32_t[2]){STDIN_FILENO,
+	ret = exec_flow_exec(ctx, node, node, (int32_t[2]){STDIN_FILENO,
 		STDOUT_FILENO});
 	return (ret);
 }

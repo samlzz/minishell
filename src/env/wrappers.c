@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:30:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:55:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:43:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,11 @@ int16_t	env_literal_set(t_hmap *env, const char *key, const char *val)
 		return (1);
 	}
 	return (0);
+}
+
+void	context_free(t_sh_ctx *ctx)
+{
+	free(ctx->p_id);
+	ft_hmap_free(&ctx->env, &free);
+	free(ctx);
 }

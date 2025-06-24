@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_flow.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/24 06:48:30 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:24:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static void	_dup_err(int32_t oldfd, int32_t newfd)
 	perror(str);
 }
 
-static void	_open_err(char *filename, t_hmap *env, t_ast *root, int32_t fds[2])
+static void	_open_err(char *filename, t_sh_ctx *ctx, t_ast *root, int32_t fds[2])
 {
 	char	str[12 + NAME_MAX];
 
@@ -39,7 +39,7 @@ static void	_open_err(char *filename, t_hmap *env, t_ast *root, int32_t fds[2])
 	ft_strlcat(str, "minishell: ", 12 + NAME_MAX);
 	ft_strlcat(str, filename, 12 + NAME_MAX);
 	perror(str);
-	ft_hmap_free(env, free);
+	context_free(ctx);
 	ast_free(root);
 	if (fds[0] != STDIN_FILENO)
 		close(fds[0]);
@@ -60,7 +60,7 @@ static void _dup_fds(int32_t fds[2])
 		close(fds[0]);
 }
 
-static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
+static void	_exec_flow_cmd_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	t_token	*errtok;
 	char	filename[PATH_MAX];
@@ -71,15 +71,15 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 	int32_t	fd;
 
 	errtok = NULL;
-	if (expand_node(node, env, &errtok))
-		return (ast_free(root), ft_hmap_free(env, free), err_print_expand(errtok));
+	if (expand_node(ctx, node, &errtok))
+		return (ast_free(root), context_free(ctx), err_print_expand(errtok));
 	if (node->u_data.rd.redir_type == RD_IN)
 	{
 		if (fds[0] != STDIN_FILENO)
 			close(fds[0]);
 		fds[0] = open(node->u_data.rd.filename.expanded, O_RDONLY);
 		if (fds[0] == -1)
-			return (_open_err(node->u_data.rd.filename.expanded, env, root, fds));
+			return (_open_err(node->u_data.rd.filename.expanded, ctx, root, fds));
 	}
 	else if (node->u_data.rd.redir_type == RD_OUT
 		|| node->u_data.rd.redir_type == RD_APPEND)
@@ -91,7 +91,7 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 			oflags = O_WRONLY | O_CREAT | O_APPEND;
 		fds[1] = open(node->u_data.rd.filename.expanded, oflags, 0644);
 		if (fds[1] == -1)
-			return (_open_err(node->u_data.rd.filename.expanded, env, root, fds));
+			return (_open_err(node->u_data.rd.filename.expanded, ctx, root, fds));
 	}
 	else if (node->u_data.rd.redir_type == RD_HEREDOC && node->u_data.rd.hd_expand)
 	{
@@ -99,17 +99,17 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 			close(fds[0]);
 		fd = gen_heredoc_filename(filename);
 		if (fd == -1)
-			return (_open_err(filename, env, root, fds));
+			return (_open_err(filename, ctx, root, fds));
 		fds[0] = open(filename, O_RDONLY);
 		if (fds[0] == -1)
-			return (_open_err(filename, env, root, fds), (void) close(fd));
+			return (_open_err(filename, ctx, root, fds), (void) close(fd));
 		unlink(filename);
 		line = NULL;
 		n = 0;
 		stream = fdopen(node->u_data.rd.fd, "r");
 		while (getline(&line, &n, stream) != -1) // FIXME: use ft_getline
 		{
-			expand_line(env, &line);
+			expand_line(ctx, &line);
 			if (!line)
 				return (perror("minishell: expand_line"));
 			write(fd, line, ft_strlen(line));
@@ -125,10 +125,10 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 		fds[0] = node->u_data.rd.fd;
 	}
 	if (node->u_data.rd.child)
-		exec_flow_cmd(env, root, node->u_data.rd.child, fds);
+		exec_flow_cmd(ctx, root, node->u_data.rd.child, fds);
 	else
 	{
-		ft_hmap_free(env, free);
+		context_free(ctx);
 		ast_free(root);
 		if (fds[0] != STDIN_FILENO)
 			close(fds[0]);
@@ -138,7 +138,7 @@ static void	_exec_flow_cmd_redir(t_hmap *env, t_ast *root, t_ast *node, int32_t 
 	}
 }
 
-static void	_exec_flow_cmd_cmd(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
+static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	char	**argv;
 	char	**envp;
@@ -146,31 +146,31 @@ static void	_exec_flow_cmd_cmd(t_hmap *env, t_ast *root, t_ast *node, int32_t fd
 	char	*cmd;
 
 	errtok = NULL;
-	if (expand_node(node, env, &errtok))
+	if (expand_node(ctx, node, &errtok))
 		return (err_print_expand(errtok));
 	argv = &node->u_data.cmd.args->expanded;
 	node->u_data.cmd.args = NULL;
 	ast_free(root);
-	envp = get_envp(env);
+	envp = get_envp(&ctx->env);
 	if (!envp)
 		return (perror("cannot get envp"));
-	cmd = exec_get_cmd_path(argv, env);
+	cmd = exec_get_cmd_path(argv, &ctx->env);
 	if (access(cmd, F_OK))
 		return (perror("minishell: command not found"), free(cmd),
 			ft_splitfree(argv, 0), ft_splitfree(envp, 0),
-			ft_hmap_free(env, free), exit(127));
+			context_free(ctx), exit(127));
 	if (access(cmd, X_OK))
 		return (perror("minishell: command not executable"), free(cmd),
 			ft_splitfree(argv, 0), ft_splitfree(envp, 0),
-			ft_hmap_free(env, free), exit(127));
+			context_free(ctx), exit(127));
 	_dup_fds(fds);
 	execve(cmd, argv, envp);
 }
 
-void	exec_flow_cmd(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
+void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	if (node && node->type == ND_REDIR)
-		_exec_flow_cmd_redir(env, root, node, fds);
+		_exec_flow_cmd_redir(ctx, root, node, fds);
 	else if (node && node->type == ND_CMD)
-		_exec_flow_cmd_cmd(env, root, node, fds);
+		_exec_flow_cmd_cmd(ctx, root, node, fds);
 }

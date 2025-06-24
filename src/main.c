@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 09:26:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 10:09:11 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ int	main(int argc, char const *argv[], char **envp)
 
 #else
 
-static void	_launch_exec(t_hmap *env, const char *input)
+static void	_launch_exec(t_sh_ctx *ctx, const char *input)
 {
 	t_ast	*ast;
 
@@ -93,18 +93,18 @@ static void	_launch_exec(t_hmap *env, const char *input)
 	if (!ast)
 		return ;
 	if (!write_heredocs(ast))
-		exec_wrapper(env, ast);
+		exec_wrapper(ctx, ast);
 	ast_free(ast);
 }
 
 int	main(int argc, char const *argv[], char **envp)
 {
-	t_hmap	env;
-	char	*input;
+	t_sh_ctx	*ctx;
+	char		*input;
 
 	(void)argc;
-	env = env_init(envp, argv[0]);
-	if (!env.__entries)
+	ctx	= context_init(envp, argv[0]);
+	if (!ctx)
 		return (1);
 	if (isatty(STDIN_FILENO))
 	{
@@ -120,7 +120,7 @@ int	main(int argc, char const *argv[], char **envp)
 			if (*input)
 				add_history(input);
 			if (!_skipable(input))
-				_launch_exec(&env, input);
+				_launch_exec(ctx, input);
 			free(input);
 		}
 	}
@@ -134,11 +134,11 @@ int	main(int argc, char const *argv[], char **envp)
 			if (input[ft_strlen(input)] == '\n')
 				input[ft_strlen(input)] = 0;
 			if (!_skipable(input))
-				_launch_exec(&env, input);
+				_launch_exec(ctx, input);
 			free(input);
 		}
 	}
-	ft_hmap_free(&env, &free);
+	context_free(ctx);
 	return (0);
 }
 
