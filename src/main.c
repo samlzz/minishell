@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 10:09:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 20:16:24 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,28 +85,34 @@ int	main(int argc, char const *argv[], char **envp)
 
 #else
 
-static void	_launch_exec(t_sh_ctx *ctx, const char *input)
+static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 {
+	uint8_t	ret;
 	t_ast	*ast;
 
 	ast = parse_ast(input);
 	if (!ast)
-		return ;
-	if (!write_heredocs(ast))
-		exec_wrapper(ctx, ast);
+		return (2);
+	ret = write_heredocs(ast);
+	if (!ret)
+		ret = exec_wrapper(ctx, ast);
 	ast_free(ast);
+	return (ret);
 }
 
 int	main(int argc, char const *argv[], char **envp)
 {
 	t_sh_ctx	*ctx;
 	char		*input;
+	uint8_t		ret;
 
-	(void)argc;
+	ret = 0;
 	ctx	= context_init(envp, argv[0]);
 	if (!ctx)
-		return (1);
-	if (isatty(STDIN_FILENO))
+		return (ret = 1, 1);
+	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
+		ret = _launch_exec(ctx, argv[2]);
+	else if (isatty(STDIN_FILENO))
 	{
 		rl_outstream = stderr;
 		while (1)
@@ -120,7 +126,7 @@ int	main(int argc, char const *argv[], char **envp)
 			if (*input)
 				add_history(input);
 			if (!_skipable(input))
-				_launch_exec(ctx, input);
+				ret = _launch_exec(ctx, input);
 			free(input);
 		}
 	}
@@ -134,12 +140,12 @@ int	main(int argc, char const *argv[], char **envp)
 			if (input[ft_strlen(input)] == '\n')
 				input[ft_strlen(input)] = 0;
 			if (!_skipable(input))
-				_launch_exec(ctx, input);
+				ret = _launch_exec(ctx, input);
 			free(input);
 		}
 	}
 	context_free(ctx);
-	return (0);
+	return (ret);
 }
 
 #endif
