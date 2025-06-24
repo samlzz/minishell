@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/24 10:36:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 19:42:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include "exec/exec.h"
+#include "minishell.h"
 
 static t_expr	_exec_wait_get_exec_infos(t_ast *node)
 {
@@ -93,6 +94,8 @@ static uint8_t	_exec_wait(t_ast *node)
 	return (_exec_wait_get_exec_infos(node).ret);
 }
 
+# ifdef DEBUG_MODE
+
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	if (node->type == ND_AND || node->type == ND_OR)
@@ -106,9 +109,28 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	else
 		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
 	ctx->lst_exit = _exec_wait(node);
-	dprintf(2, "Exit code: %d\n", ctx->lst_exit);
+	if (PRINT_EXIT_CODE)
+		dprintf(2, "Exit code: %d\n", ctx->lst_exit);
 	return (ctx->lst_exit);
 }
+#else
+
+uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+{
+	if (node->type == ND_AND || node->type == ND_OR)
+	{
+		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
+		if ((node->type == ND_AND && !ctx->lst_exit) || \
+		(node->type == ND_OR && ctx->lst_exit))
+			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
+		return (ctx->lst_exit);
+	}
+	else
+		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+	ctx->lst_exit = _exec_wait(node);
+	return (ctx->lst_exit);
+}
+#endif
 
 uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node)
 {

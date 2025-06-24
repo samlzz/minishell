@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 19:29:22 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/20 19:14:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 19:42:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,9 @@
 // ? if want to adjust set to 0 ^
 # define PRINT_AST_NO_EXPAND	0
 # define PRINT_AST_EXPAND		0
+
+// Exec
+# define PRINT_EXIT_CODE		1
 
 static inline void	print_entry(char *key, void *val)
 {
