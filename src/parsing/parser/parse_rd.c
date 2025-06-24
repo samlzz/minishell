@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/13 03:50:17 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 11:48:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,12 +85,11 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 	if ((*cur)->type != TK_WORD || expr->type != ND_CMD)
 	{
 		*errtok = *cur;
-		ast_free(expr);
 		return (NULL);
 	}
 	new = collect_args(cur, errtok);
 	if (!new)
-		return (ast_free(expr), NULL);
+		return (NULL);
 	last = expr->u_data.cmd.args->tk;
 	while (last && last->next)
 		last = last->next;
