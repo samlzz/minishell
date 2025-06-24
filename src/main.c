@@ -6,17 +6,19 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 09:25:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 09:26:12 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "exec/exec.h"
+#include "ft_gnl.h"
 #include "minishell.h"
 #include "heredoc/here_doc.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <unistd.h>
 
 static inline bool	_skipable(const char *input)
 {
@@ -104,19 +106,37 @@ int	main(int argc, char const *argv[], char **envp)
 	env = env_init(envp, argv[0]);
 	if (!env.__entries)
 		return (1);
-	while (1)
+	if (isatty(STDIN_FILENO))
 	{
-		input = readline(CMD_PROMPT);
-		if (!input)
+		rl_outstream = stderr;
+		while (1)
 		{
-			ft_putendl_fd("exit", 2);
-			break;
+			input = readline(CMD_PROMPT);
+			if (!input)
+			{
+				ft_putendl_fd("exit", 2);
+				break;
+			}
+			if (*input)
+				add_history(input);
+			if (!_skipable(input))
+				_launch_exec(&env, input);
+			free(input);
 		}
-		if (*input)
-			add_history(input);
-		if (!_skipable(input))
-			_launch_exec(&env, input);
-		free(input);
+	}
+	else
+	{
+		while (1)
+		{
+			ft_getline(&input, STDIN_FILENO);
+			if (!input)
+				break;
+			if (input[ft_strlen(input)] == '\n')
+				input[ft_strlen(input)] = 0;
+			if (!_skipable(input))
+				_launch_exec(&env, input);
+			free(input);
+		}
 	}
 	ft_hmap_free(&env, &free);
 	return (0);
