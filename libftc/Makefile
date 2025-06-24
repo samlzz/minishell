@@ -55,6 +55,8 @@ INCLUDES =	include/		\
 SRCS =	dyn/ft_dynbuf.c \
 		dyn/ft_dynint.c \
 		dyn/private/generic_dyn.c \
+		gnl/ft_getdelim.c \
+		gnl/ft_getline.c \
 		hashmap/ft_hmap.c \
 		hashmap/ft_hmap_iter.c \
 		hashmap/ft_hmap_op.c \
