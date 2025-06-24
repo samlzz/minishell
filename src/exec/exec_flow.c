@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/23 07:34:20 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/24 08:33:08 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,18 +103,6 @@ uint8_t	exec_flow_exec(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[2])
 		if ((node->type == ND_AND && !ret) || (node->type == ND_OR && ret))
 			return (exec_flow_exec(env, root, node->u_data.op.right, fds));
 		return (ret);
-	}
-	else if (node->type == ND_SUBSHELL)
-	{
-		node->u_data.subsh.exec_infos.pid = fork();
-		if (node->u_data.subsh.exec_infos.pid == -1)
-			return (perror("minishell: fork"),
-				(node->u_data.subsh.exec_infos.ret = 254));
-		else if (node->u_data.subsh.exec_infos.pid == 0)
-		{
-			ret = exec_flow_exec(env, root, node->u_data.subsh.child, fds);
-			return (exit(ret), ret);
-		}
 	}
 	else
 		exec_flow_pipe(env, root, node, (int32_t[3]){fds[0], fds[1], -1});

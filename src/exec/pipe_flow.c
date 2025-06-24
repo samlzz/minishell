@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/21 11:32:05 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/23 19:32:26 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
 void	exec_flow_pipe(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[3])
 {
 	int32_t	fds_[2];
+	int32_t	ret;
 	pid_t	pid;
 
 	if (node->type != ND_PIPE)
@@ -55,7 +56,14 @@ void	exec_flow_pipe(t_hmap *env, t_ast *root, t_ast *node, int32_t fds[3])
 		else if (pid == 0 && fds[2] != -1)
 			close(fds[2]);
 		if (pid == 0 && node->type == ND_SUBSHELL)
-			return (exit(exec_flow_exec(env, root, node->u_data.subsh.child, fds)));
+		{
+			ret = exec_flow_exec(env, root, node->u_data.subsh.child, fds);
+			if (fds[0] != STDIN_FILENO)
+				close(fds[0]);
+			if (fds[1] != STDOUT_FILENO)
+				close(fds[1]);
+			return (ast_free(root), ft_hmap_free(env, free), exit(ret));
+		}
 		else if (pid == 0)
 			return (exec_flow_cmd(env, root, node, fds));
 		return ((void) _set_pipe_pid_ret(node, pid, 0));
