@@ -70,6 +70,8 @@ SRCS =	main.c \
 		expansion/expander.c \
 		expansion/field_splitting.c \
 		expansion/ft_argword.c \
+		expansion/tild_expand.c \
+		expansion/tild_utils.c \
 		expansion/wildcards.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_writer.c \
