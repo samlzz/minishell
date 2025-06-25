@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 10:42:47 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/25 11:43:25 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,33 +117,6 @@ t_hmap	env_init(char **envp)
 			ft_hmap_free(&env, free);
 	}
 	return (env);
-}
-
-/**
- * @brief Update or set the process id and last exit in the environment.
- * 
- * Handles overflow or underflow scenarios, and emits a warning if the level is too high.
- * 
- * @param env The environment hash map.
- * @return int16_t 0 on success, 1 on failure.
- */
-static inline int16_t	_init_exec_env(t_hmap *env)
-{
-	int32_t	fd;
-	char	str[12];
-	char	*tmp;
-
-	fd = open("/proc/self/stat", O_RDONLY);
-	if (fd == -1)
-		return (1);
-	if (read(fd, str, 11) == -1)
-		return (close(fd), 1);
-	close(fd);
-	str[11] = 0;
-	tmp = ft_itoa(ft_atoi(str));
-	if (!tmp || env_set(env, "$", tmp))
-		return (1);
-	return (env_literal_set(env, "?", "127"));
 }
 
 static inline char	*_ft_getpid(void)
