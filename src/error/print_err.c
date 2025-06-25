@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 16:56:10 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/24 14:31:28 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ void	err_print_expand(t_token *errtok)
 	ft_putstr_fd("minishell: ", 2);
 	ft_putstr_fd(errtok->value, 2);
 	ft_putstr_fd(": ambiguous redirect\n", 2);
-	token_clear(errtok);
 }
 
 static inline void	_print_unclosed_quote(int16_t errcode)
