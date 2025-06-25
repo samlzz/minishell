@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/16 22:16:40 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/25 08:27:43 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ char	*exec_get_cmd_path(char **av, t_hmap *envp)
 
 	path_str = ft_hmap_get(envp, "PATH");
 	if (!path_str)
-		return (ft_calloc(1, sizeof(char *)));
+		return (ft_calloc(1, sizeof(char)));
 	path = ft_split(path_str, ':');
 	if (!path)
 		return (perror("exec: _get_cmd_path: ft_split"), NULL);
