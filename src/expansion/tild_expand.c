@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 23:32:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 00:02:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,16 @@ static inline char	*_expand_alone_tild(t_hmap *env, char *username)
 	char	*home;
 	
 	home = ft_hmap_get(env, "HOME");
-	if (!home)
+	if (home)
+		return (ft_strdup(home));
+	if (!username)
 	{
-		if (!username)
-		{
-			user = ft_getuser();
-			home = ft_gethome(user);
-			free(user);
-		}
-		else
-			home = ft_gethome(username);
+		user = ft_getuser();
+		home = ft_gethome(user);
+		free(user);
 	}
+	else
+		home = ft_gethome(username);
 	return (home);
 }
 
@@ -92,6 +91,7 @@ void	expand_tild(t_token *cur, t_sh_ctx *ctx)
 			{
 				free(cur->value);
 				cur->value = tmp;
+				cur->quote = QUOTE_SINGLE;
 			}
 		}
 		cur = cur->next;
