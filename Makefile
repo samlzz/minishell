@@ -64,6 +64,7 @@ SRCS =	main.c \
 		exec/cmd_utils.c \
 		exec/exec_flow.c \
 		exec/pipe_flow.c \
+		exec/redir_flow.c \
 		expansion/argword_fill.c \
 		expansion/argword_sort.c \
 		expansion/expander.c \
