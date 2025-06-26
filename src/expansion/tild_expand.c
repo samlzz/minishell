@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 09:35:24 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 14:05:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,9 @@ static bool	_is_tilde_expandable(t_token *tok)
 		return (false);
 	if (tok->quote != QUOTE_NONE)
 		return (false);
-	if (tok->glued || (tok->next && \
-		(tok->next->glued && tok->next->quote != QUOTE_NONE)))
+	if (tok->glued || \
+		(tok->next && tok->next->glued && tok->next->quote != QUOTE_NONE && \
+		!ft_strchr(tok->value, '/')))
 		return (false);
 	return (true);
 }
@@ -52,7 +53,7 @@ static inline char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
 	size_t	i;
 
 	i = 0;
-	while (tk_val[i] && tk_val[i] != '/')
+	while (tk_val[i] && !ft_strchr("/:", tk_val[i]))
 		i++;
 	if (i <= 1)
 		tmp = NULL;
