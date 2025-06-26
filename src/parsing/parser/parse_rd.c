@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 11:48:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:08:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static inline t_ast	*_new_redir(t_redir_type type)
 
 	rd = ft_calloc(1, sizeof(t_ast));
 	if (!rd)
-		return (NULL);
+		return (parse_err("minishell: malloc", NULL));
 	rd->type = ND_REDIR;
 	rd->u_data.rd.redir_type = type;
 	if (type == RD_HEREDOC)
@@ -54,7 +54,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 	{
 		new = token_dup(*cur);
 		if (!new)
-			return (ast_free(redir), NULL);
+			return (parse_err("minishell: token_dup", redir));
 		if (type == RD_HEREDOC && new->quote != QUOTE_NONE)
 			redir->u_data.rd.hd_expand = false;
 		token_addback(&redir->u_data.rd.filename.tk, new);
@@ -121,8 +121,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 
 	rd_subtree = NULL;
 	expr = NULL;
-	while (*cur && ((*cur)->type == TK_WORD \
-		|| (*cur)->type == TK_LPAREN \
+	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN \
 		|| is_redirection((*cur)->type)))
 	{
 		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)
@@ -138,5 +137,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 	}
 	if (expr)
 		_rd_add_last(&rd_subtree, expr);
+	if (!rd_subtree)
+		*errtok = *cur;
 	return (rd_subtree);
 }

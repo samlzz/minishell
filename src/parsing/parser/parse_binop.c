@@ -6,18 +6,18 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/13 03:49:39 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:29:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ast/ast.h"
 
-static inline void	*_set_errtok_quit(t_token **errtok, t_token *cur, t_ast *to_free)
+void	*parse_err(char const *msg, t_ast *to_free)
 {
-	if (!*errtok)
-		*errtok = cur;
 	if (to_free)
 		ast_free(to_free);
+	perror(msg);
+	errno = 0;
 	return (NULL);
 }
 
@@ -29,18 +29,18 @@ t_ast	*pipe_parser(t_token **cur, t_token **errtok)
 
 	left = redir_parser(cur, errtok);
 	if (!left)
-		return (_set_errtok_quit(errtok, *cur, NULL));
+		return (NULL);
 	if (!*cur || (*cur)->type != TK_PIPE)
 		return (left);
 	next(cur);
 	node = ft_calloc(1, sizeof (t_ast));
 	if (!node)
-		return (ast_free(left), NULL);
+		return (parse_err("minishell: malloc", left));
 	node->type = ND_PIPE;
 	node->u_data.op.left = left;
 	node->u_data.op.right = pipe_parser(cur, errtok);
 	if (!node->u_data.op.right)
-		return (_set_errtok_quit(errtok, *cur, node));
+		return (ast_free(node), NULL);
 	return (node);
 }
 
@@ -57,12 +57,12 @@ t_ast	*logical_parser(t_token **cur, t_token **errtok)
 
 	left = pipe_parser(cur, errtok);
 	if (!left)
-		return (_set_errtok_quit(errtok, *cur, NULL));
+		return (NULL);
 	while (*cur && _is_logicalop((*cur)->type))
 	{
 		node = ft_calloc(1, sizeof (t_ast));
 		if (!node)
-			return (ast_free(left), NULL);
+			return (parse_err("minishell: malloc", left));
 		if ((*cur)->type == TK_AND)
 			node->type = ND_AND;
 		else
@@ -71,7 +71,7 @@ t_ast	*logical_parser(t_token **cur, t_token **errtok)
 		next(cur);
 		node->u_data.op.right = pipe_parser(cur, errtok);
 		if (!node->u_data.op.right)
-			return (_set_errtok_quit(errtok, *cur, node));
+			return (ast_free(node), NULL);
 		left = node;
 	}
 	return (left);
