@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:57:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:24:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,14 +112,16 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 	t_token	*curr;
 
 	i = 0;
+	offset = 0;
 	tokens = NULL;
 	while (input[i])
 	{
+		i += offset;
 		curr = ft_calloc(1, sizeof (t_token));
 		if (!curr)
 			return (token_clear(tokens), *exit_code = PARSE_ERR, NULL);
 		curr->glued = true;
-		while (ft_isspace(input[i]))
+		while (input[i] && ft_isspace(input[i]))
 			(i++, curr->glued = false);
 		offset = _fill_token(input + i, curr);
 		if (offset < 0)
@@ -127,7 +129,6 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 			*exit_code = (int16_t)offset;
 			return (free(curr), token_clear(tokens), NULL);
 		}
-		i += offset;
 		token_addback(&tokens, curr);
 	}
 	return (tokens);
