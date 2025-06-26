@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 10:19:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:45:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static inline const char	*token_type_str(t_token *errtok)
 	stringify[TK_REDIR_OUT] = ">";
 	stringify[TK_REDIR_APPEND] = ">>";
 	stringify[TK_HEREDOC] = "<<";
-	stringify[TK_EOF] = "EOF";
+	stringify[TK_EOF] = "newline";
 	return (stringify[errtok->type]);
 }
 
@@ -89,14 +89,16 @@ static void	_print_syntax_error(t_token *tok, char *input_tk)
  * @param errcode The error code to report.
  * @param errtok The token where the error occurred (may be NULL).
  */
-void	err_print(int16_t errcode, t_token *errtok, bool is_parsing)
+void	err_print(int16_t errcode, t_token *errtok, bool is_tokenize)
 {
 	if (errcode == PARSE_ERR)
 	{
-		if (is_parsing)
-			perror("minishell: parser: malloc failed");
+		if (!errno)
+			return (token_clear(errtok));
+		if (is_tokenize)
+			perror("minishell: tokeniser: malloc");
 		else
-			perror("minishell: tokeniser: malloc failed");
+			perror("minishell: internal error");
 	}
 	else if (errcode == PARSE_ERR_EOF)
 		_print_eof_error(errtok, NULL);
