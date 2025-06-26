@@ -55,6 +55,7 @@ SRCS =	ft_char.c \
 		ft_convert_base.c \
 		ft_is.c \
 		ft_mem.c \
+		ft_nsplit.c \
 		ft_output.c \
 		ft_safe_str.c \
 		ft_split.c \

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/05 11:54:22 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/12 01:56:49 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 08:25:00 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ char		*ft_strtrim(char const *s1, char const *set)
 			__attribute__ ((warn_unused_result, nonnull(1, 2)));
 // split
 char		**ft_split(char const *s, char c)
+			__attribute__ ((warn_unused_result, nonnull(1)));
+char		**ft_nsplit(char const *s, char c)
 			__attribute__ ((warn_unused_result, nonnull(1)));
 void		ft_splitfree(char **splited, size_t end);
 
