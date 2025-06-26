@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 10:19:47 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:33:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,14 +123,14 @@ t_ast	*parse_ast(const char *input)
 	errtok = NULL;
 	tk_lst = tokenise(input, &errcode);
 	if (!tk_lst)
-		return (err_print(errcode, errtok, false), NULL);
+		return (err_print(errcode, errtok, true), NULL);
 	if (PRINT_TOKENS)
 		print_tokens(tk_lst);
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);
 	if (!res)
-		return (err_print(errcode, errtok, true), NULL);
+		return (err_print(errcode, errtok, false), NULL);
 	return (res);
 }
 
@@ -147,12 +147,12 @@ t_ast	*parse_ast(const char *input)
 	errtok = NULL;
 	tk_lst = tokenise(input, &errcode);
 	if (!tk_lst)
-		return (err_print(errcode, errtok, false), NULL);
+		return (err_print(errcode, errtok, true), NULL);
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);
 	if (!res)
-		return (err_print(errcode, errtok, true), NULL);
+		return (err_print(errcode, errtok, false), NULL);
 	return (res);
 }
 #endif
