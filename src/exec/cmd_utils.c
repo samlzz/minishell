@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/26 08:05:13 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 09:18:53 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,14 +62,14 @@ char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx)
 		path_str = ENV_DEFAULT_PATH;
 	else if (!path_str)
 		path_str = "";
-	paths = ft_split(path_str, ':');
+	paths = ft_nsplit(path_str, ':');
 	if (!paths)
 		return (perror("minishell: malloc"), NULL);
 	if (!_test_paths(paths, av[0], &cmd))
-		return (ft_splitfree(paths, 0), NULL);
+		return (free(paths), NULL);
 	else if (!cmd)
 		cmd = ft_strdup(av[0]);
 	if (!cmd)
 		 perror("minishell: malloc");
-	return (ft_splitfree(paths, 0), cmd);
+	return (free(paths), cmd);
 }
