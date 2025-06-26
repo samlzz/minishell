@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 20:52:09 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 23:33:56 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 09:32:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,11 @@ static char	*_extract_value(int fd, char* (*parse_line) (char **, char *), \
 	value = NULL;
 	while (ft_getline(&line, fd))
 	{
-		split = ft_split(line, ':');
+		split = ft_nsplit(line, ':');
 		if (split)
 		{
 			value = parse_line(split, to_comp);
-			ft_splitfree(split, 0);
+			free(split);
 		}
 		free(line);
 		if (value)
@@ -74,7 +74,7 @@ char	*ft_getuser(void)
 static char	*_get_home_from_line(char **line, char *username)
 {
 	if (line[0] && line[5] && ft_strcmp(line[0], username) == 0)
-		return (ft_strdup(line[4]));
+		return (ft_strdup(line[5]));
 	return (NULL);
 }
 
