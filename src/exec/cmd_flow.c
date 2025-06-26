@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/25 08:51:46 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 08:02:27 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ static void	_print_cmd_err(char *cmd, int32_t fds[2])
 
 	errno_ = errno;
 	len = ft_strlen("minishell: ") + ft_strlen(cmd) + 1;
-	if (fds)
-		len += ft_strlen(": command not found");
 	str = malloc(len);
 	if (!str)
 	{
@@ -66,9 +64,15 @@ static void	_print_cmd_err(char *cmd, int32_t fds[2])
 	ft_strlcat(str, "minishell: ", len);
 	ft_strlcat(str, cmd, len);
 	if (fds)
-		ft_strlcat(str, ": command not found", len);
-	errno = errno_;
-	perror(str);
+	{
+		dup2(STDERR_FILENO, STDOUT_FILENO);
+		printf("%s: command not found\n", str);
+	}
+	else
+	{
+		errno = errno_;
+		perror(str);
+	}
 	free(str);
 	if (fds && fds[0] != STDIN_FILENO)
 		close(fds[0]);
@@ -106,8 +110,17 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 			close(fds[1]);
 		return (ft_splitfree(argv, 0), context_free(ctx), exit(1));
 	}
-	cmd = exec_get_cmd_path(argv, &ctx->env);
-	if (access(cmd, F_OK))
+	cmd = exec_get_cmd_path(argv, ctx);
+	if (!cmd)
+	{
+		if (fds[0] != STDIN_FILENO)
+			close(fds[0]);
+		if (fds[1] != STDOUT_FILENO)
+			close(fds[1]);
+		return (ft_splitfree(argv, 0), ft_splitfree(envp, 0), context_free(ctx),
+			exit(1));
+	}
+	if (!ft_strchr(cmd, '/'))
 		return (_print_cmd_err(cmd, fds), free(cmd), ft_splitfree(argv, 0),
 			ft_splitfree(envp, 0), context_free(ctx), exit(127));
 	_dup_fds(fds);

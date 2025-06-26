@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:19:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/25 06:54:01 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/25 22:10:06 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,6 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3]);
 void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2]);
 void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2]);
 
-char	*exec_get_cmd_path(char **av, t_hmap *envp);
+char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx);
 
 #endif

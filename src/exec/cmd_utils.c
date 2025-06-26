@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/25 08:27:43 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 08:05:13 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,64 +16,60 @@
 
 #include "exec/exec.h"
 
-static inline char	*_concat_path_cmd(char *path, char *cmd)
+static bool	_test_paths(char **paths, char *cmd, char **ret)
 {
-	size_t	len;
-	char	*ret;
-
-	len = ft_strlen(path) + ft_strlen(cmd) + 2;
-	ret = ft_calloc(len, sizeof(char));
-	if (!ret)
-		return (perror("exec: _concat_path_cmd: malloc"), NULL);
-	ft_strlcat(ret, path, len);
-	ft_strlcat(ret, "/", len);
-	ft_strlcat(ret, cmd, len);
-	return (ret);
-}
-
-static inline char	*_cmd_finder(char *cmd, char **path)
-{
-	size_t	i;
+	char	*cmd_;
 	char	*tmp;
-	char	*f;
+	size_t	i;
 
-	if (!cmd)
-		return (NULL);
-	if (ft_strchr(cmd, '/') || ft_strlen(cmd) == 0)
-		return (ft_strdup(cmd));
-	f = NULL;
+	tmp = NULL;
 	i = -1;
-	while (path[++i])
+	while (paths[++i])
 	{
-		tmp = _concat_path_cmd(path[i], cmd);
-		if (!tmp)
-			return (free(f), NULL);
-		if (!f && access(tmp, F_OK) != -1)
-			f = tmp;
-		if (access(tmp, X_OK) != -1)
-			return (free((void *)((f != tmp) * (uintptr_t)(f))), tmp);
-		else if (f != tmp)
+		if (ft_strlen(paths[i]))
+			cmd_ = ft_str3join(paths[i], "/", cmd);
+		else
+			cmd_ = ft_str3join(".", "/", cmd);
+		if (!cmd_)
+			return (perror("minishell: malloc"), free(tmp), *ret = NULL, false);
+		if (!access(cmd_, X_OK))
+			return (free(tmp), *ret = cmd_, true);
+		else if (!access(cmd_, F_OK))
+		{
 			free(tmp);
+			tmp = cmd_;
+		}
+		else
+			free(cmd_);
 	}
-	if (f)
-		return (f);
-	return (free(f), ft_strdup(cmd));
+	return (*ret = tmp, true);
 }
 
-char	*exec_get_cmd_path(char **av, t_hmap *envp)
+char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx)
 {
-	char	**path;
+	char	**paths;
 	char	*path_str;
 	char	*cmd;
 
-
-	path_str = ft_hmap_get(envp, "PATH");
-	if (!path_str)
-		return (ft_calloc(1, sizeof(char)));
-	path = ft_split(path_str, ':');
-	if (!path)
-		return (perror("exec: _get_cmd_path: ft_split"), NULL);
-	cmd = _cmd_finder(av[0], path);
-	ft_splitfree(path, 0);
-	return (cmd);
+	if (ft_strchr(av[0], '/'))
+		cmd = ft_strdup(av[0]);
+	if (ft_strchr(av[0], '/') && !cmd)
+		perror("minishell: malloc");
+	if (ft_strchr(av[0], '/'))
+		return (cmd);
+	path_str = ft_hmap_get(&ctx->env, "PATH");
+	if (!path_str && ctx->use_fallback_path)
+		path_str = ENV_DEFAULT_PATH;
+	else if (!path_str)
+		path_str = "";
+	paths = ft_split(path_str, ':');
+	if (!paths)
+		return (perror("minishell: malloc"), NULL);
+	if (!_test_paths(paths, av[0], &cmd))
+		return (ft_splitfree(paths, 0), NULL);
+	else if (!cmd)
+		cmd = ft_strdup(av[0]);
+	if (!cmd)
+		 perror("minishell: malloc");
+	return (ft_splitfree(paths, 0), cmd);
 }

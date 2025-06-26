@@ -148,5 +148,7 @@ t_sh_ctx	*context_init(char **envp, const char *argv0)
 		free(ctx);
 		return (NULL);
 	}
+	if (!ft_hmap_get(&ctx->env, "PATH"))
+		ctx->use_fallback_path = true;
 	return (ctx);
 }
