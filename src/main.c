@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/28 18:15:33 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/28 18:17:56 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,13 +47,13 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 	if (!ast)
 		return (ctx->lst_exit = 2);
 	if (PRINT_AST || PRINT_AST_NO_EXPAND)
-		print_ast_ascii(ast);
+		print_ast(ast);
 	ret = write_heredocs(ast);
 	if (!ret)
 	{
 		ret = exec_wrapper(ctx, ast);
 		if (PRINT_AST || PRINT_AST_EXPAND)
-			print_ast_ascii(ast);
+			print_expanded_ast(ast, ctx);
 	}
 	ast_free(ast);
 	return (ret);

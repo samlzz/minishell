@@ -1,4 +1,5 @@
 #include "ast/ast.h"
+#include "expansion/expander.h" 
 #include <stdio.h>
 
 #define RESET   "\033[0m"
@@ -26,7 +27,9 @@ static void	print_prefix(const char *prefix, int is_last)
 
 void	short_print_tokens(t_token *tokens);
 
-static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
+typedef int16_t (*t_expand_cb)(t_sh_ctx *ctx, t_ast *node, t_token **errtok);
+
+static void	print_ast_generic(t_ast *node, const char *prefix, int is_last, t_sh_ctx *ctx, t_expand_cb expand_cb)
 {
 	char new_prefix[256];
 
@@ -36,9 +39,14 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 		printf("(null)\n");
 		return;
 	}
-	
+
+	t_token	*errtok = NULL;
+	if (expand_cb && (node->type == ND_CMD || node->type == ND_REDIR) && \
+		expand_cb(ctx, node, &errtok))
+		err_print(PARSE_OK, errtok, false);
+
 	print_prefix(prefix, is_last);
-	snprintf(new_prefix, 256, "%s%s", prefix, is_last ? "    " : "│   ");
+	snprintf(new_prefix, sizeof(new_prefix), "%s%s", prefix, is_last ? "    " : "│   ");
 
 	if (node->type == ND_CMD)
 	{
@@ -55,45 +63,53 @@ static void	print_ast_rec(t_ast *node, const char *prefix, int is_last)
 	else if (node->type == ND_PIPE)
 	{
 		printf(BLUE "PIPE" RESET "\n");
-		print_ast_rec(node->u_data.op.left, new_prefix, 0);
-		print_ast_rec(node->u_data.op.right, new_prefix, 1);
+		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
+		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
 	}
 	else if (node->type == ND_AND)
 	{
 		printf(GREEN "AND" RESET "\n");
-		print_ast_rec(node->u_data.op.left, new_prefix, 0);
-		print_ast_rec(node->u_data.op.right, new_prefix, 1);
+		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
+		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
 	}
 	else if (node->type == ND_OR)
 	{
 		printf(MAGENTA "OR" RESET "\n");
-		print_ast_rec(node->u_data.op.left, new_prefix, 0);
-		print_ast_rec(node->u_data.op.right, new_prefix, 1);
+		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
+		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
 	}
 	else if (node->type == ND_REDIR)
 	{
-		const char	*expand_hd;
+		const char *expand_hd = "";
 
-		expand_hd = "";
 		if (node->u_data.rd.redir_type == RD_HEREDOC)
 			expand_hd = node->u_data.rd.hd_expand ? "[expand]" : "[no-expand]";
+
 		printf(RED "REDIR (%s)%s ->", redir_str(node->u_data.rd.redir_type), expand_hd);
 		if (node->u_data.rd.is_expanded)
 			printf(" %s", node->u_data.rd.filename.expanded);
 		else
 			short_print_tokens(node->u_data.rd.filename.tk);
 		printf(RESET "\n");
-		print_ast_rec(node->u_data.rd.child, new_prefix, 1);
+
+		print_ast_generic(node->u_data.rd.child, new_prefix, 1, ctx, expand_cb);
 	}
 	else if (node->type == ND_SUBSHELL)
 	{
 		printf(CYAN "SUBSHELL" RESET "\n");
-		print_ast_rec(node->u_data.subsh.child, new_prefix, 1);
+		print_ast_generic(node->u_data.subsh.child, new_prefix, 1, ctx, expand_cb);
 	}
 }
 
-void	print_ast_ascii(t_ast *node)
+void	print_ast(t_ast *node)
 {
-	print_ast_rec(node, "", \
-		node->type == ND_AND || node->type == ND_OR || node->type == ND_PIPE);
+	print_ast_generic(node, "", \
+		node->type == ND_AND || node->type == ND_OR || node->type == ND_PIPE, NULL, NULL);
 }
+
+void	print_expanded_ast(t_ast *node, t_sh_ctx *ctx)
+{
+	print_ast_generic(node, "", \
+		node->type == ND_AND || node->type == ND_OR || node->type == ND_PIPE, ctx, expand_node);
+}
+
