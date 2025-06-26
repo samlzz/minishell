@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 11:43:25 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 10:35:33 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 
 
 /**
@@ -140,14 +141,18 @@ t_sh_ctx	*context_init(char **envp, const char *argv0)
 
 	ctx = ft_calloc(1, sizeof(t_sh_ctx));
 	if (!ctx)
-		return (NULL);
+		return (perror("minishell: malloc"), NULL);
 	ctx->p_name = argv0;
 	ctx->p_id = _ft_getpid();
 	if (!ctx->p_id)
+	{
+		perror("minishell: ft_getpid");
 		return (free(ctx), NULL);
+	}
 	ctx->env = env_init(envp);
 	if (!ctx->env.__entries)
 	{
+		perror("minishell: env_init");
 		free(ctx->p_id);
 		free(ctx);
 		return (NULL);
