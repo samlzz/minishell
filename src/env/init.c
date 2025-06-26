@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 11:43:25 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 08:19:50 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,20 +102,16 @@ static inline int16_t	_init_shlvl(t_hmap *env)
 t_hmap	env_init(char **envp)
 {
 	t_hmap	env;
-	char	pwd[PATH_MAX];
+	char	*pwd;
 
 	env = ft_hmap_new(NULL);
 	if (!env.__entries)
 		return (env);
-	if (!getcwd(pwd, sizeof(pwd)) || \
-	env_literal_set(&env, "PWD", pwd) || \
-	_init_shlvl(&env))
+	pwd = getcwd(NULL, 0);
+	if (!pwd || env_set(&env, "PWD", pwd) || _init_shlvl(&env))
 		return (ft_hmap_free(&env, free), env);
-	if (envp && *envp)
-	{
-		if (_env_init_from_envp(envp, &env))
-			ft_hmap_free(&env, free);
-	}
+	if (envp && *envp && _env_init_from_envp(envp, &env))
+		ft_hmap_free(&env, free);
 	return (env);
 }
 
