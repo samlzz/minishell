@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 18:09:04 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/28 18:15:33 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,49 +38,72 @@ static inline bool	_skipable(const char *input)
 
 #ifdef DEBUG_MODE
 
-static void	_launch_exec(t_hmap *env, const char *input)
+static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 {
+	uint8_t	ret;
 	t_ast	*ast;
 
 	ast = parse_ast(input);
 	if (!ast)
-		return ;
+		return (ctx->lst_exit = 2);
 	if (PRINT_AST || PRINT_AST_NO_EXPAND)
 		print_ast_ascii(ast);
-	if (!write_heredocs(ast))
-		exec_wrapper(env, ast);
-	if (PRINT_AST || PRINT_AST_EXPAND)
-		print_ast_ascii(ast);
+	ret = write_heredocs(ast);
+	if (!ret)
+	{
+		ret = exec_wrapper(ctx, ast);
+		if (PRINT_AST || PRINT_AST_EXPAND)
+			print_ast_ascii(ast);
+	}
 	ast_free(ast);
+	return (ret);
 }
 
 int	main(int argc, char const *argv[], char **envp)
 {
-	t_hmap	env;
-	char	*input;
+	t_sh_ctx	*ctx;
+	char		*input;
+	uint8_t		ret;
 
-	(void)argc;
-	env = env_init(envp, argv[0]);
-	if (!env.__entries)
-		return (1);
+	ret = 0;
+	ctx	= context_init(envp, argv[0]);
+	if (!ctx)
+		return (ret = 1, 1);
 	if (PRINT_ENV)
-		ft_hmap_iter(&env, &print_entry);
+		ft_hmap_iter(&ctx->env, &print_entry);
+	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
+		return (_launch_exec(ctx, argv[2]));
 	while (1)
 	{
-		input = readline(CMD_PROMPT);
-		if (!input)
+		if (isatty(STDIN_FILENO))
 		{
-			ft_putendl_fd("exit", 2);
-			break;
+			rl_outstream = stderr;
+			input = readline(CMD_PROMPT);
+			if (!input)
+			{
+				ft_putendl_fd("exit", 2);
+				break;
+			}
+			if (*input)
+				add_history(input);
 		}
-		if (*input)
-			add_history(input);
+		else
+		{
+			ft_getline(&input, STDIN_FILENO);
+			if (!input)
+				break;
+			if (input[ft_strlen(input)] == '\n')
+				input[ft_strlen(input)] = 0;
+		}
 		if (!_skipable(input))
-			_launch_exec(&env, input);
+			ret = _launch_exec(ctx, input);
 		free(input);
+		input = ft_itoa((int32_t)ret);
+		if (input)
+			env_set(&ctx->env, "?", input);
 	}
-	ft_hmap_free(&env, &free);
-	return (0);
+	context_free(ctx);
+	return (ret);
 }
 
 #else
@@ -111,12 +134,12 @@ int	main(int argc, char const *argv[], char **envp)
 	if (!ctx)
 		return (ret = 1, 1);
 	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
-		ret = _launch_exec(ctx, argv[2]);
-	else if (isatty(STDIN_FILENO))
+		return (_launch_exec(ctx, argv[2]));
+	while (1)
 	{
-		rl_outstream = stderr;
-		while (1)
+		if (isatty(STDIN_FILENO))
 		{
+			rl_outstream = stderr;
 			input = readline(CMD_PROMPT);
 			if (!input)
 			{
@@ -125,24 +148,18 @@ int	main(int argc, char const *argv[], char **envp)
 			}
 			if (*input)
 				add_history(input);
-			if (!_skipable(input))
-				ret = _launch_exec(ctx, input);
-			free(input);
 		}
-	}
-	else
-	{
-		while (1)
+		else
 		{
 			ft_getline(&input, STDIN_FILENO);
 			if (!input)
 				break;
 			if (input[ft_strlen(input)] == '\n')
 				input[ft_strlen(input)] = 0;
-			if (!_skipable(input))
-				ret = _launch_exec(ctx, input);
-			free(input);
 		}
+		if (!_skipable(input))
+			ret = _launch_exec(ctx, input);
+		free(input);
 	}
 	context_free(ctx);
 	return (ret);
