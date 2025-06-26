@@ -15,6 +15,7 @@
 
 # include "lexer/token.h"
 # include "utils/utils.h"
+# include <stdio.h>
 
 # define HANDLED_CHAR	"()<>|&'\""
 
@@ -29,7 +30,10 @@ t_ast	*logical_parser(t_token **cur, t_token **errtok);
 t_ast	*redir_parser(t_token **cur, t_token **errtok);
 t_ast	*primary_parser(t_token **cur, t_token **errtok);
 
-// Args helpers
+// Helpers
+
 t_words	*collect_args(t_token **cur, t_token **errtok);
+
+void	*parse_err(char const *msg, t_ast *to_free);
 
 #endif

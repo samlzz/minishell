@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/13 03:49:55 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 12:35:05 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,15 @@ t_words	*collect_args(t_token **cur, t_token **errtok)
 
 	args = ft_calloc(1, sizeof (t_words));
 	if (!args)
-		return (NULL);
+		return (parse_err("minishell: malloc", NULL));
 	while (*cur && (*cur)->type == TK_WORD)
 	{
 		new = token_dup(*cur);
 		if (!new)
 		{
 			token_clear(args->tk);
-			free(args);
-			return (NULL);
+			parse_err("minishell: token_dup", NULL);
+			return (free(args), NULL);
 		}
 		token_addback(&args->tk, new);
 		next(cur);
@@ -36,8 +36,7 @@ t_words	*collect_args(t_token **cur, t_token **errtok)
 	if (!args->tk)
 	{
 		*errtok = *cur;
-		free(args);
-		return (NULL);
+		return (free(args), NULL);
 	}
 	return (args);
 }
@@ -57,7 +56,7 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 
 	node = ft_calloc(1, sizeof (t_ast));
 	if (!node)
-		return (NULL);
+		return (parse_err("minishell: malloc", NULL));
 	node->type = ND_CMD;
 	node->u_data.cmd.args = collect_args(cur, errtok);
 	if (!node->u_data.cmd.args)
@@ -93,7 +92,7 @@ t_ast	*primary_parser(t_token **cur, t_token **errtok)
 		next(cur);
 		subshell = ft_calloc(1, sizeof(t_ast));
 		if (!subshell)
-			return (ast_free(subexpr), NULL);
+			return (parse_err("minishell: malloc", subexpr));
 		subshell->type = ND_SUBSHELL;
 		subshell->u_data.subsh.child = subexpr;
 		return (subshell);
