@@ -53,8 +53,10 @@ static void	print_ast_generic(t_ast *node, const char *prefix, int is_last, t_sh
 		printf(YELLOW "CMD:" RESET);
 		if (node->u_data.cmd.is_expanded)
 		{
+			printf("[");
 			for (size_t i = 0; node->u_data.cmd.args[i].expanded != NULL; i++)
-				printf(" %s", node->u_data.cmd.args[i].expanded);
+				printf(i == 0 ? "%s" : ", (%s)", node->u_data.cmd.args[i].expanded);
+			printf("]");
 		}
 		else
 			short_print_tokens(node->u_data.cmd.args->tk);
