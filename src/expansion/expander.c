@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 22:56:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:49:53 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,13 @@ static inline void	_construct_argv(t_words **dest, t_argword *args)
 	if (!*dest)
 		return ;
 	i = 0;
-	while (i < size)
+	while (args)
 	{
-		(*dest)[i++].expanded = args->value;
-		args->value = NULL;
+		if (args->value && *args->value)
+		{
+			(*dest)[i++].expanded = args->value;
+			args->value = NULL;
+		}
 		args = args->next;
 	}
 }
