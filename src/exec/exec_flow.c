@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/24 19:42:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 08:17:15 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,27 @@ static size_t	_exec_wait_get_count(t_ast *node)
 	return (0);
 }
 
-static uint8_t	_exec_wait(t_ast *node)
+static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
+{
+	t_token	*errtok;
+	char	**argv;
+	size_t	i;
+
+	if (!node || (node->type != ND_CMD && node->type != ND_REDIR))
+		return ;
+	if (node->type == ND_REDIR)
+		return (_update_underscore(ctx, node->u_data.rd.child));
+	errtok = NULL;
+	if (expand_node(ctx, node, &errtok))
+		return ;
+	argv = &node->u_data.cmd.args->expanded;
+	i = 0;
+	while (argv[i])
+		i++;
+	env_literal_set(&ctx->env, "_", argv[--i]);
+}
+
+static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 {
 	size_t	i;
 	int32_t	status;
@@ -91,6 +111,7 @@ static uint8_t	_exec_wait(t_ast *node)
 			ret = 128 + WTERMSIG(status);
 		_exec_wait_set_ret(node, pid, ret);
 	}
+	_update_underscore(ctx, node);
 	return (_exec_wait_get_exec_infos(node).ret);
 }
 
@@ -127,7 +148,7 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	}
 	else
 		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
-	ctx->lst_exit = _exec_wait(node);
+	ctx->lst_exit = _exec_wait(ctx, node);
 	return (ctx->lst_exit);
 }
 #endif
