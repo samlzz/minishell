@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/26 08:02:27 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 19:29:19 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,16 +100,6 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 	argv = &node->u_data.cmd.args->expanded;
 	node->u_data.cmd.args = NULL;
 	ast_free(root);
-	envp = get_envp(&ctx->env);
-	if (!envp)
-	{
-		perror("minishell: malloc");
-		if (fds[0] != STDIN_FILENO)
-			close(fds[0]);
-		if (fds[1] != STDOUT_FILENO)
-			close(fds[1]);
-		return (ft_splitfree(argv, 0), context_free(ctx), exit(1));
-	}
 	cmd = exec_get_cmd_path(argv, ctx);
 	if (!cmd)
 	{
@@ -117,12 +107,21 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 			close(fds[0]);
 		if (fds[1] != STDOUT_FILENO)
 			close(fds[1]);
-		return (ft_splitfree(argv, 0), ft_splitfree(envp, 0), context_free(ctx),
-			exit(1));
+		return (ft_splitfree(argv, 0), context_free(ctx), exit(1));
 	}
 	if (!ft_strchr(cmd, '/'))
 		return (_print_cmd_err(cmd, fds), free(cmd), ft_splitfree(argv, 0),
-			ft_splitfree(envp, 0), context_free(ctx), exit(127));
+			context_free(ctx), exit(127));
+	envp = get_envp(&ctx->env, cmd);
+	if (!envp)
+	{
+		perror("minishell: malloc");
+		if (fds[0] != STDIN_FILENO)
+			close(fds[0]);
+		if (fds[1] != STDOUT_FILENO)
+			close(fds[1]);
+		return (ft_splitfree(argv, 0), context_free(ctx), free(cmd), exit(1));
+	}
 	_dup_fds(fds);
 	execve(cmd, argv, envp);
 	return (_print_cmd_err(cmd, NULL), free(cmd), ft_splitfree(argv, 0),

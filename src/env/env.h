@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/25 22:07:45 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/26 19:21:47 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ t_hmap		env_init(char **envp);
 // Wrappers
 void	context_free(t_sh_ctx *ctx);
 
-char	**get_envp(t_hmap *env);
+char	**get_envp(t_hmap *env, char *cmd);
 int16_t	env_set(t_hmap *env, const char *key, char *value);
 int16_t	env_literal_set(t_hmap *env, const char *key, const char *val);
 

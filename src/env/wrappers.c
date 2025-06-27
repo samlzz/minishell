@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:30:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 10:43:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/26 19:28:22 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,30 @@ static char	*_join_key_value(char *key, void *value)
 	return (ft_str3join(key, "=", value));
 }
 
-char	**get_envp(t_hmap *env)
+char	**get_envp(t_hmap *env, char *cmd)
 {
-	return (ft_hmap_to_array(env, &_join_key_value));
+	char	**envp;
+	char	**tmp;
+	size_t	len;
+
+	tmp = ft_hmap_to_array(env, &_join_key_value);
+	if (!tmp)
+		return (NULL);
+	len = 0;
+	while (tmp[len])
+		len++;
+	envp = ft_calloc(len + 2, sizeof(char *));
+	if (!envp)
+		return (ft_splitfree(tmp, 0), NULL);
+	len = -1;
+	while (tmp[++len])
+		envp[len] = tmp[len];
+	envp[len] = ft_calloc(ft_strlen(cmd) + 3, sizeof(char));
+	if (!envp[len])
+		return (ft_splitfree(tmp, 0), free(envp), NULL);
+	ft_strlcat(envp[len], "_=", ft_strlen(cmd) + 3);
+	ft_strlcat(envp[len], cmd, ft_strlen(cmd) + 3);
+	return (envp);
 }
 
 int16_t	env_set(t_hmap *env, const char *key, char *value)
