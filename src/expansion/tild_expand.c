@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 15:02:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 15:30:29 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ static char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
 
 static inline char	*_expand_var_tild(t_token *var, t_hmap *env)
 {
+	char	*resp;
 	char	*pref;
 	char	*tmp;
 	char	*eq;
@@ -83,18 +84,22 @@ static inline char	*_expand_var_tild(t_token *var, t_hmap *env)
 	if (!eq || eq[1] != '~')
 		return (NULL);
 	if (eq[2] == '\0')
-		tmp = _expand_alone_tild(env, NULL);
+		resp = _expand_alone_tild(env, NULL);
 	else
-		tmp = _expand_parametered_tild(eq + 1, env);
-	if (tmp)
+		resp = _expand_parametered_tild(eq + 1, env);
+	if (resp)
 	{
 		pref = ft_substr(var->value, 0, (eq - var->value) + 1);
-		if (pref && *pref)
-			return (ft_strjoin(pref, tmp));
-		else if (pref)
-			free(pref);
+		if (!pref)
+			return (perror("minishell: malloc"), free(resp), NULL);
+		tmp = ft_strjoin(pref, resp);
+		if (!tmp)
+			perror("minishell: malloc");
+		free(pref);
+		free(resp);
+		resp = tmp;
 	}
-	return (tmp);
+	return (resp);
 }
 
 void	expand_tild(t_token *cur, t_sh_ctx *ctx)
