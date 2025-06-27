@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 12:29:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:11:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	*parse_err(char const *msg, t_ast *to_free)
 {
+	perror(msg);
 	if (to_free)
 		ast_free(to_free);
-	perror(msg);
 	errno = 0;
 	return (NULL);
 }

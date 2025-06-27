@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:29:28 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/28 18:16:44 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/28 18:20:46 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-
+#include <errno.h>
 
 /**
  * @brief Initialize environment from envp.
@@ -125,7 +125,12 @@ static inline char	*_ft_getpid(void)
 	if (fd == -1)
 		return (NULL);
 	if (read(fd, str, 11) == -1)
-		return (close(fd), NULL);
+	{
+		fd = errno;
+		close(fd);
+		errno = fd;
+		return (NULL);
+	}
 	close(fd);
 	str[11] = '\0';
 	return (ft_itoa(ft_atoi(str)));

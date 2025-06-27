@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 12:35:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:12:07 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ t_words	*collect_args(t_token **cur, t_token **errtok)
 		new = token_dup(*cur);
 		if (!new)
 		{
-			token_clear(args->tk);
 			parse_err("minishell: token_dup", NULL);
+			token_clear(args->tk);
 			return (free(args), NULL);
 		}
 		token_addback(&args->tk, new);
