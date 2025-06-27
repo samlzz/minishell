@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 14:05:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 15:02:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static bool	_is_tilde_expandable(t_token *tok)
 	return (true);
 }
 
-static inline char	*_expand_alone_tild(t_hmap *env, char *username)
+static char	*_expand_alone_tild(t_hmap *env, char *username)
 {
 	char	*user;
 	char	*home;
@@ -44,7 +44,7 @@ static inline char	*_expand_alone_tild(t_hmap *env, char *username)
 	return (home);
 }
 
-static inline char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
+static char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
 {
 	char	*home;
 	char	*tmp;
@@ -73,24 +73,51 @@ static inline char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
 	return (res);
 }
 
+static inline char	*_expand_var_tild(t_token *var, t_hmap *env)
+{
+	char	*pref;
+	char	*tmp;
+	char	*eq;
+
+	eq = ft_strchr(var->value, '=');
+	if (!eq || eq[1] != '~')
+		return (NULL);
+	if (eq[2] == '\0')
+		tmp = _expand_alone_tild(env, NULL);
+	else
+		tmp = _expand_parametered_tild(eq + 1, env);
+	if (tmp)
+	{
+		pref = ft_substr(var->value, 0, (eq - var->value) + 1);
+		if (pref && *pref)
+			return (ft_strjoin(pref, tmp));
+		else if (pref)
+			free(pref);
+	}
+	return (tmp);
+}
+
 void	expand_tild(t_token *cur, t_sh_ctx *ctx)
 {
 	char	*tmp;
 
 	while (cur)
 	{
+		tmp = NULL;
 		if (_is_tilde_expandable(cur))
 		{
 			if (cur->value[1] == '\0')
 				tmp = _expand_alone_tild(&ctx->env, NULL);
 			else
 				tmp = _expand_parametered_tild(cur->value, &ctx->env);
-			if (tmp)
-			{
-				free(cur->value);
-				cur->value = tmp;
-				cur->quote = QUOTE_SINGLE;
-			}
+		}
+		else if (!ft_strcmp(cur->value, "export"))
+			tmp = _expand_var_tild(cur = cur->next, &ctx->env);
+		if (tmp)
+		{
+			free(cur->value);
+			cur->value = tmp;
+			cur->quote = QUOTE_SINGLE;
 		}
 		cur = cur->next;
 	}
