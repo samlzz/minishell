@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 15:30:29 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 20:09:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,10 +91,8 @@ static inline char	*_expand_var_tild(t_token *var, t_hmap *env)
 	{
 		pref = ft_substr(var->value, 0, (eq - var->value) + 1);
 		if (!pref)
-			return (perror("minishell: malloc"), free(resp), NULL);
+			return (free(resp), NULL);
 		tmp = ft_strjoin(pref, resp);
-		if (!tmp)
-			perror("minishell: malloc");
 		free(pref);
 		free(resp);
 		resp = tmp;
