@@ -13,4 +13,4 @@
 - [x] PATH
   - [x] empty entrie => .
   - [x] gestion default value (quand pad d'env)
-- [ ] expand `$_` in child (path last cmd) & in parent (last arg last cmd)
+- [x] expand `$_` in child (path last cmd) & in parent (last arg last cmd)
