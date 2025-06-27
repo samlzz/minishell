@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/21 17:30:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 19:28:22 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:25:19 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ char	**get_envp(t_hmap *env, char *cmd)
 		return (ft_splitfree(tmp, 0), free(envp), NULL);
 	ft_strlcat(envp[len], "_=", ft_strlen(cmd) + 3);
 	ft_strlcat(envp[len], cmd, ft_strlen(cmd) + 3);
-	return (envp);
+	return (free(tmp), envp);
 }
 
 int16_t	env_set(t_hmap *env, const char *key, char *value)
