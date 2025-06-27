@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/26 19:29:19 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/27 17:28:11 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "exec/exec.h"
@@ -82,10 +83,11 @@ static void	_print_cmd_err(char *cmd, int32_t fds[2])
 
 static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
-	char	**argv;
-	char	**envp;
-	t_token	*errtok;
-	char	*cmd;
+	char			**argv;
+	char			**envp;
+	t_token			*errtok;
+	char			*cmd;
+	struct	stat	st;
 
 	errtok = NULL;
 	if (expand_node(ctx, node, &errtok))
@@ -124,6 +126,8 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 	}
 	_dup_fds(fds);
 	execve(cmd, argv, envp);
+	if (!stat(cmd, &st) && S_ISDIR(st.st_mode))
+		errno = EISDIR;
 	return (_print_cmd_err(cmd, NULL), free(cmd), ft_splitfree(argv, 0),
 		ft_splitfree(envp, 0), context_free(ctx), exit(126));
 }
