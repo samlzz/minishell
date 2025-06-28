@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/25 08:43:40 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:42:55 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,9 @@ static void	_exit_clean(uint8_t code, t_sh_ctx *ctx, t_ast *root, int32_t fds[2]
 		close(fds[0]);
 	if (fds[1] != STDOUT_FILENO)
 		close(fds[1]);
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
 	exit(code);
 }
 

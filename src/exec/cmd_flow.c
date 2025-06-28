@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/27 17:28:11 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/28 12:41:46 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,17 @@ static void _dup_fds(int32_t fds[2])
 		close(fds[0]);
 }
 
+static void	_close_all_fds(int32_t fds[2])
+{
+	if (fds && fds[0] != STDIN_FILENO)
+		close(fds[0]);
+	if (fds && fds[1] != STDOUT_FILENO)
+		close(fds[1]);
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	close(STDERR_FILENO);
+}
+
 static void	_print_cmd_err(char *cmd, int32_t fds[2])
 {
 	char	*str;
@@ -54,13 +65,7 @@ static void	_print_cmd_err(char *cmd, int32_t fds[2])
 	len = ft_strlen("minishell: ") + ft_strlen(cmd) + 1;
 	str = malloc(len);
 	if (!str)
-	{
-		if (fds && fds[0] != STDIN_FILENO)
-			close(fds[0]);
-		if (fds && fds[1] != STDOUT_FILENO)
-			close(fds[1]);
-		return (perror("minishell: malloc"));
-	}
+		return (perror("minishell: malloc"), _close_all_fds(fds));
 	str[0] = 0;
 	ft_strlcat(str, "minishell: ", len);
 	ft_strlcat(str, cmd, len);
@@ -75,10 +80,7 @@ static void	_print_cmd_err(char *cmd, int32_t fds[2])
 		perror(str);
 	}
 	free(str);
-	if (fds && fds[0] != STDIN_FILENO)
-		close(fds[0]);
-	if (fds && fds[1] != STDOUT_FILENO)
-		close(fds[1]);
+	_close_all_fds(fds);
 }
 
 static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
@@ -91,39 +93,22 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 
 	errtok = NULL;
 	if (expand_node(ctx, node, &errtok))
-	{
-		err_print_expand(errtok);
-		if (fds[0] != STDIN_FILENO)
-			close(fds[0]);
-		if (fds[1] != STDOUT_FILENO)
-			close(fds[1]);
-		return (context_free(ctx), exit(1));
-	}
+		return (err_print_expand(errtok), _close_all_fds(fds),
+			context_free(ctx), exit(1));
 	argv = &node->u_data.cmd.args->expanded;
 	node->u_data.cmd.args = NULL;
 	ast_free(root);
 	cmd = exec_get_cmd_path(argv, ctx);
 	if (!cmd)
-	{
-		if (fds[0] != STDIN_FILENO)
-			close(fds[0]);
-		if (fds[1] != STDOUT_FILENO)
-			close(fds[1]);
-		return (ft_splitfree(argv, 0), context_free(ctx), exit(1));
-	}
+		return (_close_all_fds(fds), ft_splitfree(argv, 0), context_free(ctx),
+			exit(1));
 	if (!ft_strchr(cmd, '/'))
 		return (_print_cmd_err(cmd, fds), free(cmd), ft_splitfree(argv, 0),
 			context_free(ctx), exit(127));
 	envp = get_envp(&ctx->env, cmd);
 	if (!envp)
-	{
-		perror("minishell: malloc");
-		if (fds[0] != STDIN_FILENO)
-			close(fds[0]);
-		if (fds[1] != STDOUT_FILENO)
-			close(fds[1]);
-		return (ft_splitfree(argv, 0), context_free(ctx), free(cmd), exit(1));
-	}
+		return (perror("minishell: malloc"), _close_all_fds(fds),
+			ft_splitfree(argv, 0), context_free(ctx), free(cmd), exit(1));
 	_dup_fds(fds);
 	execve(cmd, argv, envp);
 	if (!stat(cmd, &st) && S_ISDIR(st.st_mode))
