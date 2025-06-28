@@ -6,13 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/27 08:17:15 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/28 09:22:35 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
+#include <termios.h>
 #include <unistd.h>
 
 #include "exec/exec.h"
@@ -155,9 +156,24 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 
 uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node)
 {
-	uint8_t	ret;
+	uint8_t			ret;
+	struct termios	tc_in;
+	struct termios	tc_out;
+	struct termios	tc_err;
 
+	if (tcgetattr(STDIN_FILENO, &tc_in) == -1)
+		perror("minishell: tcgetattr");
+	if (tcgetattr(STDOUT_FILENO, &tc_out) == -1)
+		perror("minishell: tcgetattr");
+	if (tcgetattr(STDERR_FILENO, &tc_err) == -1)
+		perror("minishell: tcgetattr");
 	ret = exec_flow_exec(ctx, node, node, (int32_t[2]){STDIN_FILENO,
 		STDOUT_FILENO});
+	if (tcsetattr(STDIN_FILENO, TCSANOW, &tc_in) == -1)
+		perror("minishell: tcsetattr");
+	if (tcsetattr(STDOUT_FILENO, TCSANOW, &tc_out) == -1)
+		perror("minishell: tcsetattr");
+	if (tcsetattr(STDERR_FILENO, TCSANOW, &tc_err) == -1)
+		perror("minishell: tcsetattr");
 	return (ret);
 }
