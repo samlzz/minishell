@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/30 03:15:21 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/30 09:35:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,15 +60,15 @@ static void	_exec_wait_set_ret(t_ast *node, pid_t pid, uint8_t ret)
 		node->u_data.cmd.exec_infos.ret = ret;
 }
 
-static size_t	_exec_wait_get_count(t_ast *node)
+size_t	exec_wait_get_count(t_ast *node)
 {
 	if (node && node->type == ND_PIPE)
-		return (_exec_wait_get_count(node->u_data.op.left)
-			+ _exec_wait_get_count(node->u_data.op.right));
+		return (exec_wait_get_count(node->u_data.op.left)
+			+ exec_wait_get_count(node->u_data.op.right));
 	else if (node && node->type == ND_SUBSHELL)
 		return (node && node->u_data.subsh.exec_infos.pid > 0);
 	else if (node && node->type == ND_REDIR && node->u_data.rd.child)
-		return (_exec_wait_get_count(node->u_data.rd.child));
+		return (exec_wait_get_count(node->u_data.rd.child));
 	else if (node && node->type == ND_REDIR)
 		return (node->u_data.rd.exec_infos.pid > 0);
 	else if (node && node->type == ND_CMD)
@@ -106,7 +106,7 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 	pid_t	pid;
 	uint8_t	ret;
 
-	i = _exec_wait_get_count(node);
+	i = exec_wait_get_count(node);
 	while (i-- > 0)
 	{
 		pid = wait(&status);
