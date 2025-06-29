@@ -6,27 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 20:09:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/29 18:46:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
 #include <stdlib.h>
-
-static bool	_is_tilde_expandable(t_token *tok)
-{
-	if (!tok || !tok->value)
-		return (false);
-	if (tok->value[0] != '~')
-		return (false);
-	if (tok->quote != QUOTE_NONE)
-		return (false);
-	if (tok->glued || \
-		(tok->next && tok->next->glued && tok->next->quote != QUOTE_NONE && \
-		!ft_strchr(tok->value, '/')))
-		return (false);
-	return (true);
-}
 
 static char	*_expand_alone_tild(t_hmap *env, char *username)
 {
@@ -73,49 +58,65 @@ static char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
 	return (res);
 }
 
-static inline char	*_expand_var_tild(t_token *var, t_hmap *env)
+static inline char	*_expand_export_arg(char *arg, t_hmap *env)
 {
-	char	*resp;
-	char	*pref;
-	char	*tmp;
 	char	*eq;
+	char	*tmp;
+	char	*prefix;
 
-	eq = ft_strchr(var->value, '=');
+	eq = ft_strchr(arg, '=');
 	if (!eq || eq[1] != '~')
 		return (NULL);
 	if (eq[2] == '\0')
-		resp = _expand_alone_tild(env, NULL);
+		tmp = _expand_alone_tild(env, NULL);
 	else
-		resp = _expand_parametered_tild(eq + 1, env);
-	if (resp)
-	{
-		pref = ft_substr(var->value, 0, (eq - var->value) + 1);
-		if (!pref)
-			return (free(resp), NULL);
-		tmp = ft_strjoin(pref, resp);
-		free(pref);
-		free(resp);
-		resp = tmp;
-	}
-	return (resp);
+		tmp = _expand_parametered_tild(eq + 1, env);
+	prefix = ft_substr(arg, 0, (eq - arg) + 1);
+	if (!prefix)
+		return (free(tmp), NULL);
+	eq = ft_strjoin(prefix, tmp);
+	free(prefix);
+	free(tmp);
+	return (eq);
 }
 
-void	expand_tild(t_token *cur, t_sh_ctx *ctx)
+void	expand_tild_export(t_token *argv, t_hmap *env)
+{
+	char	*tmp;
+
+	while (argv)
+	{
+		tmp = NULL;
+		if (argv && argv->value && argv->quote == QUOTE_NONE && (
+		!argv->next || !argv->next->glued || argv->next->quote == QUOTE_NONE ||
+		ft_strchr(argv->value, '/') || ft_strchr(argv->value, ':')))
+			tmp = _expand_export_arg(argv->value, env);
+		if (tmp)
+		{
+			free(argv->value);
+			argv->value = tmp;
+		}
+		argv = argv->next;
+	}
+}
+
+void	expand_tild(t_token *cur, t_hmap *env)
 {
 	char	*tmp;
 
 	while (cur)
 	{
 		tmp = NULL;
-		if (_is_tilde_expandable(cur))
+		if (cur && cur->value && cur->value[0] == '~' && \
+			cur->quote == QUOTE_NONE && !cur->glued && \
+			(!cur->next || !cur->next->glued || cur->next->quote == QUOTE_NONE\
+				|| ft_strchr(cur->value, '/')))
 		{
 			if (cur->value[1] == '\0')
-				tmp = _expand_alone_tild(&ctx->env, NULL);
+				tmp = _expand_alone_tild(env, NULL);
 			else
-				tmp = _expand_parametered_tild(cur->value, &ctx->env);
+				tmp = _expand_parametered_tild(cur->value, env);
 		}
-		else if (!ft_strcmp(cur->value, "export"))
-			tmp = _expand_var_tild(cur = cur->next, &ctx->env);
 		if (tmp)
 		{
 			free(cur->value);

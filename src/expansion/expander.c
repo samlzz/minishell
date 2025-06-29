@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 20:49:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/29 18:33:43 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split)
 	t_argword	*splitted;
 	t_argword	*expanded;
 
-	expand_tild(*cur, ctx);
+	expand_tild(*cur, &ctx->env);
 	expanded = fill_argword(ctx, cur);
 	if (!expanded)
 		return (NULL);
