@@ -1,0 +1,102 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   hd_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/27 22:11:06 by sliziard          #+#    #+#             */
+/*   Updated: 2025/06/27 22:54:20 by sliziard         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "here_doc.h"
+#include "unistd.h"
+#include "fcntl.h"
+
+/**
+ * @brief Generate a unique temporary heredoc filename.
+ *
+ * Tries to use `/dev/urandom`, falls back to a counter if not available.
+ *
+ * @param dest Output buffer to write the generated filename into.
+ * @return fd of the unique file that was generated
+ */
+int32_t	hd_gen_filename(char *dest)
+{
+	static int	fallback_counter;
+	int32_t		fd;
+	uint8_t		buf[8];
+	int32_t		i;
+	
+	ft_memmove(dest, HD_FNAME_BASE, HD_FN_LEN);
+	fd = open("/dev/urandom", O_RDONLY);
+	if (fd < 0 || read(fd, buf, sizeof(buf)) != sizeof(buf))
+	{
+		i = 0;
+		while (i < 8)
+		{
+			buf[i] = (fallback_counter + i) & 0xFF;
+			i++;
+		}
+		fallback_counter++;
+	}
+	if (fd >= 0)
+		close(fd);
+	i = -1;
+	while (++i < 8)
+		dest[HD_FN_LEN + i] = HD_CHARSET[buf[i] % HD_CHARSET_LEN];
+	dest[HD_FN_LEN + i] = '\0';
+	return (open(dest, O_WRONLY | O_CREAT | O_TRUNC, 0600));
+}
+
+void	hd_expand_line(t_sh_ctx *ctx, char **line)
+{
+	t_token		*tokens;
+	t_token		*cur;
+	t_argword	*expanded;
+	t_dynbuf	dest;
+
+	if (!*line || !ft_strchr(*line, '$'))
+		return ;
+	dest = ft_dynbuf_new(ft_strlen(*line));
+	if (!dest.data)
+		return ;
+	tokens = hd_tokenise(*line);
+	if (!tokens)
+		return (ft_dynbuf_free(&dest));
+	cur = tokens;
+	while (cur && cur->type != TK_EOF)
+	{
+		expanded = expand_word(ctx, &cur, false);
+		if (!expanded || !ft_dynbuf_append_str(&dest, expanded->value))
+			return (token_clear(tokens), ft_dynbuf_free(&dest));
+	}
+	free(*line);
+	*line = dest.data;
+}
+
+int16_t	hd_quotes_removing(t_redir *node)
+{
+	char	*filename;
+	char	*tmp;
+	t_token	*cur;
+	
+	filename = NULL;
+	cur = node->filename.tk;
+	while (cur)
+	{
+		tmp = ft_strappend(filename, cur->value);
+		free(filename);
+		if (!tmp)
+			return (perror("minishell: hd_quotes_removing: ft_strappend"), 1);
+		filename = tmp;
+		cur = cur->next;
+		if (!cur || !cur->glued)
+			break ;
+	}
+	token_clear(node->filename.tk);
+	node->filename.expanded = filename;
+	node->is_expanded = true;
+	return (0);
+}

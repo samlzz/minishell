@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/24 10:20:47 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/27 22:53:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,18 @@
 # define HD_FNAME_BASE		"/tmp/.minishell_heredoc_"
 # define HD_FN_LEN			24
 
-//* Functions
+// *Functions
 
-int16_t	write_heredocs(t_ast *node);
-void	expand_line(t_sh_ctx *ctx, char **line);
-int32_t	gen_heredoc_filename(char *dest);
+int16_t	hd_init(t_ast *node);
+
+// utils
 
 t_token	*hd_tokenise(const char *input);
+
+int16_t	hd_quotes_removing(t_redir *node);
+
+// ? For expand (at exec)
+void	hd_expand_line(t_sh_ctx *ctx, char **line);
+int32_t	hd_gen_filename(char *dest);
 
 #endif

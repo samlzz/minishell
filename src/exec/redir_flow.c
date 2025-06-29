@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/28 12:42:55 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/29 19:27:40 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	{
 		if (fds[0] != STDIN_FILENO)
 			close(fds[0]);
-		fd = gen_heredoc_filename(filename);
+		fd = hd_gen_filename(filename);
 		if (fd == -1)
 			return (_open_err(filename), _exit_clean(1, ctx, root, fds));
 		fds[0] = open(filename, O_RDONLY);
@@ -101,9 +101,9 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		unlink(filename);
 		while (ft_getline(&line, node->u_data.rd.fd))
 		{
-			expand_line(ctx, &line);
+			hd_expand_line(ctx, &line);
 			if (!line)
-				return (perror("minishell: expand_line"), close(fd),
+				return (perror("minishell: hd_expand_line"), close(fd),
 					close(fds[0]), _exit_clean(1, ctx, root, fds));
 			write(fd, line, ft_strlen(line));
 		}
