@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/26 09:18:53 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/30 02:32:58 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,13 @@ char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx)
 	char	*path_str;
 	char	*cmd;
 
-	if (ft_strchr(av[0], '/'))
+	if (!av[0])
+		cmd = ft_strdup("");
+	if (av[0] && ft_strchr(av[0], '/'))
 		cmd = ft_strdup(av[0]);
-	if (ft_strchr(av[0], '/') && !cmd)
+	if ((!av[0] || ft_strchr(av[0], '/')) && !cmd)
 		perror("minishell: malloc");
-	if (ft_strchr(av[0], '/'))
+	if (!av[0] || ft_strchr(av[0], '/'))
 		return (cmd);
 	path_str = ft_hmap_get(&ctx->env, "PATH");
 	if (!path_str && ctx->use_fallback_path)
