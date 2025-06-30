@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 09:13:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 09:16:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,6 +86,33 @@ static int16_t	_hd_rec_init(t_ast *node, t_sh_ctx *ctx, t_ast *head)
 	return (0);
 }
 
+#ifdef DEBUG_MODE
+
+int16_t	hd_init(t_ast *head, t_sh_ctx *ctx)
+{
+	int16_t	ret;
+	int32_t status;
+	size_t	count;
+
+	ret = _hd_rec_init(head, ctx, head);
+	count = exec_wait_get_count(head, true);
+	if (PRINT_HD_COUNT)
+		printf("WAIT COUNT: %zu\n", count);
+	while (count-- > 0)
+	{
+		if (wait(&status) == -1)
+		{
+			perror("minishell: hd_init: wait");
+			continue ;
+		}
+		if (WIFSIGNALED(status))
+			ctx->lst_exit = 128 + WTERMSIG(status);
+	}
+	return (ret);
+}
+
+# else
+
 int16_t	hd_init(t_ast *head, t_sh_ctx *ctx)
 {
 	int16_t	ret;
@@ -106,3 +133,5 @@ int16_t	hd_init(t_ast *head, t_sh_ctx *ctx)
 	}
 	return (ret);
 }
+
+#endif
