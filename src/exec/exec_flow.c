@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/30 09:35:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 09:36:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,7 +133,7 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	}
 	else
 		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
-	ctx->lst_exit = _exec_wait(node);
+	ctx->lst_exit = _exec_wait(ctx, node);
 	if (PRINT_EXIT_CODE)
 		dprintf(2, "Exit code: %d\n", ctx->lst_exit);
 	return (ctx->lst_exit);

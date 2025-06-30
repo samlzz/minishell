@@ -40,10 +40,19 @@ static void	print_ast_generic(t_ast *node, const char *prefix, int is_last, t_sh
 		return;
 	}
 
-	t_token	*errtok = NULL;
-	if (expand_cb && (node->type == ND_CMD || node->type == ND_REDIR) && \
-		expand_cb(ctx, node, &errtok))
-		err_print(PARSE_OK, errtok, false);
+	if (expand_cb)
+	{
+		t_token	*errtok = NULL;
+		bool	exp;
+
+		exp = true;
+		if (node->type == ND_CMD)
+			exp = node->u_data.cmd.is_expanded;
+		else if (node->type == ND_REDIR)
+			exp = node->u_data.rd.is_expanded;
+		if (!exp && expand_cb(ctx, node, &errtok))
+			err_print(PARSE_OK, errtok, false);
+	}
 
 	print_prefix(prefix, is_last);
 	snprintf(new_prefix, sizeof(new_prefix), "%s%s", prefix, is_last ? "    " : "│   ");
