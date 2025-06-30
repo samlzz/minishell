@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/29 18:30:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 07:59:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct s_argword
 	char				*value;
 	t_dynint			wild_offsets;
 	t_dynint			space_offsets;
+	bool				is_expanded;
 	struct s_argword	*next;
 }	t_argword;
 

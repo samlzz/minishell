@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 12:30:57 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/06/30 08:01:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,6 +148,7 @@ t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur)
 		if (!expanded)
 			return (argword_clear(node), NULL);
 		err = !argword_append_value(node, expanded, (*cur)->quote);
+		node->is_expanded = ft_strcmp((*cur)->value, expanded) != 0;
 		free(expanded);
 		if (err)
 			return (argword_clear(node), NULL);
