@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/29 19:26:43 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/29 19:29:29 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 	ast = parse_ast(input);
 	if (!ast)
 		return (ctx->lst_exit = 2);
-	ret = write_heredocs(ast);
+	ret = hd_init(ast, ctx);
 	if (!ret)
 		ret = exec_wrapper(ctx, ast);
 	ast_free(ast);

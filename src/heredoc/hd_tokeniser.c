@@ -6,12 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 19:36:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 17:39:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/29 19:14:49 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "here_doc.h"
-#include <stdlib.h>
 
 static bool	_is_dollar(int c)
 {

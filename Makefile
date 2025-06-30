@@ -74,7 +74,8 @@ SRCS =	main.c \
 		expansion/tild_utils.c \
 		expansion/wildcards.c \
 		heredoc/hd_tokeniser.c \
-		heredoc/hd_writer.c \
+		heredoc/hd_utils.c \
+		heredoc/hd_writter.c \
 		parsing/ast/ast_init.c \
 		parsing/lexer/ft_token.c \
 		parsing/lexer/tokeniser.c \

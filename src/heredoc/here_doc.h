@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 22:53:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/29 19:14:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define HERE_DOC_H
 
 # include "ast/ast.h"
+# include <stdlib.h>
 
 # define HD_PROMPT			"> "
 # define HD_CHARSET			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -23,7 +24,7 @@
 
 // *Functions
 
-int16_t	hd_init(t_ast *node);
+int16_t	hd_init(t_ast *node, t_sh_ctx *ctx);
 
 // utils
 
