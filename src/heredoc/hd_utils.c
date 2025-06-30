@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:11:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 22:54:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 12:27:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@
  * Tries to use `/dev/urandom`, falls back to a counter if not available.
  *
  * @param dest Output buffer to write the generated filename into.
- * @return fd of the unique file that was generated
+ * @return write fd of the unique file that was generated
  */
-int32_t	hd_gen_filename(char *dest)
+int	hd_gen_filename(char *dest)
 {
 	static int	fallback_counter;
-	int32_t		fd;
+	int			fd;
 	uint8_t		buf[8];
 	int32_t		i;
 	
@@ -48,6 +48,23 @@ int32_t	hd_gen_filename(char *dest)
 		dest[HD_FN_LEN + i] = HD_CHARSET[buf[i] % HD_CHARSET_LEN];
 	dest[HD_FN_LEN + i] = '\0';
 	return (open(dest, O_WRONLY | O_CREAT | O_TRUNC, 0600));
+}
+
+int32_t	ft_pipe(int fds[2])
+{
+	char	tmpfile[PATH_MAX];
+
+	fds[1] = hd_gen_filename(tmpfile);
+	if (fds[1] == -1)
+		return (-1);
+	fds[0] = open(tmpfile, O_RDONLY);
+	if (fds[0] == -1)
+	{
+		close(fds[1]);
+		return (-1);
+	}
+	unlink(tmpfile);
+	return (0);
 }
 
 void	hd_expand_line(t_sh_ctx *ctx, char **line)

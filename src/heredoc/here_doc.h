@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/29 19:14:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 12:26:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,5 +35,6 @@ int16_t	hd_quotes_removing(t_redir *node);
 // ? For expand (at exec)
 void	hd_expand_line(t_sh_ctx *ctx, char **line);
 int32_t	hd_gen_filename(char *dest);
+int32_t	ft_pipe(int fds[2]);
 
 #endif

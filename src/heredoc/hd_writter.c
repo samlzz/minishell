@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 09:16:47 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 12:52:53 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static int16_t	_hd_process(t_redir *hd, t_sh_ctx *ctx, t_ast *head)
 {
 	int	fds[2];
 
-	if (pipe(fds) == -1)
+	if (ft_pipe(fds) == -1)
 		return (perror("minishell: hd_process: pipe"), 1);
 	hd->fd = fds[0];
 	hd->exec_infos.pid = fork();
