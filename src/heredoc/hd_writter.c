@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 07:47:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 09:13:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,12 +88,12 @@ static int16_t	_hd_rec_init(t_ast *node, t_sh_ctx *ctx, t_ast *head)
 
 int16_t	hd_init(t_ast *head, t_sh_ctx *ctx)
 {
-	size_t	count;
 	int16_t	ret;
-	int32_t	status;
+	int32_t status;
+	size_t	count;
 
 	ret = _hd_rec_init(head, ctx, head);
-	count = exec_wait_get_count(head);
+	count = exec_wait_get_count(head, true);
 	while (count-- > 0)
 	{
 		if (wait(&status) == -1)
