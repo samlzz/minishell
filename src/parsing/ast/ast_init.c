@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 12:33:48 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/06/30 05:44:37 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,8 @@ void	ast_free(t_ast *node)
 	else if (node->type == ND_REDIR)
 	{
 		_words_free(&node->u_data.rd.filename, node->u_data.rd.is_expanded, false);
+		if (node->u_data.rd.redir_type == RD_HEREDOC && node->u_data.rd.fd > 0)
+			close(node->u_data.rd.fd);
 		ast_free(node->u_data.rd.child);
 	}
 	else if (node->type == ND_PIPE || \
