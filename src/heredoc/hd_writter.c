@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 12:52:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/02 16:53:40 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,103 +35,48 @@ static inline void	_hd_read(int write_fd, char const *delim)
 	}
 }
 
-static int16_t	_hd_process(t_redir *hd, t_sh_ctx *ctx, t_ast *head)
+static int16_t	_hd_process(t_redir *hd)
 {
 	int	fds[2];
 
 	if (ft_pipe(fds) == -1)
 		return (perror("minishell: hd_process: pipe"), 1);
-	hd->fd = fds[0];
-	hd->exec_infos.pid = fork();
-	if (hd->exec_infos.pid == -1)
-		return (perror("minishell: hd_process: fork"),
-		close(fds[0]), close(fds[1]), 1);
-	if (!hd->exec_infos.pid)
+	if (hd_quotes_removing(hd))
 	{
 		close(fds[0]);
-		hd->fd = -1;
-		if (hd_quotes_removing(hd))
-			(close(fds[1]), exit(1));
-		_hd_read(fds[1], hd->filename.expanded);
 		close(fds[1]);
-		ast_free(head);
-		context_free(ctx);
-		exit(0);
+		return (1);
 	}
-	else
-		close(fds[1]);
+	hd->fd = fds[0];
+	_hd_read(fds[1], hd->filename.expanded);
+	close(fds[1]);
 	return (0);
 }
 
-static int16_t	_hd_rec_init(t_ast *node, t_sh_ctx *ctx, t_ast *head)
+static int16_t	_hd_rec_init(t_ast *node, t_sh_ctx *ctx)
 {
 	if (!node)
 		return (0);
 	else if (node->type == ND_REDIR && node->u_data.rd.redir_type == RD_HEREDOC)
 	{
-		if (_hd_process(&node->u_data.rd, ctx, head))
+		if (_hd_process(&node->u_data.rd))
 			return (1);
-		return (_hd_rec_init(node->u_data.rd.child, ctx, head));
+		return (_hd_rec_init(node->u_data.rd.child, ctx));
 	}
 	else if (node->type == ND_REDIR)
-		return (_hd_rec_init(node->u_data.rd.child, ctx, head));
+		return (_hd_rec_init(node->u_data.rd.child, ctx));
 	else if (node->type == ND_PIPE || node->type == ND_AND || node->type == ND_OR)
 	{
-		if (_hd_rec_init(node->u_data.op.left, ctx, head))
+		if (_hd_rec_init(node->u_data.op.left, ctx))
 			return (1);
-		return (_hd_rec_init(node->u_data.op.right, ctx, head));
+		return (_hd_rec_init(node->u_data.op.right, ctx));
 	}
 	else if (node->type == ND_SUBSHELL)
-		return (_hd_rec_init(node->u_data.subsh.child, ctx, head));
+		return (_hd_rec_init(node->u_data.subsh.child, ctx));
 	return (0);
 }
 
-#ifdef DEBUG_MODE
-
 int16_t	hd_init(t_ast *head, t_sh_ctx *ctx)
 {
-	int16_t	ret;
-	int32_t status;
-	size_t	count;
-
-	ret = _hd_rec_init(head, ctx, head);
-	count = exec_wait_get_count(head, true);
-	if (PRINT_HD_COUNT)
-		printf("WAIT COUNT: %zu\n", count);
-	while (count-- > 0)
-	{
-		if (wait(&status) == -1)
-		{
-			perror("minishell: hd_init: wait");
-			continue ;
-		}
-		if (WIFSIGNALED(status))
-			ctx->lst_exit = 128 + WTERMSIG(status);
-	}
-	return (ret);
+	return (_hd_rec_init(head, ctx));
 }
-
-# else
-
-int16_t	hd_init(t_ast *head, t_sh_ctx *ctx)
-{
-	int16_t	ret;
-	int32_t status;
-	size_t	count;
-
-	ret = _hd_rec_init(head, ctx, head);
-	count = exec_wait_get_count(head, true);
-	while (count-- > 0)
-	{
-		if (wait(&status) == -1)
-		{
-			perror("minishell: hd_init: wait");
-			continue ;
-		}
-		if (WIFSIGNALED(status))
-			ctx->lst_exit = 128 + WTERMSIG(status);
-	}
-	return (ret);
-}
-
-#endif
