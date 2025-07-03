@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 12:26:35 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/02 17:40:23 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@
 
 // *Functions
 
-int16_t	hd_init(t_ast *node, t_sh_ctx *ctx);
+uint8_t	hd_init(t_ast *node);
 
 // utils
 
