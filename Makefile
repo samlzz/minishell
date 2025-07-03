@@ -73,6 +73,7 @@ SRCS =	main.c \
 		expansion/tild_expand.c \
 		expansion/tild_utils.c \
 		expansion/wildcards.c \
+		handler/signal.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_utils.c \
 		heredoc/hd_writter.c \

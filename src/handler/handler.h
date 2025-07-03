@@ -1,27 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   handler.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/01 16:56:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/02 16:27:44 by sliziard         ###   ########.fr       */
+/*   Created: 2025/07/02 12:15:57 by sliziard          #+#    #+#             */
+/*   Updated: 2025/07/03 09:39:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#ifndef HANDLER_H
+# define HANDLER_H
 
-# include "env/env.h"
-# include "ast/ast.h"
-# include "handler/handler.h"
+# include <stdint.h>
+# include <signal.h>
 
-// TODO: tmp (for debug)
-# ifdef DEBUG_MODE
-#  include "test/test.h"
-# endif
+extern volatile sig_atomic_t	g_sig;
 
-# define CMD_PROMPT	"minishell> "
+typedef enum e_sig_handle
+{
+	SIGH_MAIN,
+	SIGH_RESTORE,
+	SIGH_HD,
+	SIGH_RUNNING_CH,
+}	t_sig_handle;
+
+void	sig_init(t_sig_handle action);
 
 #endif
