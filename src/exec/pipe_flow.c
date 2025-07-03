@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/24 10:18:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/03 09:46:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <unistd.h>
 
 #include "exec/exec.h"
+#include "handler/handler.h"
 
 static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
 {
@@ -50,22 +51,27 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3])
 
 	if (node->type != ND_PIPE)
 	{
+		sig_init(SIGH_RUNNING_CH);
 		pid = fork();
 		if (pid == -1)
 			return (_set_pipe_pid_ret(node, -1, 254), perror("minishell: fork"));
-		else if (pid == 0 && fds[2] != -1)
-			close(fds[2]);
-		if (pid == 0 && node->type == ND_SUBSHELL)
+		if (pid == 0)
 		{
-			ret = exec_flow_exec(ctx, root, node->u_data.subsh.child, fds);
-			if (fds[0] != STDIN_FILENO)
-				close(fds[0]);
-			if (fds[1] != STDOUT_FILENO)
-				close(fds[1]);
-			return (ast_free(root), context_free(ctx), exit(ret));
+			if (fds[2] != -1)
+				close(fds[2]);
+			sig_init(SIGH_RESTORE);
+			if (node->type == ND_SUBSHELL)
+			{
+				ret = exec_flow_exec(ctx, root, node->u_data.subsh.child, fds);
+				if (fds[0] != STDIN_FILENO)
+					close(fds[0]);
+				if (fds[1] != STDOUT_FILENO)
+					close(fds[1]);
+				return (ast_free(root), context_free(ctx), exit(ret));
+			}
+			else
+				return (exec_flow_cmd(ctx, root, node, fds));
 		}
-		else if (pid == 0)
-			return (exec_flow_cmd(ctx, root, node, fds));
 		return ((void) _set_pipe_pid_ret(node, pid, 0));
 	}
 	if (pipe(fds_) == -1)

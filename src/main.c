@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 08:44:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/03 10:16:45 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,11 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 		return (ctx->lst_exit = 2);
 	if (PRINT_AST || PRINT_AST_NO_EXPAND)
 		print_ast(ast);
-	ret = hd_init(ast, ctx);
+	ret = hd_init(ast);
 	if (!ret)
 		ret = exec_wrapper(ctx, ast);
+	else
+		ctx->lst_exit = ret;
 	if (PRINT_AST || PRINT_AST_EXPAND)
 		print_expanded_ast(ast, ctx);
 	ast_free(ast);
@@ -114,9 +116,11 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 	ast = parse_ast(input);
 	if (!ast)
 		return (ctx->lst_exit = 2);
-	ret = hd_init(ast, ctx);
+	ret = hd_init(ast);
 	if (!ret)
 		ret = exec_wrapper(ctx, ast);
+	else
+		ctx->lst_exit = ret;
 	ast_free(ast);
 	return (ret);
 }
@@ -129,6 +133,7 @@ int	main(int argc, char const *argv[], char **envp)
 
 	ret = 0;
 	ctx	= context_init(envp, argv[0]);
+	sig_init(SIGH_MAIN);
 	if (!ctx)
 		return (ret = 1, 1);
 	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))

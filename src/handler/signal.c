@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 10:04:45 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/03 10:36:21 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ void	sigint_handler(int32_t sig)
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
-	printf("SIGH_MAIN: %d\n", g_sig);
 }
 
 void sigint_when_child_handler(int32_t sig)
