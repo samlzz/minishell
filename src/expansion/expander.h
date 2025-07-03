@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 07:59:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/03 10:02:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "ast/ast.h"
 # include "lexer/token.h"
 # include "utils/utils.h"
+# include "handler/handler.h"
 
 // * Argwords
 

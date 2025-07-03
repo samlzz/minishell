@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 08:01:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/03 10:35:23 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,10 @@ static char *_expand_token(t_sh_ctx *ctx, t_token *cur)
 	buf = ft_dynbuf_new(ft_strlen(cur->value));
 	if (!buf.data)
 		return (NULL);
-	exit_code = ft_itoa(ctx->lst_exit);
+	if (g_sig)
+		exit_code = ft_itoa((uint8_t)(128 + g_sig));
+	else
+		exit_code = ft_itoa(ctx->lst_exit);
 	if (!exit_code)
 		return (ft_dynbuf_free(&buf), NULL);
 	while (*input)
