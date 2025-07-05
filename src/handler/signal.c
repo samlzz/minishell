@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 10:36:21 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/05 17:03:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,18 @@ void	sigint_handler(int32_t sig)
 	rl_redisplay();
 }
 
-void sigint_when_child_handler(int32_t sig)
+void	sigint_when_child_handler(int32_t sig)
 {
 	g_sig = sig;
 	write(1, "\n", 1);
+	rl_replace_line("", 0);
+	rl_redisplay();
+}
+
+void	sigquit_when_child_handler(int32_t sig)
+{
+	g_sig = sig;
+	write(2, "Quit (core dumped)\n", 19);
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
@@ -52,6 +60,7 @@ void	sig_init(t_sig_handle action)
 	else if (action == SIGH_RUNNING_CH)
 	{
 		signal(SIGINT, &sigint_when_child_handler);
+		signal(SIGQUIT, &sigquit_when_child_handler);
 	}
 	else if (action == SIGH_HD)
 	{
