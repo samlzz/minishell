@@ -6,19 +6,23 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:39:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:46:38 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
 #include <stdlib.h>
 
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split)
+t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
+																bool is_export)
 {
 	t_argword	*splitted;
 	t_argword	*expanded;
 
-	expand_tild(*cur, ctx->env);
+	if (is_export)
+		expand_tild_export(*cur, ctx->env);
+	else
+		expand_tild(*cur, ctx->env);
 	expanded = fill_argword(ctx, cur);
 	if (!expanded)
 		return (NULL);
@@ -39,7 +43,7 @@ int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
 	t_token		*cur;
 
 	cur = rd->u_data.rd.filename.tk;
-	file = expand_word(ctx, &cur, false);
+	file = expand_word(ctx, &cur, false, false);
 	if (!file)
 		return (1);
 	if (argword_size(file) > 1)
@@ -84,14 +88,18 @@ int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 	t_argword	*args;
 	t_argword	*field;
 	t_token		*cur;
+	bool		is_export;
 
+	is_export = false;
 	args = NULL;
 	cur = cmd->u_data.cmd.args->tk;
 	while (cur)
 	{
-		field = expand_word(ctx, &cur, true);
+		field = expand_word(ctx, &cur, true, is_export);
 		if (!field)
 			return (argword_clear(args), 1);
+		if (args == NULL && field->value && !ft_strcmp(field->value, "export"))
+			is_export = true;
 		argword_add_back(&args, field);
 	}
 	token_clear(cmd->u_data.cmd.args->tk);
