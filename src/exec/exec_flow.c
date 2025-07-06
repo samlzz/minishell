@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/18 15:50:03 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:50:46 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ size_t	exec_wait_get_count(t_ast *node, bool is_hd)
 
 static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
 {
-	t_token	*errtok;
 	char	**argv;
 	size_t	i;
 
@@ -97,9 +96,6 @@ static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
 		return ;
 	if (node->type == ND_REDIR)
 		return (_update_underscore(ctx, node->u_data.rd.child));
-	errtok = NULL;
-	if (!node->u_data.cmd.is_expanded && expand_node(ctx, node, &errtok))
-		return ;
 	argv = &node->u_data.cmd.args->expanded;
 	i = 0;
 	while (argv[i])
@@ -178,8 +174,7 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
-	t_builtin_func	func;
-	t_token			*errtok;
+	uint8_t	ret;
 
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
@@ -191,18 +186,16 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
 		return (ctx->lst_exit);
 	}
-	else if (node->type == ND_CMD)
+	else
 	{
-		errtok = NULL;
-		if (expand_node(ctx, node, &errtok))
-			return (err_print_expand(errtok), context_free(ctx), ast_free(root), 1);
-		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
-			exec_flow_builtin(ctx, root, node, fds);
+		ret = is_builtin(ctx, root, node);
+		if (ret == 2)
+			return (1);
+		else if (ret == 1)
+			exec_flow_cmd(ctx, root, node, fds);
 		else
 			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
 	}
-	else
-		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
 	ctx->lst_exit = _exec_wait(ctx, node);
 	g_sig = 0;
 	return (ctx->lst_exit);
