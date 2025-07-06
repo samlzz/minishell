@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/06 09:43:05 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/06 10:40:42 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,12 +146,19 @@ void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
 	t_builtin_func	func;
+	t_token			*errtok;
 
 	if (node && node->type == ND_REDIR)
 		exec_flow_redir(ctx, root, node, fds);
-	else if (node && node->type == ND_CMD
-		&& get_builtin_func(node->u_data.cmd.args->expanded, &func))
-		exec_flow_builtin(ctx, root, node, fds);
 	else if (node && node->type == ND_CMD)
-		_exec_flow_cmd_cmd(ctx, root, node, fds);
+	{
+		errtok = NULL;
+		if (!node->u_data.cmd.is_expanded && expand_node(ctx, node, &errtok))
+			return (err_print_expand(errtok), _close_all_fds(fds),
+				context_free(ctx), ast_free(root), exit(1));
+		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
+			exec_flow_builtin(ctx, root, node, fds);
+		else
+			_exec_flow_cmd_cmd(ctx, root, node, fds);
+	}
 }
