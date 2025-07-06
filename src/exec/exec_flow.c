@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/03 10:35:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/06 10:07:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,6 +156,8 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
 		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
+		if (ctx->lst_exit == 130)
+			return (ctx->lst_exit);
 		if ((node->type == ND_AND && !ctx->lst_exit) || \
 		(node->type == ND_OR && ctx->lst_exit))
 			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
