@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/06/21 10:05:48 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/07/18 15:48:48 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,6 +57,14 @@ INCLUDES =	$(LIBFT_DIR)/include/	\
 
 ##begin: SRCS
 SRCS =	main.c \
+		builtins/cd.c \
+		builtins/echo.c \
+		builtins/env.c \
+		builtins/exit.c \
+		builtins/export.c \
+		builtins/pwd.c \
+		builtins/unset.c \
+		builtins/utils.c \
 		env/ft_ctx.c \
 		env/ft_env.c \
 		env/ft_env_init.c \

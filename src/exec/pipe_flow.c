@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/03 09:46:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/07 19:22:12 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,8 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3])
 				return (ast_free(root), context_free(ctx), exit(ret));
 			}
 			else
-				return (exec_flow_cmd(ctx, root, node, fds));
+				return (_set_pipe_pid_ret(node, -1, 0),
+					exec_flow_cmd(ctx, root, node, fds));
 		}
 		return ((void) _set_pipe_pid_ret(node, pid, 0));
 	}

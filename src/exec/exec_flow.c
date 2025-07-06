@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/18 12:28:22 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:50:03 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
 	if (node->type == ND_REDIR)
 		return (_update_underscore(ctx, node->u_data.rd.child));
 	errtok = NULL;
-	if (expand_node(ctx, node, &errtok))
+	if (!node->u_data.cmd.is_expanded && expand_node(ctx, node, &errtok))
 		return ;
 	argv = &node->u_data.cmd.args->expanded;
 	i = 0;
@@ -134,7 +134,8 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
-	uint8_t	ret;
+	t_builtin_func	func;
+	t_token			*errtok;
 
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
@@ -145,6 +146,16 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		))
 			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
 		return (ctx->lst_exit);
+	}
+	else if (node->type == ND_CMD)
+	{
+		errtok = NULL;
+		if (expand_node(ctx, node, &errtok))
+			return (err_print_expand(errtok), context_free(ctx), ast_free(root), 1);
+		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
+			exec_flow_builtin(ctx, node, fds, func);
+		else
+			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
 	}
 	else
 	{
@@ -162,10 +173,14 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		dprintf(2, "Exit code: %d\n", ctx->lst_exit);
 	return (ctx->lst_exit);
 }
+
 #else
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
+	t_builtin_func	func;
+	t_token			*errtok;
+
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
 		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
@@ -176,12 +191,23 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
 		return (ctx->lst_exit);
 	}
+	else if (node->type == ND_CMD)
+	{
+		errtok = NULL;
+		if (expand_node(ctx, node, &errtok))
+			return (err_print_expand(errtok), context_free(ctx), ast_free(root), 1);
+		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
+			exec_flow_builtin(ctx, root, node, fds);
+		else
+			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+	}
 	else
 		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
 	ctx->lst_exit = _exec_wait(ctx, node);
 	g_sig = 0;
 	return (ctx->lst_exit);
 }
+
 #endif
 
 uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node)
