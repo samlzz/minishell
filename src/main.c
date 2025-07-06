@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/06 12:52:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/06 15:16:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ int	main(int argc, char const *argv[], char **envp)
 	ctx	= context_init(envp, argv[0]);
 	if (!ctx)
 		return (ret = 1, 1);
+	sig_init(SIGH_MAIN);
 	if (PRINT_ENV)
 		ft_hmap_iter(&ctx->env, &print_entry);
 	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
@@ -135,9 +136,9 @@ int	main(int argc, char const *argv[], char **envp)
 
 	ret = 0;
 	ctx	= context_init(envp, argv[0]);
-	sig_init(SIGH_MAIN);
 	if (!ctx)
 		return (ret = 1, 1);
+	sig_init(SIGH_MAIN);
 	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
 		return (_launch_exec(ctx, argv[2]));
 	while (1)
