@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 10:16:45 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/06 12:52:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,22 @@
 #include <readline/history.h>
 #include <unistd.h>
 
-static inline bool	_skipable(const char *input)
+static inline bool	_skipable(const char *input, t_sh_ctx *ctx)
 {
 	size_t	i;
 
-	if (!ft_strncmp(input, "\n", 1))
+	if (!*input || !ft_strcmp(input, "\n"))
 		return (true);
-	if (!ft_strncmp(input, ":", 1))
-		return (true);
-	if (!ft_strncmp(input, "!", 1))
-		return (true);
+	if (!ft_strcmp(input, ":"))
+		return (ctx->lst_exit = 0, true);
+	if (!ft_strcmp(input, "!"))
+		return (ctx->lst_exit = 1, true);
 	i = 0;
 	while (input[i] && (input[i] == ' ' || input[i] == '\t'))
 		i++;
-	return (!input[i]);
+	if (!input[i])
+		return (ctx->lst_exit = 0, true);
+	return (false);
 }
 
 #ifdef DEBUG_MODE
@@ -95,7 +97,7 @@ int	main(int argc, char const *argv[], char **envp)
 			if (input[ft_strlen(input)] == '\n')
 				input[ft_strlen(input)] = 0;
 		}
-		if (!_skipable(input))
+		if (!_skipable(input, ctx))
 			ret = _launch_exec(ctx, input);
 		free(input);
 		input = ft_itoa((int32_t)ret);
@@ -160,7 +162,7 @@ int	main(int argc, char const *argv[], char **envp)
 			if (input[ft_strlen(input)] == '\n')
 				input[ft_strlen(input)] = 0;
 		}
-		if (!_skipable(input))
+		if (!_skipable(input, ctx))
 			ret = _launch_exec(ctx, input);
 		free(input);
 	}
