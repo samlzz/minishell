@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 09:51:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/06 09:59:10 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ static inline void	_hd_read(int write_fd, char const *delim)
 	while (1)
 	{
 		line = readline(HD_PROMPT);
-		if (!line || (!*line && g_sig == 2) || ft_strcmp(line, delim) == 0)
+		if (!line || g_sig == 2 || ft_strcmp(line, delim) == 0)
 		{
 			free(line);
 			break;
