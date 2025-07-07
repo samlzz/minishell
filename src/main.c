@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 11:31:46 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:52:05 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,8 @@ int	main(int argc, char const *argv[], char **envp)
 		if (!_skipable(input, ctx))
 			ret = _launch_exec(ctx, input);
 		free(input);
+		if (ctx->exit)
+			break ;
 	}
 	context_free(ctx);
 	return (ret);

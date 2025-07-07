@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 13:34:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:53:11 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,7 @@ typedef struct s_sh_ctx
 	const char	*p_name;
 	char		*p_id;
 	bool		use_fallback_path;
+	bool		exit;
 }	t_sh_ctx;
 
 // * Ft Context
