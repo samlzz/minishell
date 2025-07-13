@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:29:00 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 12:25:55 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:55:41 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,5 +123,6 @@ t_env	*env_init(char *const envp[])
 		return (perror("minishell: env_init: malloc"),
 			ft_splitfree(env->entries, env->size), free(env), free(pwd), NULL);
 	free(pwd);
+	env_rm(env, "OLDPWD");
 	return (env);
 }
