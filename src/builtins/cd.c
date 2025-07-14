@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/14 06:07:08 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/14 06:49:10 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,18 +39,16 @@ static inline bool	_check_invalid_opt(int32_t *ac, char ***av)
 static inline bool	_get_dest_dir(char **dst, int32_t ac, char **av,
 																t_sh_ctx *ctx)
 {
-	char	*user;
-
 	*dst = av[0];
 	if (ac == 0)
 	{
-		user = ft_getuser();
-		if (!user)
-			return (perror("minishell: malloc"), false);
-		*dst = ft_gethome(user);
+		*dst = ft_hmap_get(&ctx->env, "HOME");
 		if (!*dst)
-			return (perror("minishell: malloc"), free(user), false);
-		free(user);
+			return (ft_putstr_fd("minishell: cd: HOME not set\n",
+					STDERR_FILENO), false);
+		*dst = ft_strdup(*dst);
+		if (!*dst)
+			return (perror("minishell: malloc"), false);
 	}
 	else if (!ft_strcmp(av[0], "-"))
 	{
