@@ -6,13 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:29:00 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 15:55:41 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:59:31 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 size_t	strtab_len(char *const *tab)
@@ -103,8 +104,9 @@ static inline int16_t	_init_shlvl(t_env *env)
 
 t_env	*env_init(char *const envp[])
 {
-	char	*pwd;
-	t_env	*env;
+	char		*pwd;
+	t_env		*env;
+	struct stat	st;
 
 	env = NULL;
 	if (envp && *envp)
@@ -123,6 +125,8 @@ t_env	*env_init(char *const envp[])
 		return (perror("minishell: env_init: malloc"),
 			ft_splitfree(env->entries, env->size), free(env), free(pwd), NULL);
 	free(pwd);
-	env_rm(env, "OLDPWD");
+	pwd = env_get(env, "OLDPWD");
+	if (pwd && (stat(pwd, &st) || !S_ISDIR(st.st_mode)))
+		env_rm(env, "OLDPWD");
 	return (env);
 }
