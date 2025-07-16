@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 19:29:22 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 09:16:36 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/16 18:26:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,12 @@
 
 # define PRINT_ENV				0
 
-# define PRINT_TOKENS			0
+# define PRINT_TOKENS			1
 
-# define PRINT_AST				0
+# define PRINT_AST				1
 // ? if want to adjust set to 0 ^
 # define PRINT_AST_NO_EXPAND	0
-# define PRINT_AST_EXPAND		1
+# define PRINT_AST_EXPAND		0
 
 # define PRINT_HD_COUNT			1
 // Exec

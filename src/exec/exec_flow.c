@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/06 15:18:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:30:51 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,10 +134,12 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
+	uint8_t	ret;
+
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
 		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
-		if (ctx->lst_exit != 130 && (
+		if (ctx->lst_exit != 130 && !ctx->exit && (
 			(node->type == ND_AND && !ctx->lst_exit) ||
 			(node->type == ND_OR && ctx->lst_exit)
 		))
@@ -145,8 +147,17 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		return (ctx->lst_exit);
 	}
 	else
-		exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+	{
+		ret = is_builtin(ctx, root, node);
+		if (ret == 2)
+			return (1);
+		else if (ret == 1)
+			exec_flow_cmd(ctx, root, node, fds);
+		else
+			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+	}
 	ctx->lst_exit = _exec_wait(ctx, node);
+	g_sig = 0;
 	if (PRINT_EXIT_CODE)
 		dprintf(2, "Exit code: %d\n", ctx->lst_exit);
 	return (ctx->lst_exit);
