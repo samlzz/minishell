@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/14 06:49:10 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/15 13:14:43 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,7 +109,7 @@ int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx)
 		return (1);
 	old = getcwd(NULL, 0);
 	if (!old)
-		return (perror("minishell: malloc"), 1);
+		return (_print_chdir_err(dir, NULL));
 	if (!dir[0])
 		return (_print_and_update_pwd(false, ctx, old));
 	if (chdir(dir))

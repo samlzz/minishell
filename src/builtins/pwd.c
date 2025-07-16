@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/08 06:42:42 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/15 13:12:08 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,8 @@ int32_t	main_pwd(int32_t ac, char **av, t_sh_ctx *ctx)
 		return (2);
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
-		return (ft_putstr_fd("minishell: malloc", STDERR_FILENO), 1);
+		return (perror("pwd: error retrieving current directory: getcwd: "
+			"cannot access parent directories"), 1);
 	ft_putstr_fd(pwd, STDOUT_FILENO);
 	ft_putstr_fd("\n", STDOUT_FILENO);
 	free(pwd);
