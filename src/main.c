@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/06 15:16:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:31:46 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -143,26 +143,9 @@ int	main(int argc, char const *argv[], char **envp)
 		return (_launch_exec(ctx, argv[2]));
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-		{
-			rl_outstream = stderr;
-			input = readline(CMD_PROMPT);
-			if (!input)
-			{
-				ft_putendl_fd("exit", 2);
-				break;
-			}
-			if (*input)
-				add_history(input);
-		}
-		else
-		{
-			ft_getline(&input, STDIN_FILENO);
-			if (!input)
-				break;
-			if (input[ft_strlen(input)] == '\n')
-				input[ft_strlen(input)] = 0;
-		}
+		input = ft_getinput(CMD_PROMPT);
+		if (!input)
+			break ;
 		if (!_skipable(input, ctx))
 			ret = _launch_exec(ctx, input);
 		free(input);
