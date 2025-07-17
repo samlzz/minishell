@@ -6,17 +6,18 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 21:57:43 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:12:50 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:42:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "utils/utils.h"
+#include <stdlib.h>
 
 static int32_t	_env_get_idx(t_env *env, const char *key)
 {
 	char	*eq;
-	int32_t	i;
+	size_t	i;
 
 	i = 0;
 	while (i < env->size)
@@ -64,7 +65,7 @@ static int16_t	_env_resize(t_env *env)
 
 int16_t	env_set(t_env *env, char *entry)
 {
-	size_t	idx;
+	int32_t	idx;
 	char	*eq;
 	char	*key;
 
@@ -105,7 +106,7 @@ int16_t	env_literal_set(t_env *env, const char *key, const char *val)
 
 void	env_rm(t_env *env, const char *key)
 {
-	int32_t	i;
+	size_t	i;
 	int32_t	to_del;
 
 	to_del = _env_get_idx(env, key);

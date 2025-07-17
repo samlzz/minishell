@@ -57,8 +57,9 @@ INCLUDES =	$(LIBFT_DIR)/include/	\
 
 ##begin: SRCS
 SRCS =	main.c \
-		env/init.c \
-		env/wrappers.c \
+		env/ft_ctx.c \
+		env/ft_env.c \
+		env/ft_env_init.c \
 		error/print_err.c \
 		exec/cmd_flow.c \
 		exec/cmd_utils.c \
