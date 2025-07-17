@@ -6,21 +6,21 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/29 18:46:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:41:01 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
 #include <stdlib.h>
 
-static char	*_expand_alone_tild(t_hmap *env, char *username)
+static char	*_expand_alone_tild(t_env *env, char *username)
 {
 	char	*user;
 	char	*home;
 	
 	if (username)
 		return (ft_gethome(username));
-	home = ft_hmap_get(env, "HOME");
+	home = env_get(env, "HOME");
 	if (home)
 		return (ft_strdup(home));
 	user = ft_getuser();
@@ -29,7 +29,7 @@ static char	*_expand_alone_tild(t_hmap *env, char *username)
 	return (home);
 }
 
-static char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
+static char	*_expand_parametered_tild(char *tk_val, t_env *env)
 {
 	char	*home;
 	char	*tmp;
@@ -58,7 +58,7 @@ static char	*_expand_parametered_tild(char *tk_val, t_hmap *env)
 	return (res);
 }
 
-static inline char	*_expand_export_arg(char *arg, t_hmap *env)
+static inline char	*_expand_export_arg(char *arg, t_env *env)
 {
 	char	*eq;
 	char	*tmp;
@@ -80,7 +80,7 @@ static inline char	*_expand_export_arg(char *arg, t_hmap *env)
 	return (eq);
 }
 
-void	expand_tild_export(t_token *argv, t_hmap *env)
+void	expand_tild_export(t_token *argv, t_env *env)
 {
 	char	*tmp;
 
@@ -100,7 +100,7 @@ void	expand_tild_export(t_token *argv, t_hmap *env)
 	}
 }
 
-void	expand_tild(t_token *cur, t_hmap *env)
+void	expand_tild(t_token *cur, t_env *env)
 {
 	char	*tmp;
 

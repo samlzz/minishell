@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cmd_utils.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/30 02:32:58 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:49:43 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,7 @@ char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx)
 		perror("minishell: malloc");
 	if (!av[0] || ft_strchr(av[0], '/'))
 		return (cmd);
-	path_str = ft_hmap_get(&ctx->env, "PATH");
+	path_str = env_get(ctx->env, "PATH");
 	if (!path_str && ctx->use_fallback_path)
 		path_str = ENV_DEFAULT_PATH;
 	else if (!path_str)

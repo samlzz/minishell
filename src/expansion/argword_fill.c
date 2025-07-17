@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 10:35:23 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:39:19 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static int32_t	_put_value(t_sh_ctx *ctx, t_dynbuf *buf, \
 	key = ft_substr(input, 0, i);
 	if (!key)
 		return (-1);
-	val = ft_hmap_get(&ctx->env, key);
+	val = env_get(ctx->env, key);
 	if (!ft_strcmp(key, "PATH") && !val && ctx->use_fallback_path)
 		val = ENV_DEFAULT_PATH;
 	free(key);

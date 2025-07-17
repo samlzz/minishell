@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/18 11:30:51 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:28:22 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,9 +105,9 @@ static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
 	while (argv[i])
 		i++;
 	if (i)
-		env_literal_set(&ctx->env, "_", argv[--i]);
+		env_literal_set(ctx->env, "_", argv[--i]);
 	else
-		env_literal_set(&ctx->env, "_", "");
+		env_literal_set(ctx->env, "_", "");
 }
 
 static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 10:02:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/17 23:40:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,8 +44,8 @@ void		argword_sort(t_argword **head);
 // ? tild expand
 char		*ft_getuser(void);
 char		*ft_gethome(const char *username);
-void		expand_tild(t_token *cur, t_hmap *env);
-void		expand_tild_export(t_token *argv, t_hmap *env);
+void		expand_tild(t_token *cur, t_env *env);
+void		expand_tild_export(t_token *argv, t_env *env);
 
 t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur);
 t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split);
