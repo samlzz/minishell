@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 20:12:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:09:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,12 @@ t_ast	*primary_parser(t_token **cur, t_token **errtok)
 		next(cur);
 		subexpr = logical_parser(cur, errtok);
 		if (!*cur || !subexpr || (*cur)->type != TK_RPAREN)
-			return (ast_free(subexpr), NULL);
+		{
+			if (!*errtok)
+				*errtok = *cur;
+			ast_free(subexpr);
+			return (NULL);
+		}
 		next(cur);
 		subshell = ft_calloc(1, sizeof(t_ast));
 		if (!subshell)
