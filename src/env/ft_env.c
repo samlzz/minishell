@@ -6,13 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 21:57:43 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 12:41:33 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 13:31:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "utils/utils.h"
-#include <stdio.h>
 #include <stdlib.h>
 
 static int32_t	_env_get_idx(t_env *env, const char *key)
@@ -78,7 +77,7 @@ int16_t	env_set(t_env *env, char *entry)
 	else
 		key = ft_strdup(entry);
 	if (!key)
-		return (perror("minishell: env_set: malloc"), 1);
+		return (1);
 	idx = _env_get_idx(env, key);
 	free(key);
 	if (idx != -1)
@@ -88,7 +87,7 @@ int16_t	env_set(t_env *env, char *entry)
 		return (0);
 	}
 	if (_env_resize(env))
-		return (perror("minishell: env_set: malloc"), 1);
+		return (1);
 	env->entries[env->size++] = entry;
 	env->entries[env->size] = NULL;
 	return (0);
@@ -103,8 +102,8 @@ void	env_rm(t_env *env, const char *key)
 	if (to_del == -1)
 		return ;
 	free(env->entries[to_del]);
-	i = 0;
-	while (i < env->size)
+	i = to_del;
+	while (i < env->size - 1)
 	{
 		env->entries[i] = env->entries[i + 1];
 		i++;
