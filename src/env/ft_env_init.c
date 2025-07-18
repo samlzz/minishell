@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:29:00 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 15:59:31 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 23:52:18 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,28 +78,29 @@ static inline int16_t	_init_shlvl(t_env *env)
 {
 	int32_t	curr_lvl;
 	char	*sh_lvl;
+	char	tmp[12];
 
+	tmp[0] = 0;
 	sh_lvl = env_get(env, "SHLVL");
 	if (sh_lvl)
 	{
 		curr_lvl = ft_atoi(sh_lvl) + 1;
 		if (curr_lvl < ENV_SHLVL_MIN)
-			sh_lvl = ft_strdup("0");
+			ft_strlcat(tmp, "0", 12);
 		else if (curr_lvl >= ENV_SHLVL_MAX)
 		{
 			ft_putstr_fd("minishell: warning: shell level (", 2);
 			ft_putnbr_fd(curr_lvl, 2);
 			ft_putendl_fd(") too high, resetting to 1", 2);
-			sh_lvl = ft_strdup("1");
+			ft_strlcat(tmp, "1", 12);
 		}
 		else
-			sh_lvl = ft_itoa(curr_lvl);
-		if (!sh_lvl || env_literal_set(env, "SHLVL", sh_lvl))
-			return (perror("minishell: _init_shlvl: malloc"), free(sh_lvl), 1);
+			ft_itoa_str(tmp, curr_lvl);
+		if (env_literal_set(env, "SHLVL", tmp))
+			return (perror("minishell: _init_shlvl: malloc"), 1);
+		return (0);
 	}
-	else
-		return (env_literal_set(env, "SHLVL", "1"));
-	return (0);
+	return (env_literal_set(env, "SHLVL", "1"));
 }
 
 t_env	*env_init(char *const envp[])
