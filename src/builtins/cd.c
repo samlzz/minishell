@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/15 13:14:43 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 16:22:53 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ static inline bool	_get_dest_dir(char **dst, int32_t ac, char **av,
 	*dst = av[0];
 	if (ac == 0)
 	{
-		*dst = ft_hmap_get(&ctx->env, "HOME");
+		*dst = env_get(ctx->env, "HOME");
 		if (!*dst)
 			return (ft_putstr_fd("minishell: cd: HOME not set\n",
 					STDERR_FILENO), false);
@@ -52,7 +52,7 @@ static inline bool	_get_dest_dir(char **dst, int32_t ac, char **av,
 	}
 	else if (!ft_strcmp(av[0], "-"))
 	{
-		*dst = ft_hmap_get(&ctx->env, "OLDPWD");
+		*dst = env_get(ctx->env, "OLDPWD");
 		if (!*dst)
 			return (ft_putstr_fd("minishell: cd: OLDPWD not set\n",
 					STDERR_FILENO), false);
@@ -79,19 +79,28 @@ static inline int32_t	_print_chdir_err(char *dir, char *old_cwd)
 }
 
 static inline int32_t	_print_and_update_pwd(bool should_print, t_sh_ctx *ctx,
-												char *old_cwd)
+																char *old_cwd)
 {
 	char	*new_cwd;
+	char	*tmp;
 
 	new_cwd = getcwd(NULL, 0);
-	if (!new_cwd || env_set(&ctx->env, "OLDPWD", old_cwd)
-		|| env_set(&ctx->env, "PWD", new_cwd))
+	if (!new_cwd)
 		return (perror("minishell: malloc"), 1);
+	tmp = ft_strjoin("OLDPWD=", old_cwd);
+	if (!tmp)
+		return (perror("minishell: malloc"), free(old_cwd), free(new_cwd), 1);
+	free(old_cwd);
+	if (env_set(ctx->env, tmp))
+		return (perror("minishell: malloc"), free(new_cwd), free(tmp), 1);
+	tmp = ft_strjoin("PWD=", new_cwd);
+	if (!tmp)
+		return (perror("minishell: malloc"), free(new_cwd), 1);
+	free(new_cwd);
+	if (env_set(ctx->env, tmp))
+		return (perror("minishell: malloc"), free(tmp), 1);
 	if (should_print)
-	{
-		ft_putstr_fd(new_cwd, STDOUT_FILENO);
-		ft_putstr_fd("\n", STDOUT_FILENO);
-	}
+		ft_putendl_fd(new_cwd, STDOUT_FILENO);
 	return (0);
 }
 
