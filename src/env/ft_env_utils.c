@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 12:20:49 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 13:34:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 15:45:15 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
+#include "utils/utils.h"
 #include <unistd.h>
 
 int16_t	env_literal_set(t_env *env, const char *key, const char *val)

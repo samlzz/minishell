@@ -60,6 +60,7 @@ SRCS =	main.c \
 		env/ft_ctx.c \
 		env/ft_env.c \
 		env/ft_env_init.c \
+		env/ft_env_utils.c \
 		error/print_err.c \
 		exec/cmd_flow.c \
 		exec/cmd_utils.c \
