@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:29:53 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:35:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_sh_ctx
 }	t_sh_ctx;
 
 // * Ft Context
+
 t_sh_ctx	*context_init(char **envp, const char *argv0);
 void		context_free(t_sh_ctx *ctx);
 
@@ -53,5 +54,9 @@ char	*env_get(t_env *env, const char *key);
 int16_t	env_set(t_env *env, char *entry);
 int16_t	env_literal_set(t_env *env, const char *key, const char *val);
 void	env_rm(t_env *env, const char *key);
+
+void	env_iter(t_env *env, void (*f)(char *));
+void	export_print_entry(char *entry);
+void	env_print_entry(char *entry);
 
 #endif

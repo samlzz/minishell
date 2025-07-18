@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 21:57:43 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 12:22:46 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:41:33 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,8 @@ static int16_t	_env_resize(t_env *env)
 	if (env->size < env->cap)
 		return (0);
 	env->cap *= 2;
+	if (env->cap >= INT32_MAX)
+		return (1);
 	resized = ft_realloc(env->entries, env->size * sizeof (char *),
 		env->cap * sizeof (char *));
 	if (!resized)
@@ -90,19 +92,6 @@ int16_t	env_set(t_env *env, char *entry)
 	env->entries[env->size++] = entry;
 	env->entries[env->size] = NULL;
 	return (0);
-}
-
-int16_t	env_literal_set(t_env *env, const char *key, const char *val)
-{
-	char	*tmp;
-
-	if (val)
-		tmp = ft_str3join(key, "=", val);
-	else
-		tmp = ft_strdup(key);
-	if (!tmp)
-		return (perror("minishell: env_literal_set: malloc"), 1);
-	return (env_set(env, tmp));
 }
 
 void	env_rm(t_env *env, const char *key)
