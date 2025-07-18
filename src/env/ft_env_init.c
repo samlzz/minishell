@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:29:00 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:49:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/18 12:25:55 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ static inline int16_t	_init_shlvl(t_env *env)
 		else
 			sh_lvl = ft_itoa(curr_lvl);
 		if (!sh_lvl || env_literal_set(env, "SHLVL", sh_lvl))
-			return (free(sh_lvl), 1);
+			return (perror("minishell: _init_shlvl: malloc"), free(sh_lvl), 1);
 	}
 	else
 		return (env_literal_set(env, "SHLVL", "1"));
@@ -112,13 +112,16 @@ t_env	*env_init(char *const envp[])
 	else
 		env = ft_calloc(1, sizeof (t_env));
 	if (!env)
-		return (NULL);
+		return (perror("minishell: env_init: malloc"), NULL);
 	if (_init_shlvl(env))
 		return (ft_splitfree(env->entries, env->size), free(env), NULL);
 	pwd = getcwd(NULL, 0);
-	if (!pwd || env_literal_set(env, "PWD", pwd))
-		return (ft_splitfree(env->entries, env->size), 
-			free(env), free(pwd), NULL);
+	if (!pwd)
+		perror("shell-init: error retrieving current directory: getcwd: cannot "
+			"access parent directories");
+	else if (env_literal_set(env, "PWD", pwd))
+		return (perror("minishell: env_init: malloc"),
+			ft_splitfree(env->entries, env->size), free(env), free(pwd), NULL);
 	free(pwd);
 	return (env);
 }
