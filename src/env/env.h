@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 15:53:11 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 17:19:01 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ void		context_free(t_sh_ctx *ctx);
 
 t_env	*env_init(char *const envp[]);
 char	*env_get(t_env *env, const char *key);
+char	**env_get_envp(t_env *env, char *cmd);
 
 int16_t	env_set(t_env *env, char *entry);
 int16_t	env_literal_set(t_env *env, const char *key, const char *val);
