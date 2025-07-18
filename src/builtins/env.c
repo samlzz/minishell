@@ -6,22 +6,26 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/06 05:25:56 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/18 23:38:22 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
 #include <stdio.h>
+#include <unistd.h>
 
 int32_t	main_env(int32_t ac, char **av, t_sh_ctx *ctx)
 {
-	int32_t	i;
+	size_t	i;
+	char	**envp;
 
-	(void) ctx;
-	printf("Executing env:\n");
+	(void) ac, (void) av;
+	envp = env_get_envp(ctx->env, NULL);
+	if (!envp)
+		return (1);
 	i = -1;
-	while (++i < ac)
-		printf("%d:\t%s\n", i, av[i]);
-	printf("%d:\t%s\n", i, av[i]);
+	while (envp[++i])
+		ft_putendl_fd(envp[i], STDOUT_FILENO);
+	ft_splitfree(envp, 0);
 	return (0);
 }
