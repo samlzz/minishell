@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:59:46 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:19:11 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include "error/error.h"
 #include "utils/utils.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 {
@@ -30,7 +31,7 @@ static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 	}
 	curr->value = ft_substr(input, 1, len - 1);
 	if (!curr->value)
-		return (PARSE_ERR);
+		return (perror("minishell: tokenise: malloc"), PARSE_ERR);
 	if (*input == '"')
 		curr->quote = QUOTE_DOUBLE;
 	else
@@ -53,7 +54,7 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 		return (PARSE_ERR_MALFORMED);
 	curr->value = ft_substr(input, 0, len);
 	if (!curr->value)
-		return (PARSE_ERR);
+		return (perror("minishell: tokenise: malloc"), PARSE_ERR);
 	curr->quote = QUOTE_NONE;
 	return (len);
 }
