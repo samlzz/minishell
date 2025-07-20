@@ -6,13 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 21:57:43 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 13:31:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:28:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "env.h"
 #include "utils/utils.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 static int32_t	_env_get_idx(t_env *env, const char *key)
 {
@@ -53,13 +54,16 @@ static int16_t	_env_resize(t_env *env)
 
 	if (env->size < env->cap)
 		return (0);
-	env->cap *= 2;
+	if (!env->cap)
+		env->cap = ENV_MINIMAL_SIZE;
+	else
+		env->cap *= 2;
 	if (env->cap >= INT32_MAX)
 		return (1);
 	resized = ft_realloc(env->entries, env->size * sizeof (char *),
-		env->cap * sizeof (char *));
+		(env->cap + 1) * sizeof (char *));
 	if (!resized)
-		return (env->cap /= 2, 1);
+		return (perror("minishell: env_set: ft_realloc"), env->cap /= 2, 1);
 	free(env->entries);
 	env->entries = resized;
 	return (0);
@@ -77,7 +81,7 @@ int16_t	env_set(t_env *env, char *entry)
 	else
 		key = ft_strdup(entry);
 	if (!key)
-		return (1);
+		return (perror("minishell: env_set: malloc"), 1);
 	idx = _env_get_idx(env, key);
 	free(key);
 	if (idx != -1)

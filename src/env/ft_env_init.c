@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:29:00 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 23:52:18 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:33:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,21 +51,6 @@ char	**strtab_dup(char * const tab[])
 	return (dest);
 }
 
-static inline t_env	*_env_init_from_envp(char * const envp[])
-{
-	t_env	*env;
-
-	env = ft_calloc(1, sizeof (t_env));
-	if (!env)
-		return (perror("minishell: context_init: malloc"), NULL);
-	env->entries = strtab_dup(envp);
-	if (!env->entries)
-		return (free(env), NULL);
-	env->size = strtab_len(env->entries);
-	env->cap = env->size;
-	return (env);
-}
-
 /**
  * @brief Update or set the shell level (SHLVL) in the environment.
  * 
@@ -96,38 +81,56 @@ static inline int16_t	_init_shlvl(t_env *env)
 		}
 		else
 			ft_itoa_str(tmp, curr_lvl);
-		if (env_literal_set(env, "SHLVL", tmp))
-			return (perror("minishell: _init_shlvl: malloc"), 1);
-		return (0);
+		return (env_literal_set(env, "SHLVL", tmp));
 	}
 	return (env_literal_set(env, "SHLVL", "1"));
 }
 
-t_env	*env_init(char *const envp[])
+static inline int16_t	_init_pwds(t_env *env)
 {
-	char		*pwd;
-	t_env		*env;
 	struct stat	st;
+	char		*pwd;
+	char		*tmp;
 
-	env = NULL;
-	if (envp && *envp)
-		env = _env_init_from_envp(envp);
-	else
-		env = ft_calloc(1, sizeof (t_env));
-	if (!env)
-		return (perror("minishell: env_init: malloc"), NULL);
-	if (_init_shlvl(env))
-		return (ft_splitfree(env->entries, env->size), free(env), NULL);
+	pwd = env_get(env, "OLDPWD");
+	if (!pwd)
+	{
+		tmp = ft_strdup("OLDPWD");
+		if (!tmp)
+			return (perror("minishell: env_init: malloc"), 1);
+		env_set(env, tmp);
+	}
+	else if (stat(pwd, &st) || !S_ISDIR(st.st_mode))
+		env_rm(env, "OLDPWD");
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 		perror("shell-init: error retrieving current directory: getcwd: cannot "
 			"access parent directories");
 	else if (env_literal_set(env, "PWD", pwd))
-		return (perror("minishell: env_init: malloc"),
-			ft_splitfree(env->entries, env->size), free(env), free(pwd), NULL);
+		return (perror("minishell: env_init: malloc"), free(pwd), 1);
 	free(pwd);
-	pwd = env_get(env, "OLDPWD");
-	if (pwd && (stat(pwd, &st) || !S_ISDIR(st.st_mode)))
-		env_rm(env, "OLDPWD");
+	return (0);
+}
+
+t_env	*env_init(char *const envp[])
+{
+	t_env		*env;
+
+	env = ft_calloc(1, sizeof (t_env));
+	if (!env)
+		return (perror("minishell: env_init: malloc"), NULL);
+	if (envp && *envp)
+	{
+		env->entries = strtab_dup(envp);
+		if (!env->entries)
+			return (free(env), NULL);
+		env->size = strtab_len(env->entries);
+		env->cap = env->size;
+	}
+	if (_init_pwds(env))
+		return (ft_splitfree(env->entries, env->size), free(env), NULL);
+	if (_init_shlvl(env))
+		return (perror("minishell: env_init: malloc"),
+		ft_splitfree(env->entries, env->size), free(env), NULL);
 	return (env);
 }

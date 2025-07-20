@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 02:56:55 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 15:12:36 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@
 //? limits
 # define ENV_SHLVL_MAX		1000
 # define ENV_SHLVL_MIN		0
+
+# define ENV_MINIMAL_SIZE	4
 
 # define ENV_DEFAULT_PATH	"/usr/local/sbin:/usr/local/bin:/usr/bin"
 
