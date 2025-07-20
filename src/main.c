@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 15:52:05 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:30:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,18 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 	return (ret);
 }
 
+static inline void	_print_env(t_env *env)
+{
+	size_t	i;
+	
+	i = 0;
+	while (i < env->size)
+	{
+		printf("[%zu]: (%s)\n", i, env->entries[i]);
+		i++;
+	}
+}
+
 int	main(int argc, char const *argv[], char **envp)
 {
 	t_sh_ctx	*ctx;
@@ -71,42 +83,23 @@ int	main(int argc, char const *argv[], char **envp)
 	ctx	= context_init(envp, argv[0]);
 	if (!ctx)
 		return (ret = 1, 1);
-	sig_init(SIGH_MAIN);
 	if (PRINT_ENV)
-		ft_hmap_iter(&ctx->env, &print_entry);
+		_print_env(ctx->env);
+	sig_init(SIGH_MAIN);
 	if (argc >= 3 && !ft_strncmp(argv[1], "-c", 3))
 		return (_launch_exec(ctx, argv[2]));
 	while (1)
 	{
-		if (isatty(STDIN_FILENO))
-		{
-			rl_outstream = stderr;
-			input = readline(CMD_PROMPT);
-			if (!input)
-			{
-				ft_putendl_fd("exit", 2);
-				break;
-			}
-			if (*input)
-				add_history(input);
-		}
-		else
-		{
-			ft_getline(&input, STDIN_FILENO);
-			if (!input)
-				break;
-			if (input[ft_strlen(input)] == '\n')
-				input[ft_strlen(input)] = 0;
-		}
+		input = ft_getinput(CMD_PROMPT);
+		if (!input)
+			break ;
 		if (!_skipable(input, ctx))
 			ret = _launch_exec(ctx, input);
 		free(input);
-		input = ft_itoa((int32_t)ret);
-		if (input)
-			env_set(&ctx->env, "?", input);
+		if (ctx->exit)
+			break ;
 	}
-	context_free(ctx);
-	return (ret);
+	return (context_free(ctx), ret);
 }
 
 #else

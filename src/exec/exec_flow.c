@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/18 16:00:56 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:19:07 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,8 +130,7 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 {
-	t_builtin_func	func;
-	t_token			*errtok;
+	uint8_t	ret;
 
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
@@ -142,16 +141,6 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		))
 			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
 		return (ctx->lst_exit);
-	}
-	else if (node->type == ND_CMD)
-	{
-		errtok = NULL;
-		if (expand_node(ctx, node, &errtok))
-			return (err_print_expand(errtok), context_free(ctx), ast_free(root), 1);
-		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
-			exec_flow_builtin(ctx, node, fds, func);
-		else
-			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
 	}
 	else
 	{
