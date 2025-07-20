@@ -83,8 +83,25 @@ static int32_t	_fill_token(const char *input, t_token *curr)
 			+ !(input[1] == '<') * TK_REDIR_IN;
 	else
 		return (_handle_word(input, curr));
-	return (1 + (curr->type == TK_OR || curr->type == TK_AND ||
-		curr->type == TK_REDIR_APPEND || curr->type == TK_HEREDOC));
+	return (1 + (curr->type == TK_OR || curr->type == TK_AND \
+		|| curr->type == TK_REDIR_APPEND || curr->type == TK_HEREDOC));
+}
+
+static inline t_token	*_create_token(char *input, size_t *pos, bool is_first)
+{
+	t_token	*tk;
+	size_t	save;
+
+	tk = ft_calloc(1, sizeof (t_token));
+	if (!tk)
+		return (perror("minishell: tokenise: malloc"), NULL);
+	tk->glued = !is_first;
+	save = *pos;
+	while (input[*pos])
+		(*pos)++;
+	if (*pos != save)
+		tk->glued = false;
+	return (tk);
 }
 
 /**
@@ -118,19 +135,16 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 	while (input[i])
 	{
 		i += offset;
-		curr = ft_calloc(1, sizeof (t_token));
+		curr = _create_token(input, &i, tokens == NULL);
 		if (!curr)
 			return (token_clear(tokens), *exit_code = PARSE_ERR, NULL);
-		curr->glued = tokens != NULL;
-		while (input[i] && ft_isspace(input[i]))
-			i++;
-		if (i)
-			curr->glued = false;
 		offset = _fill_token(input + i, curr);
 		if (offset < 0)
 		{
 			*exit_code = (int16_t)offset;
-			return (free(curr), token_clear(tokens), NULL);
+			token_clear(tokens);
+			free(curr);
+			return (NULL);
 		}
 		token_addback(&tokens, curr);
 	}

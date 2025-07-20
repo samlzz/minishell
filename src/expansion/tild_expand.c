@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:41:01 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:32:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static char	*_expand_alone_tild(t_env *env, char *username)
 {
 	char	*user;
 	char	*home;
-	
+
 	if (username)
 		return (ft_gethome(username));
 	home = env_get(env, "HOME");
@@ -87,10 +87,14 @@ void	expand_tild_export(t_token *argv, t_env *env)
 	while (argv)
 	{
 		tmp = NULL;
-		if (argv && argv->value && argv->quote == QUOTE_NONE && (
-		!argv->next || !argv->next->glued || argv->next->quote == QUOTE_NONE ||
-		ft_strchr(argv->value, '/') || ft_strchr(argv->value, ':')))
+		if (argv && argv->value && argv->quote == QUOTE_NONE \
+			&& (!argv->next || !argv->next->glued \
+				|| argv->next->quote == QUOTE_NONE \
+				|| ft_strchr(argv->value, '/') || ft_strchr(argv->value, ':'))
+		)
+		{
 			tmp = _expand_export_arg(argv->value, env);
+		}
 		if (tmp)
 		{
 			free(argv->value);
@@ -107,10 +111,12 @@ void	expand_tild(t_token *cur, t_env *env)
 	while (cur)
 	{
 		tmp = NULL;
-		if (cur && cur->value && cur->value[0] == '~' && \
-			cur->quote == QUOTE_NONE && !cur->glued && \
-			(!cur->next || !cur->next->glued || cur->next->quote == QUOTE_NONE\
-				|| ft_strchr(cur->value, '/')))
+		if (cur && cur->value && cur->value[0] == '~' \
+			&& cur->quote == QUOTE_NONE && !cur->glued \
+			&& (!cur->next || !cur->next->glued \
+				|| cur->next->quote == QUOTE_NONE \
+				|| ft_strchr(cur->value, '/'))
+		)
 		{
 			if (cur->value[1] == '\0')
 				tmp = _expand_alone_tild(env, NULL);

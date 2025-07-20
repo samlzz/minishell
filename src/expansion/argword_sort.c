@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 10:47:05 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 10:47:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:24:39 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
  */
 static t_argword	*_merge(t_argword *a, t_argword *b)
 {
-	t_argword *result;
+	t_argword	*result;
 
 	if (!a)
 		return (b);

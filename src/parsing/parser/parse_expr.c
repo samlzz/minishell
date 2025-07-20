@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 11:09:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:20:37 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,6 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 		return (free(node), NULL);
 	return (node);
 }
-
 
 /**
  * @brief Parse either a command or a parenthesized subshell expression.

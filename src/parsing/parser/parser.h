@@ -22,7 +22,7 @@
 //? Forward declaration
 typedef struct s_ast		t_ast;
 typedef enum e_node_type	t_node_type;
-typedef	union u_words		t_words;
+typedef union u_words		t_words;
 
 // Parser
 

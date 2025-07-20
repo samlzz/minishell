@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 11:03:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:25:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,7 +93,7 @@ t_argword	*split_withespaces(t_argword *field)
 	{
 		len = field->space_offsets.data[i] - start;
 		if (len > 0 && !_add_word(&lst, field, start, len))
-				return (argword_clear(lst), NULL);
+			return (argword_clear(lst), NULL);
 		start = field->space_offsets.data[i++] + 1;
 	}
 	if (field->value[start] && \

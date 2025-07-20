@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 21:57:43 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:28:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:22:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ static int32_t	_env_get_idx(t_env *env, const char *key)
 		eq = ft_strchr(env->entries[i], '=');
 		if (!eq && ft_strcmp(env->entries[i], key) == 0)
 			return (i);
-		if (eq && !ft_strncmp(env->entries[i], key, eq - env->entries[i]) &&
-		!key[eq - env->entries[i]])
+		if (eq && !ft_strncmp(env->entries[i], key, eq - env->entries[i]) \
+		&& !key[eq - env->entries[i]])
 			return (i);
 		i++;
 	}
@@ -60,7 +60,7 @@ static int16_t	_env_resize(t_env *env)
 		env->cap *= 2;
 	if (env->cap >= INT32_MAX)
 		return (1);
-	resized = ft_realloc(env->entries, env->size * sizeof (char *),
+	resized = ft_realloc(env->entries, env->size * sizeof (char *), \
 		(env->cap + 1) * sizeof (char *));
 	if (!resized)
 		return (perror("minishell: env_set: ft_realloc"), env->cap /= 2, 1);

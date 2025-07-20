@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 20:52:09 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 09:32:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 21:04:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 #include "libft.h"
 #include "ft_gnl.h"
 
-static char	*_extract_value(int fd, char* (*parse_line) (char **, char *), \
+static char	*_extract_value(int fd, char *(*parse_line) (char **, char *),
 	char *to_comp)
 {
 	char	**split;

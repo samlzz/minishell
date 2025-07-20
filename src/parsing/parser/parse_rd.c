@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 18:00:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:19:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 
 	rd_subtree = NULL;
 	expr = NULL;
-	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN
+	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN \
 		|| is_redirection((*cur)->type)))
 	{
 		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)

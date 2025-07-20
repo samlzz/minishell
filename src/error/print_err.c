@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 12:45:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:23:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,14 +59,15 @@ static void	_print_eof_error(t_token *errtok, char *raw)
 /**
  * @brief Print a syntax error message for an unexpected token.
  *
- * Chooses between various representations: unexpanded, value, or token type string.
+ * Chooses between various representations: unexpanded, value, 
+ * or token type string.
  *
  * @param tok The erroneous token.
  * @param input_tk Optional hardcoded token string (e.g., "&").
  */
 static void	_print_syntax_error(t_token *tok, char *input_tk)
 {
-	const char *tk;
+	const char	*tk;
 
 	if (input_tk)
 		tk = input_tk;

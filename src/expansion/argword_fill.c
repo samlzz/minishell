@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:39:19 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 20:25:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ static inline bool	_fill_buffer(t_sh_ctx *ctx, const char **input, \
  * @param cur Current token to expand.
  * @return char* Expanded value string (must be freed), or NULL on error.
  */
-static char *_expand_token(t_sh_ctx *ctx, t_token *cur)
+static char	*_expand_token(t_sh_ctx *ctx, t_token *cur)
 {
 	t_dynbuf	buf;
 	char		*exit_code;
