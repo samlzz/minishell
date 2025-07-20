@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/18 16:22:53 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 14:15:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,11 @@ static inline int32_t	_print_and_update_pwd(bool should_print, t_sh_ctx *ctx,
 	tmp = ft_strjoin("PWD=", new_cwd);
 	if (!tmp)
 		return (perror("minishell: malloc"), free(new_cwd), 1);
-	free(new_cwd);
 	if (env_set(ctx->env, tmp))
-		return (perror("minishell: malloc"), free(tmp), 1);
+		return (perror("minishell: malloc"), free(tmp), free(new_cwd), 1);
 	if (should_print)
 		ft_putendl_fd(new_cwd, STDOUT_FILENO);
+	free(new_cwd);
 	return (0);
 }
 
