@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/18 17:28:49 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 02:58:52 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 	if (!ft_strchr(cmd, '/'))
 		return (_print_cmd_err(cmd, fds), free(cmd), ft_splitfree(argv, 0),
 			context_free(ctx), exit(127));
-	envp = env_get_envp(ctx->env, cmd);
+	envp = env_get_envp(ctx->env, cmd, false);
 	if (!envp)
 		return (_close_all_fds(fds), ft_splitfree(argv, 0), context_free(ctx),
 			free(cmd), exit(1));

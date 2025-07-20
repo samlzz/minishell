@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 12:20:49 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 23:43:37 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 04:49:03 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,36 @@ int16_t	env_literal_set(t_env *env, const char *key, const char *val)
 
 }
 
-static inline char	**_env_get_envp_unset_underscore(char **ret)
+static inline void	_sort_envp(char **envp)
+{
+	size_t	i;
+	size_t	j;
+	char	*tmp;
+	bool	is_sorted;
+
+	i = 0;
+	while (envp[i])
+		i++;
+	while (--i > 0)
+	{
+		is_sorted = true;
+		j = -1;
+		while (++j < i)
+		{
+			if (ft_strcmp(envp[j + 1], envp[j]) < 0)
+			{
+				tmp = envp[j];
+				envp[j] = envp[j + 1];
+				envp[j + 1] = tmp;
+				is_sorted = false;
+			}
+		}
+		if (is_sorted)
+			return ;
+	}
+}
+
+static inline char	**_env_get_envp_unset_underscore(char **ret, bool is_export)
 {
 	size_t	i;
 	size_t	to_del;
@@ -46,15 +75,18 @@ static inline char	**_env_get_envp_unset_underscore(char **ret)
 	free(ret[i + 1]);
 	while (ret[++i])
 		ret[i] = ret[i + 1];
+	if (is_export)
+		_sort_envp(ret);
 	return (ret);
 }
 
-static inline char	**_env_get_envp_set_underscore(char **ret, char *cmd)
+static inline char	**_env_get_envp_set_underscore(char **ret, char *cmd,
+																bool is_export)
 {
 	size_t	i;
 
 	if (!cmd)
-		return (_env_get_envp_unset_underscore(ret));
+		return (_env_get_envp_unset_underscore(ret, is_export));
 	i = -1;
 	while (ret[++i])
 		if (!ft_strncmp(ret[i], "_=", 2))
@@ -63,10 +95,12 @@ static inline char	**_env_get_envp_set_underscore(char **ret, char *cmd)
 	if (!ret[i])
 		return (perror("minishell: malloc"),
 			ft_splitfree(ret, 0), NULL);
+	if (is_export)
+		_sort_envp(ret);
 	return (ret);
 }
 
-char	**env_get_envp(t_env *env, char *cmd)
+char	**env_get_envp(t_env *env, char *cmd, bool is_export)
 {
 	size_t	i;
 	size_t	j;
@@ -75,7 +109,7 @@ char	**env_get_envp(t_env *env, char *cmd)
 	i = -1;
 	j = 0;
 	while (++i < env->size)
-		if (ft_strchr(env->entries[i], '='))
+		if (is_export || ft_strchr(env->entries[i], '='))
 			j++;
 	ret = ft_calloc(j + 3, sizeof(char *));
 	if (!ret)
@@ -86,11 +120,11 @@ char	**env_get_envp(t_env *env, char *cmd)
 	{
 		if (cmd && !ft_strncmp(env->entries[i], "_=", 2))
 			ret[j++] = ft_strjoin("_=", cmd);
-		else if (ft_strchr(env->entries[i], '=')
-				&& ft_strncmp(env->entries[i], "_=", 2))
+		else if (is_export || (ft_strchr(env->entries[i], '=')
+				&& ft_strncmp(env->entries[i], "_=", 2)))
 			ret[j++] = ft_strdup(env->entries[i]);
 		if (j > 0 && !ret[j - 1])
 			return (perror("minishell: malloc"), ft_splitfree(ret, 0), NULL);
 	}
-	return (_env_get_envp_set_underscore(ret, cmd));
+	return (_env_get_envp_set_underscore(ret, cmd, is_export));
 }
