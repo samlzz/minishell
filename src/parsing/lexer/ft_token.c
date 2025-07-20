@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 09:59:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:56:52 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,9 +59,9 @@ void	token_addback(t_token **lst, t_token *new)
  * @param to_retrieve Token to remove.
  * @return t_token* Pointer to removed token, or NULL if not found.
  */
-t_token *token_pop(t_token **lst, t_token *to_retrieve)
+t_token	*token_pop(t_token **lst, t_token *to_retrieve)
 {
-	t_token *prev;
+	t_token	*prev;
 	t_token	*cur;
 
 	prev = NULL;
@@ -93,7 +93,7 @@ t_token	*token_dup(t_token *og)
 {
 	t_token	*copy;
 
-	copy = malloc( sizeof (t_token));
+	copy = malloc(sizeof (t_token));
 	if (!copy)
 		return (NULL);
 	copy->next = NULL;

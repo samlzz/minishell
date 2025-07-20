@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/05 17:03:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:43:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 #include "handler.h"
 
-volatile sig_atomic_t g_sig = 0;
+volatile sig_atomic_t	g_sig = 0;
 
 void	sigint_handler(int32_t sig)
 {

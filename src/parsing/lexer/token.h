@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 09:59:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:57:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ typedef enum e_tk_type
 	TK_EOF
 }	t_tk_type;
 
-typedef	enum e_quote_type
+typedef enum e_quote_type
 {
 	QUOTE_NONE,
 	QUOTE_SINGLE,
@@ -56,7 +56,7 @@ t_token		*tokenise(const char *input, int16_t *exit_code);
 
 //* Ft_token
 void		next(t_token **cur);
-t_token 	*token_pop(t_token **lst, t_token *to_retrieve);
+t_token		*token_pop(t_token **lst, t_token *to_retrieve);
 t_token		*token_dup(t_token *og);
 void		token_clear(t_token *lst);
 void		token_addback(t_token **lst, t_token *new);

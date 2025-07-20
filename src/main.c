@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:30:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:40:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 static inline void	_print_env(t_env *env)
 {
 	size_t	i;
-	
+
 	i = 0;
 	while (i < env->size)
 	{
@@ -80,7 +80,7 @@ int	main(int argc, char const *argv[], char **envp)
 	uint8_t		ret;
 
 	ret = 0;
-	ctx	= context_init(envp, argv[0]);
+	ctx = context_init(envp, argv[0]);
 	if (!ctx)
 		return (ret = 1, 1);
 	if (PRINT_ENV)
@@ -128,7 +128,7 @@ int	main(int argc, char const *argv[], char **envp)
 	uint8_t		ret;
 
 	ret = 0;
-	ctx	= context_init(envp, argv[0]);
+	ctx = context_init(envp, argv[0]);
 	if (!ctx)
 		return (ret = 1, 1);
 	sig_init(SIGH_MAIN);

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 23:29:00 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:33:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:53:43 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@
 size_t	strtab_len(char *const *tab)
 {
 	size_t	i;
-	
+
 	i = 0;
 	while (tab && tab[i])
 		i++;
 	return (i);
 }
 
-char	**strtab_dup(char * const tab[])
+char	**strtab_dup(char *const tab[])
 {
 	int32_t	i;
 	char	**dest;
@@ -54,7 +54,8 @@ char	**strtab_dup(char * const tab[])
 /**
  * @brief Update or set the shell level (SHLVL) in the environment.
  * 
- * Handles overflow or underflow scenarios, and emits a warning if the level is too high.
+ * Handles overflow or underflow scenarios, 
+ * and emits a warning if the level is too high.
  * 
  * @param env The environment hash map.
  * @return int16_t 0 on success, 1 on failure.
@@ -131,6 +132,6 @@ t_env	*env_init(char *const envp[])
 		return (ft_splitfree(env->entries, env->size), free(env), NULL);
 	if (_init_shlvl(env))
 		return (perror("minishell: env_init: malloc"),
-		ft_splitfree(env->entries, env->size), free(env), NULL);
+			ft_splitfree(env->entries, env->size), free(env), NULL);
 	return (env);
 }

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:43:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 12:07:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:44:12 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
 		val_len = 0;
 	while (arg[i])
 	{
-		if (ft_isspace(arg[i])) 
+		if (ft_isspace(arg[i]))
 		{
 			if (!ft_dynint_append(&node->space_offsets, val_len + i))
 				return (0);
@@ -86,7 +86,7 @@ static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
  * @param cur_quote Quote context of the string.
  * @return int16_t 1 on success, 0 on failure.
  */
-int16_t	argword_append_value(t_argword *node, const char *cur_arg, \
+int16_t	argword_append_value(t_argword *node, const char *cur_arg,
 	t_quote_type cur_quote)
 {
 	char	*new_arg;

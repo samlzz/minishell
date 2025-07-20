@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 11:21:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/17 23:48:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:45:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 
 static inline char	*_ft_getpid(void)
 {
-	int32_t errno_;
+	int32_t	errno_;
 	int32_t	fd;
 	char	str[12];
 

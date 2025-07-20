@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/21 11:29:42 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:56:09 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ typedef enum e_redir_type
 	RD_APPEND
 }	t_redir_type;
 
-typedef	union u_words
+typedef union u_words
 {
 	t_token	*tk;
 	char	*expanded;

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:13:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/04/30 18:00:48 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:44:26 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ bool	ft_isspace(int c)
 
 	uc = (unsigned char)c;
 	return (
-		uc == ' ' || uc == '\f' || \
-		uc == '\n' || uc == '\r' || \
+		uc == ' ' || uc == '\f' ||
+		uc == '\n' || uc == '\r' ||
 		uc == '\t' || uc == '\v'
 	);
 }

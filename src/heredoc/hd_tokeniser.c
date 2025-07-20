@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 19:36:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/29 19:14:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:48:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ static bool	_is_token(int c)
 	return (ft_isspace(c) || (uint8_t)c == '"');
 }
 
-static inline t_token	*_new_token(const char *input, size_t *start, \
+static inline t_token	*_new_token(const char *input, size_t *start,
 	bool (*until_not) (int))
 {
 	size_t	len;

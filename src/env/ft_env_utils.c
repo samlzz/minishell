@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 12:20:49 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 04:49:03 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:46:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ int16_t	env_literal_set(t_env *env, const char *key, const char *val)
 	if (!tmp)
 		return (1);
 	return (env_set(env, tmp));
-
 }
 
 static inline void	_sort_envp(char **envp)

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:08:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/16 18:42:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:43:36 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,14 +29,14 @@ bool	is_redirection(t_tk_type type)
 t_redir_type	get_rd_type(t_tk_type tk)
 {
 	if (tk == TK_REDIR_IN)
-		return RD_IN;
+		return (RD_IN);
 	if (tk == TK_REDIR_OUT)
-		return RD_OUT;
+		return (RD_OUT);
 	if (tk == TK_REDIR_APPEND)
-		return RD_APPEND;
+		return (RD_APPEND);
 	if (tk == TK_HEREDOC)
-		return RD_HEREDOC;
-	return -1;
+		return (RD_HEREDOC);
+	return (-1);
 }
 
 char	*ft_getinput(char const *prompt)

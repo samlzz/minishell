@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:12:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/16 18:39:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:44:56 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,11 @@ bool			is_redirection(t_tk_type type);
 t_redir_type	get_rd_type(t_tk_type tk);
 
 // argword
-t_argword		**argword_insert(t_argword **cur, t_argword \
+t_argword		**argword_insert(t_argword **cur, t_argword
 				*next, t_argword *node);
 t_argword		*argword_detach_next(t_argword *node);
 
-int16_t			argword_append_value(t_argword *node, const char *cur_arg, \
+int16_t			argword_append_value(t_argword *node, const char *cur_arg,
 				t_quote_type cur_quote);
 
 // string

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/02 17:40:23 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:49:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 # include <stdlib.h>
 
 # define HD_PROMPT			"> "
-# define HD_CHARSET			"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+# define HD_CHARSET			"abcdefghijklmnopqrstuvwxyz\
+ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 # define HD_CHARSET_LEN		62
 # define HD_FNAME_BASE		"/tmp/.minishell_heredoc_"
 # define HD_FN_LEN			24

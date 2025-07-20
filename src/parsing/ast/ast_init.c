@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/30 09:36:10 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 18:01:39 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static inline void	_words_free(t_words *val, bool expand, bool allocated)
 		{
 			free(val[i++].expanded);
 			if (!allocated)
-				break;
+				break ;
 		}
 	}
 	else
@@ -55,13 +55,14 @@ void	ast_free(t_ast *node)
 		_words_free(node->u_data.cmd.args, node->u_data.cmd.is_expanded, true);
 	else if (node->type == ND_REDIR)
 	{
-		_words_free(&node->u_data.rd.filename, node->u_data.rd.is_expanded, false);
+		_words_free(&node->u_data.rd.filename, node->u_data.rd.is_expanded,
+			false);
 		if (node->u_data.rd.redir_type == RD_HEREDOC && node->u_data.rd.fd > 0)
 			close(node->u_data.rd.fd);
 		ast_free(node->u_data.rd.child);
 	}
-	else if (node->type == ND_PIPE || \
-		node->type == ND_AND || node->type == ND_OR)
+	else if (node->type == ND_PIPE
+		|| node->type == ND_AND || node->type == ND_OR)
 	{
 		ast_free(node->u_data.op.left);
 		ast_free(node->u_data.op.right);

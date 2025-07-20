@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:11:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/01 17:41:14 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:47:59 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int	hd_gen_filename(char *dest)
 	int			fd;
 	uint8_t		buf[8];
 	int32_t		i;
-	
+
 	ft_memmove(dest, HD_FNAME_BASE, HD_FN_LEN);
 	fd = open("/dev/urandom", O_RDONLY);
 	if (fd < 0 || read(fd, buf, sizeof(buf)) != sizeof(buf))
@@ -98,7 +98,7 @@ int16_t	hd_quotes_removing(t_redir *node)
 	char	*filename;
 	char	*tmp;
 	t_token	*cur;
-	
+
 	filename = NULL;
 	cur = node->filename.tk;
 	while (cur)

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/16 18:41:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:47:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static inline void	_hd_read(int write_fd, char const *delim)
 		if (!line || g_sig == 2 || ft_strcmp(line, delim) == 0)
 		{
 			free(line);
-			break;
+			break ;
 		}
 		ft_putendl_fd(line, write_fd);
 		free(line);
@@ -72,7 +72,8 @@ static uint8_t	_hd_rec_init(t_ast *node)
 	}
 	else if (node->type == ND_REDIR)
 		return (_hd_rec_init(node->u_data.rd.child));
-	else if (node->type == ND_PIPE || node->type == ND_AND || node->type == ND_OR)
+	else if (node->type == ND_PIPE || 
+		node->type == ND_AND || node->type == ND_OR)
 	{
 		if (_hd_rec_init(node->u_data.op.left))
 			return (1);
@@ -83,7 +84,7 @@ static uint8_t	_hd_rec_init(t_ast *node)
 	return (0);
 }
 
-int check_rl_done_before_user_entry(void)
+int	check_rl_done_before_user_entry(void)
 {
 	return (0);
 }

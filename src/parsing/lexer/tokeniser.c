@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 15:56:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 17:59:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,14 +75,14 @@ static int32_t	_fill_token(const char *input, t_token *curr)
 	else if (*input == '&')
 		return (PARSE_ERR_SOLO_AND);
 	else if (input[0] == '>')
-		curr->type = (input[1] == '>') * TK_REDIR_APPEND \
+		curr->type = (input[1] == '>') * TK_REDIR_APPEND
 			+ !(input[1] == '>') * TK_REDIR_OUT;
 	else if (input[0] == '<')
-		curr->type = (input[1] == '<') * TK_HEREDOC \
-			+ !(input[1] == '<')  *TK_REDIR_IN;
+		curr->type = (input[1] == '<') * TK_HEREDOC
+			+ !(input[1] == '<') * TK_REDIR_IN;
 	else
 		return (_handle_word(input, curr));
-	return (1 + (curr->type == TK_OR || curr->type == TK_AND || \
+	return (1 + (curr->type == TK_OR || curr->type == TK_AND ||
 		curr->type == TK_REDIR_APPEND || curr->type == TK_HEREDOC));
 }
 
@@ -122,7 +122,9 @@ t_token	*tokenise(const char *input, int16_t *exit_code)
 			return (token_clear(tokens), *exit_code = PARSE_ERR, NULL);
 		curr->glued = tokens != NULL;
 		while (input[i] && ft_isspace(input[i]))
-			(i++, curr->glued = false);
+			i++;
+		if (i)
+			curr->glued = false;
 		offset = _fill_token(input + i, curr);
 		if (offset < 0)
 		{
