@@ -95,7 +95,7 @@ SRCS =	main.c \
 		parsing/parser/parse_rd.c \
 		test/print_ast.c \
 		test/print_token.c \
-		utils/argword_utils.c \
+		utils/expand_utils.c \
 		utils/parse_utils.c \
 		utils/string_utils.c
 ##end: SRCS

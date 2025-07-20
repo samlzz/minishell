@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   argword_utils.c                                    :+:      :+:    :+:   */
+/*   expand_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:43:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:44:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 21:03:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,4 +102,18 @@ int16_t	argword_append_value(t_argword *node, const char *cur_arg,
 	free(node->value);
 	node->value = new_arg;
 	return (1);
+}
+
+bool	is_wildcard(t_dynint wild_offsets, int32_t i)
+{
+	size_t	j;
+
+	j = 0;
+	while (j < wild_offsets.len)
+	{
+		if (wild_offsets.data[j] == i)
+			return (true);
+		j++;
+	}
+	return (false);
 }

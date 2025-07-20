@@ -6,41 +6,36 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 11:03:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/20 21:03:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
+#include "utils/utils.h"
 #include <dirent.h>
 #include <stdlib.h>
 
 #define P 0
 #define T 1
 
-static inline bool	_is_wildcard(t_dynint wild_offsets, int32_t i)
+static inline void	_reassign_nb(int32_t *nb1, int32_t *nb2,
+	int32_t val1, int32_t val2)
 {
-	size_t	j;
-
-	j = 0;
-	while (j < wild_offsets.len)
-	{
-		if (wild_offsets.data[j] == i)
-			return (true);
-		j++;
-	}
-	return (false);
+	*nb1 = val1;
+	*nb2 = val2;
 }
 
 /**
- * @brief Matches a string `txt` against a wildcard pattern `wpat` using selective wildcards.
+ * @brief Matches a string `txt` against a wildcard pattern `wpat`
+ * using selective wildcards.
  *
  * This function implements a greedy pattern matcher.
- * Only '*' characters located at positions stored in `woffsets` are treated as wildcards.
- * All other '*' are matched literally.
+ * Only '*' characters located at positions stored in 
+ * woffsets` are treated as wildcards, other '*' are matched literally.
  *
- * @param wpat The wildcard pattern (may include both active and literal '*')
- * @param txt  The target string (typically a filename) to match against the pattern
- * @param woffsets Dynamic array of positions in `wpat` where '*' are active wildcards
+ * @param wpat Wildcard pattern
+ * @param txt Target string to match against the pattern
+ * @param woffsets Dynamic array of positions in `wpat` of active wildcards
  * 
  * @var `p_t[P]` Current index in pattern (`wpat`)
  * @var `p_t[T]` Current index in text (`txt`)
@@ -53,7 +48,8 @@ static inline bool	_is_wildcard(t_dynint wild_offsets, int32_t i)
  *
  * @return true if `txt` matches the wildcard pattern `wpat`, false otherwise.
  */
-static bool	_globbing_match(const char *wpat, const char *txt, t_dynint woffsets)
+static bool	_globbing_match(const char *wpat, const char *txt,
+	t_dynint woffsets)
 {
 	int32_t	*p_t;
 	int32_t	*lasts;
@@ -63,17 +59,14 @@ static bool	_globbing_match(const char *wpat, const char *txt, t_dynint woffsets
 	while (txt[p_t[T]])
 	{
 		if (wpat[p_t[P]] == '*' && _is_wildcard(woffsets, p_t[P]))
-		{
-			lasts[P] = p_t[P]++;
-			lasts[T] = p_t[T];
-		}
+			_reassign_nb(&lasts[P], &lasts[T], p_t[P]++, p_t[T]);
 		else if (wpat[p_t[P]] == txt[p_t[T]])
-			(p_t[P]++, p_t[T]++);
-		else if (lasts[P] != -1)
 		{
-			p_t[P] = lasts[P] + 1;
-			p_t[T] = ++lasts[T];
+			++p_t[P];
+			++p_t[T];
 		}
+		else if (lasts[P] != -1)
+			_reassign_nb(&p_t[P], p_t[T], lasts[P] + 1, ++lasts[T]);
 		else
 			return (false);
 	}
@@ -101,10 +94,12 @@ static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
 /**
  * @brief Expand a wildcard-containing argword into a list of matched files.
  *
- * Performs matching against the current directory, skipping hidden files unless pattern starts with '.'.
+ * Performs matching against the current directory, 
+ * skipping hidden files unless pattern starts with '.'.
  *
  * @param arg The wildcard argument to expand.
- * @return t_argword* List of matched argwords or NULL on error. List is sorted by their values.
+ * @return t_argword* List of matched argwords or NULL on error. 
+ * List is sorted by their values.
  * 
  * @see ft_strcmp
  */
@@ -118,8 +113,8 @@ t_argword	*expand_wildcards(t_argword *arg)
 	strm = _init_vars(&dir, &match);
 	while (strm)
 	{
-		if (!(*strm->d_name == '.' && *arg->value != '.') && \
-			_globbing_match(arg->value, strm->d_name, arg->wild_offsets))
+		if (!(*strm->d_name == '.' && *arg->value != '.') \
+			&& _globbing_match(arg->value, strm->d_name, arg->wild_offsets))
 		{
 			new = argword_new();
 			if (!new)
