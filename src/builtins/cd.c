@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/20 14:15:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/21 03:17:22 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,6 @@ static inline bool	_get_dest_dir(char **dst, int32_t ac, char **av,
 		if (!*dst)
 			return (ft_putstr_fd("minishell: cd: HOME not set\n",
 					STDERR_FILENO), false);
-		*dst = ft_strdup(*dst);
-		if (!*dst)
-			return (perror("minishell: malloc"), false);
 	}
 	else if (!ft_strcmp(av[0], "-"))
 	{
@@ -56,10 +53,10 @@ static inline bool	_get_dest_dir(char **dst, int32_t ac, char **av,
 		if (!*dst)
 			return (ft_putstr_fd("minishell: cd: OLDPWD not set\n",
 					STDERR_FILENO), false);
-		*dst = ft_strdup(*dst);
-		if (!*dst)
-			return (perror("minishell: malloc"), false);
 	}
+	*dst = ft_strdup(*dst);
+	if (!*dst)
+		return (perror("minishell: malloc"), false);
 	return (true);
 }
 
@@ -71,11 +68,11 @@ static inline int32_t	_print_chdir_err(char *dir, char *old_cwd)
 	errno_ = errno;
 	err = ft_calloc(16 + ft_strlen(dir), sizeof(char));
 	if (!err)
-		return (perror("minishell: malloc"), free(old_cwd), 1);
+		return (perror("minishell: malloc"), free(dir), free(old_cwd), 1);
 	ft_strlcat(err, "minishell: cd: ", 16 + ft_strlen(dir));
 	ft_strlcat(err, dir, 16 + ft_strlen(dir));
 	errno = errno_;
-	return (perror(err), free(err), free(old_cwd), 1);
+	return (perror(err), free(err), free(dir), free(old_cwd), 1);
 }
 
 static inline int32_t	_print_and_update_pwd(bool should_print, t_sh_ctx *ctx,
@@ -120,8 +117,9 @@ int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx)
 	if (!old)
 		return (_print_chdir_err(dir, NULL));
 	if (!dir[0])
-		return (_print_and_update_pwd(false, ctx, old));
+		return (free(dir), _print_and_update_pwd(false, ctx, old));
 	if (chdir(dir))
 		return (_print_chdir_err(dir, old));
-	return (_print_and_update_pwd(ac > 0 && !ft_strcmp(av[0], "-"), ctx, old));
+	return (free(dir), _print_and_update_pwd(ac > 0 && !ft_strcmp(av[0], "-"),
+			ctx, old));
 }
