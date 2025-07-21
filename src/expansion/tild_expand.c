@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:32:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:19:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,8 @@ static inline char	*_expand_export_arg(char *arg, t_env *env)
 		tmp = _expand_alone_tild(env, NULL);
 	else
 		tmp = _expand_parametered_tild(eq + 1, env);
+	if (!tmp)
+		return (NULL);
 	prefix = ft_substr(arg, 0, (eq - arg) + 1);
 	if (!prefix)
 		return (free(tmp), NULL);
