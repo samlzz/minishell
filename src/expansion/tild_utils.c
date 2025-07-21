@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 20:52:09 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 21:04:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:17:59 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,11 @@ static char	*_get_uid_from_line(char **line, char *uid_str)
 char	*ft_getuser(void)
 {
 	struct stat	sb;
-	char		*tty;
 	char		*uid_str;
 	char		*user;
 	int			fd;
 
-	tty = ttyname(STDIN_FILENO);
-	if (!tty || stat(tty, &sb) == -1)
+	if (stat("/proc/self/stat", &sb) == -1)
 		return (NULL);
 	uid_str = ft_itoa(sb.st_uid);
 	if (!uid_str)
