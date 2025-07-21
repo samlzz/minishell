@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 15:47:39 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/21 22:04:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,7 @@ void		expand_tild(t_token *cur, t_env *env);
 void		expand_tild_export(t_token *argv, t_env *env);
 
 t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur);
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
-				bool is_export);
+t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split);
 int16_t		expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok);
 
 t_argword	*split_withespaces(t_argword *field);

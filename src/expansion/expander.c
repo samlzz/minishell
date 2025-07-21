@@ -6,23 +6,19 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/18 15:46:38 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/21 22:13:56 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
 #include <stdlib.h>
 
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
-																bool is_export)
+t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split)
 {
 	t_argword	*splitted;
 	t_argword	*expanded;
 
-	if (is_export)
-		expand_tild_export(*cur, ctx->env);
-	else
-		expand_tild(*cur, ctx->env);
+	expand_tild(*cur, ctx->env);
 	expanded = fill_argword(ctx, cur);
 	if (!expanded)
 		return (NULL);
@@ -43,7 +39,7 @@ int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
 	t_token		*cur;
 
 	cur = rd->u_data.rd.filename.tk;
-	file = expand_word(ctx, &cur, false, false);
+	file = expand_word(ctx, &cur, false);
 	if (!file)
 		return (1);
 	if (argword_size(file) > 1)
@@ -83,24 +79,97 @@ static inline void	_construct_argv(t_words **dest, t_argword *args)
 	}
 }
 
+static inline char	*_get_export_key(t_token *cur)
+{
+	char	*tmp;
+	char	*val;
+	char	*eq;
+
+	val = NULL;
+	while (cur)
+	{
+		tmp = ft_strappend(val, cur->value);
+		free(val);
+		val = tmp;
+		cur = cur->next;
+		if (cur && !cur->glued)
+		{
+			tmp = ft_strappend(val, " ");
+			free(val);
+			val = tmp;
+		}
+		if (!val)
+			return (NULL);
+	}
+	eq = ft_strchr(val, '=');
+	if (eq)
+		*eq = 0;
+	return (val);
+}
+
+static bool	_is_export_valid_key(t_token *cur)
+{
+	size_t	i;
+	bool	resp;
+	char	*key;
+
+	key = _get_export_key(cur);
+	if (!key)
+		return (false);
+	if (*key >= '0' && *key <= '9')
+		return (false);
+	i = 0;
+	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
+		i++;
+	resp = key[i] == '\0';
+	free(key);
+	return (resp);
+}
+
+int16_t	expand_export_args(t_ast *cmd, t_argword **args, t_sh_ctx *ctx)
+{
+	t_argword	*entry;
+	t_token		*head;
+	t_token 	*cur;
+	bool		split;
+
+	cur = cmd->u_data.cmd.args->tk;
+	head = cur;
+	split = true;
+	expand_tild_export(cur, ctx->env);
+	while (cur)
+	{
+		entry = expand_word(ctx, &cur, split);
+		if (!entry)
+			return (argword_clear(*args), 1);
+		argword_add_back(args, entry);
+		if (entry->value && ft_strchr(entry->value, '='))
+			split = !_is_export_valid_key(head);
+	}
+	return (0);
+}
+
 int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 {
 	t_argword	*args;
 	t_argword	*field;
 	t_token		*cur;
-	bool		is_export;
 
-	is_export = false;
 	args = NULL;
 	cur = cmd->u_data.cmd.args->tk;
 	while (cur)
 	{
-		field = expand_word(ctx, &cur, true, is_export);
+		field = expand_word(ctx, &cur, true);
 		if (!field)
 			return (argword_clear(args), 1);
-		if (args == NULL && field->value && !ft_strcmp(field->value, "export"))
-			is_export = true;
 		argword_add_back(&args, field);
+		if (argword_size(args) == 1 && field->value && !ft_strcmp(field->value, "export"))
+		{
+			if (expand_export_args(cmd, &args, ctx))
+				return (1);
+			else
+				break ;
+		}
 	}
 	token_clear(cmd->u_data.cmd.args->tk);
 	free(cmd->u_data.cmd.args);
