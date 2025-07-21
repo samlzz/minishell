@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:19:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:19:37 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	expand_tild(t_token *cur, t_env *env)
 {
 	char	*tmp;
 
-	while (cur)
+	while (cur && cur->type == TK_WORD)
 	{
 		tmp = NULL;
 		if (cur && cur->value && cur->value[0] == '~' \
@@ -132,5 +132,7 @@ void	expand_tild(t_token *cur, t_env *env)
 			cur->quote = QUOTE_SINGLE;
 		}
 		cur = cur->next;
+		if (cur && !cur->glued)
+			break ;
 	}
 }
