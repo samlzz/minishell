@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/20 05:46:09 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/21 02:21:16 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static inline bool	_is_valid_env_name(char *name, bool print_err)
 {
 	size_t	i;
 
-	if (name[0] != '\0' && !ft_isdigit(name[0]))
+	if (name[0] != '\0' && name[0] != '=' && !ft_isdigit(name[0]))
 	{
 		i = 0;
 		while (ft_isalpha(name[i]) || ft_isdigit(name[i]) || name[i] == '_')
