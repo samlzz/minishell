@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:13:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:39:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:21:41 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,16 @@ char	*ft_str3join(const char *s1, const char *s2, const char *s3)
 	ret = ft_strjoin(tmp, s3);
 	free(tmp);
 	return (ret);
+}
+
+bool	ft_strjreplace(char **target, const char *suff)
+{
+	char	*tmp;
+
+	tmp = ft_strappend(*target, suff);
+	if (!tmp)
+		return (true);
+	free(*target);
+	*target = tmp;
+	return (false);
 }

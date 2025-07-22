@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:12:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 21:02:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:21:45 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,5 +41,6 @@ bool			is_wildcard(t_dynint wild_offsets, int32_t i);
 // string
 bool			ft_isspace(int c);
 char			*ft_str3join(const char *s1, const char *s2, const char *s3);
+bool			ft_strjreplace(char **target, const char *suff);
 
 #endif

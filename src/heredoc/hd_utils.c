@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:11:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:20:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:21:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,18 +96,15 @@ void	hd_expand_line(t_sh_ctx *ctx, char **line)
 int16_t	hd_quotes_removing(t_redir *node)
 {
 	char	*filename;
-	char	*tmp;
 	t_token	*cur;
 
 	filename = NULL;
 	cur = node->filename.tk;
 	while (cur)
 	{
-		tmp = ft_strappend(filename, cur->value);
-		free(filename);
-		if (!tmp)
-			return (perror("minishell: hd_quotes_removing: ft_strappend"), 1);
-		filename = tmp;
+		if (ft_strjreplace(&filename, cur->value))
+			return (perror("minishell: hd_quotes_removing: malloc"),
+			free(filename), 1);
 		cur = cur->next;
 		if (!cur || !cur->glued)
 			break ;
