@@ -6,24 +6,35 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 16:05:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 19:46:52 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
 #include <stdlib.h>
 
-static inline bool	_is_export_valid_key(const char *key)
+static bool	_is_export_valid_key(t_token *cur)
 {
 	size_t	i;
 	bool	resp;
+	char	*key;
 
+	key = NULL;
+	while (cur && cur->type != TK_ASSIGN)
+	{
+		if (ft_strjreplace(&key, cur->value))
+			return (free(key), false);
+		cur = cur->next;
+		if (cur && !cur->glued && ft_strjreplace(&key, " "))
+			return (free(key), false);
+	}
 	if (*key >= '0' && *key <= '9')
-		return (false);
+		return (free(key), false);
 	i = 0;
 	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
 		i++;
 	resp = key[i] == '\0';
+	free(key);
 	return (resp);
 }
 
@@ -31,15 +42,18 @@ static t_argword	*_expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 {
 	t_argword 	*args;
 	t_argword	*entry;
+	t_argword	*next;
 	bool		split;
+	bool		val_split;
 	t_argword	*append;
 
 	args = NULL;
+	append = NULL;
 	split = true;
 	expand_tild_export(cur, ctx->env);
-	append = NULL;
 	while (cur)
 	{
+		val_split = !_is_export_valid_key(cur);
 		entry = expand_word(ctx, &cur, split, true);
 		if (!entry)
 			return (argword_clear(args), NULL);
@@ -47,7 +61,14 @@ static t_argword	*_expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 		{
 			if (!argword_append_value(append, entry->value, QUOTE_SINGLE))
 				return (argword_clear(args), NULL);
+			next = entry->next;
+			entry->next = NULL;
 			argword_clear(entry);
+			while (next)
+			{
+				argword_add_back(&args, next);
+				next = next->next;
+			}
 		}
 		else
 			argword_add_back(&args, entry);
@@ -55,13 +76,15 @@ static t_argword	*_expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 		if (cur && cur->type == TK_ASSIGN)
 		{
 			entry = argword_getlast(entry);
-			split = !_is_export_valid_key(entry->value);
+			split = val_split;
 			if (ft_strjreplace(&entry->value, "="))
 				return (argword_clear(args), NULL);
 			cur = cur->next;
 			if (cur && cur->glued)
 				append = entry;
 		}
+		else
+			split = true;
 	}
 	return (args);
 }
