@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/10 11:03:56 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 15:46:03 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,13 @@ size_t	argword_size(t_argword *head)
 	return (i);
 }
 
+t_argword	*argword_getlast(t_argword *lst)
+{
+	while (lst && lst->next)
+		lst = lst->next;
+	return (lst);
+}
+
 void	argword_add_back(t_argword **lst, t_argword *new)
 {
 	t_argword	*last;
@@ -65,9 +72,7 @@ void	argword_add_back(t_argword **lst, t_argword *new)
 		*lst = new;
 		return ;
 	}
-	last = *lst;
-	while (last->next)
-		last = last->next;
+	last = argword_getlast(*lst);
 	last->next = new;
 }
 
