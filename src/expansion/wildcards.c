@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 21:03:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:34:21 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static bool	_globbing_match(const char *wpat, const char *txt,
 	lasts = (int32_t [2]){-1, -1};
 	while (txt[p_t[T]])
 	{
-		if (wpat[p_t[P]] == '*' && _is_wildcard(woffsets, p_t[P]))
+		if (wpat[p_t[P]] == '*' && is_wildcard(woffsets, p_t[P]))
 			_reassign_nb(&lasts[P], &lasts[T], p_t[P]++, p_t[T]);
 		else if (wpat[p_t[P]] == txt[p_t[T]])
 		{
@@ -66,11 +66,11 @@ static bool	_globbing_match(const char *wpat, const char *txt,
 			++p_t[T];
 		}
 		else if (lasts[P] != -1)
-			_reassign_nb(&p_t[P], p_t[T], lasts[P] + 1, ++lasts[T]);
+			_reassign_nb(&p_t[P], &p_t[T], lasts[P] + 1, ++lasts[T]);
 		else
 			return (false);
 	}
-	while (wpat[p_t[P]] == '*' && _is_wildcard(woffsets, p_t[P]))
+	while (wpat[p_t[P]] == '*' && is_wildcard(woffsets, p_t[P]))
 		p_t[P]++;
 	return (wpat[p_t[P]] == '\0');
 }

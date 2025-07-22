@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:12:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:21:45 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:33:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ typedef enum e_quote_type	t_quote_type;
 typedef enum e_redir_type	t_redir_type;
 
 typedef struct s_argword	t_argword;
+typedef	struct s_dynint		t_dynint;
 
 // parsing
 char			*ft_getinput(char const *prompt);

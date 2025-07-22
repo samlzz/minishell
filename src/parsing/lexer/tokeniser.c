@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:21:02 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:44:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,8 @@ static int32_t	_fill_token(const char *input, t_token *curr)
 		|| curr->type == TK_REDIR_APPEND || curr->type == TK_HEREDOC));
 }
 
-static inline t_token	*_create_token(char *input, size_t *pos, bool is_first)
+static inline t_token	*_create_token(const char *input, size_t *pos,
+																bool is_first)
 {
 	t_token	*tk;
 	size_t	save;
@@ -105,7 +106,7 @@ static inline t_token	*_create_token(char *input, size_t *pos, bool is_first)
 		return (perror("minishell: tokenise: malloc"), NULL);
 	tk->glued = !is_first;
 	save = *pos;
-	while (input[*pos])
+	while (input[*pos] && ft_isspace(input[*pos]))
 		(*pos)++;
 	if (*pos != save)
 		tk->glued = false;
