@@ -4,6 +4,7 @@
 const char	*token_type_str(t_tk_type type)
 {
 	if (type == TK_WORD) return "WORD";
+	if (type == TK_ASSIGN) return "ASSIGN";
 	if (type == TK_PIPE) return "PIPE";
 	if (type == TK_AND) return "AND";
 	if (type == TK_OR) return "OR";

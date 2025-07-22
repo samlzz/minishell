@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:57:30 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:20:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,13 +15,12 @@
 
 # include "libft.h"
 
-# ifndef HANDLED_CHAR
-#  define HANDLED_CHAR	"()<>|&'\""
-# endif
+# define HANDLED_CHAR	"=()<>|&'\""
 
 typedef enum e_tk_type
 {
 	TK_WORD,
+	TK_ASSIGN,
 	TK_PIPE,
 	TK_AND,
 	TK_OR,

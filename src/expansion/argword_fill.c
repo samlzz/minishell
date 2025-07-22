@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:25:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:20:49 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ static char	*_expand_token(t_sh_ctx *ctx, t_token *cur)
 	char		*exit_code;
 	const char	*input;
 
-	if (cur->quote == QUOTE_SINGLE)
+	if (cur->type == TK_ASSIGN || cur->quote == QUOTE_SINGLE)
 		return (ft_strdup(cur->value));
 	if (!ft_strcmp(cur->value, "$"))
 		return (ft_strdup("$"));
@@ -132,11 +132,12 @@ static char	*_expand_token(t_sh_ctx *ctx, t_token *cur)
  * Expands values (unless in single quotes), tracks quote state, and merges
  * tokens until unglued token is reached.
  * 
- * @param env Environment hashmap.
+ * @param env Pointer to envrionnement.
  * @param cur Pointer to the current token pointer (will be moved).
+ * @param assign_stop Boolean change if it stop iter on TK_ASSIGN or not
  * @return t_argword* Newly allocated argword node, or NULL on error.
  */
-t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur)
+t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur, bool assign_stop)
 {
 	t_argword	*node;
 	char		*expanded;
@@ -145,7 +146,8 @@ t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur)
 	node = argword_new();
 	if (!node)
 		return (NULL);
-	while (*cur && (*cur)->type == TK_WORD)
+	while (*cur && ((*cur)->type == TK_WORD \
+		|| ((*cur)->type == TK_ASSIGN && !assign_stop)))
 	{
 		expanded = _expand_token(ctx, *cur);
 		if (!expanded)

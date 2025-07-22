@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:19:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:21:02 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,14 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 {
 	int32_t	len;
 
+	if (*input == '=')
+	{
+		curr->type = TK_ASSIGN;
+		curr->value = ft_strdup("=");
+		if (!curr->value)
+			return (PARSE_ERR);
+		return (1);
+	}
 	curr->type = TK_WORD;
 	if (*input == '"' || *input == '\'')
 		return (_handle_quoted_word(input, curr));

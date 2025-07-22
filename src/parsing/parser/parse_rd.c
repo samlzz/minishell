@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:19:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:21:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,13 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 
 	type = get_rd_type((*cur)->type);
 	next(cur);
-	if (!*cur || (*cur)->type != TK_WORD || !*(*cur)->value)
+	if (!*cur || (*cur)->type != TK_WORD || (*cur)->type != TK_ASSIGN \
+	|| !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
 	redir = _new_redir(type);
 	if (!redir)
 		return (NULL);
-	while (*cur && (*cur)->type == TK_WORD)
+	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_ASSIGN))
 	{
 		new = token_dup(*cur);
 		if (!new)
@@ -82,7 +83,8 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 
 	if (!expr)
 		return (primary_parser(cur, errtok));
-	if ((*cur)->type != TK_WORD || expr->type != ND_CMD)
+	if (((*cur)->type != TK_WORD && (*cur)->type != TK_ASSIGN) \
+		|| expr->type != ND_CMD)
 	{
 		*errtok = *cur;
 		return (NULL);
@@ -122,7 +124,7 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 	rd_subtree = NULL;
 	expr = NULL;
 	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN \
-		|| is_redirection((*cur)->type)))
+		|| (*cur)->type == TK_ASSIGN || is_redirection((*cur)->type)))
 	{
 		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)
 			new = _collect_command(cur, expr, errtok);
