@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:01:11 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:24:34 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static bool	_is_export_valid_key(t_token *cur)
 }
 
 static inline int16_t	_handle_assign_tk(t_token **cur, t_argword *args,
-												t_argword **append, bool val_split)
+											t_argword **append, bool val_split)
 {
 	t_argword	*last;
 
@@ -56,7 +56,8 @@ static inline int16_t	_handle_assign_tk(t_token **cur, t_argword *args,
 	return (1);
 }
 
-static inline int16_t	_append_value_and_lst(t_argword **lst, t_argword *target, t_argword **entry)
+static inline int16_t	_append_value_and_lst(t_argword **lst,
+										t_argword *target, t_argword **entry)
 {
 	t_argword	*to_del;
 
@@ -76,10 +77,9 @@ static inline int16_t	_append_value_and_lst(t_argword **lst, t_argword *target, 
 	return (0);
 }
 
-
 t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 {
-	t_argword 	*args;
+	t_argword	*args;
 	t_argword	*entry;
 	int16_t		split;
 	bool		val_split;
@@ -93,7 +93,7 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 	{
 		val_split = !_is_export_valid_key(cur);
 		entry = expand_word(ctx, &cur, split, true);
-		if (!entry) 
+		if (!entry)
 			return (argword_clear(args), NULL);
 		if (_append_value_and_lst(&args, append, &entry))
 			return (argword_clear(args), argword_clear(entry), NULL);
