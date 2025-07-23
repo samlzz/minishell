@@ -36,7 +36,7 @@ static bool	_is_export_valid_key(t_token *cur)
 	if (!i)
 		resp = false;
 	else
-	resp = key[i] == '\0';
+		resp = key[i] == '\0';
 	free(key);
 	return (resp);
 }
@@ -51,8 +51,8 @@ static inline int16_t	_handle_assign_tk(t_token **cur, t_argword **args,
 		if ((*cur)->glued)
 		{
 			last = argword_getlast(*args);
-		if (ft_strjreplace(&last->value, "="))
-			return (-1);
+			if (ft_strjreplace(&last->value, "="))
+				return (-1);
 		}
 		else
 		{
@@ -81,7 +81,9 @@ static inline int16_t	_append_value_and_lst(t_argword **lst,
 		argword_add_back(lst, *entry);
 		return (0);
 	}
-	if (!argword_append_value(target, (*entry)->value, QUOTE_SINGLE))
+	if ((*entry)->value && !argword_append_value(
+		target, (*entry)->value, QUOTE_SINGLE)
+	)
 		return (1);
 	to_del = *entry;
 	*entry = (*entry)->next;
