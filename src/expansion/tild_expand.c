@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:20:34 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 17:17:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,28 +58,17 @@ static char	*_expand_parametered_tild(char *tk_val, t_env *env)
 	return (res);
 }
 
-static inline char	*_expand_export_arg(char *arg, t_env *env)
+static inline char	*_expand_arg(char *arg, t_env *env)
 {
-	char	*eq;
 	char	*tmp;
-	char	*prefix;
 
-	eq = ft_strchr(arg, '=');
-	if (!eq || eq[1] != '~')
+	if (*arg != '~')
 		return (NULL);
-	if (eq[2] == '\0')
+	if (arg[1] == '\0')
 		tmp = _expand_alone_tild(env, NULL);
 	else
-		tmp = _expand_parametered_tild(eq + 1, env);
-	if (!tmp)
-		return (NULL);
-	prefix = ft_substr(arg, 0, (eq - arg) + 1);
-	if (!prefix)
-		return (free(tmp), NULL);
-	eq = ft_strjoin(prefix, tmp);
-	free(prefix);
-	free(tmp);
-	return (eq);
+		tmp = _expand_parametered_tild(arg, env);
+	return (tmp);
 }
 
 void	expand_tild_export(t_token *argv, t_env *env)
@@ -88,6 +77,10 @@ void	expand_tild_export(t_token *argv, t_env *env)
 
 	while (argv)
 	{
+		while (argv && argv->type != TK_ASSIGN)
+			argv = argv->next;
+		if (argv)
+			argv = argv->next;
 		tmp = NULL;
 		if (argv && argv->value && argv->quote == QUOTE_NONE \
 			&& (!argv->next || !argv->next->glued \
@@ -95,14 +88,15 @@ void	expand_tild_export(t_token *argv, t_env *env)
 				|| ft_strchr(argv->value, '/') || ft_strchr(argv->value, ':'))
 		)
 		{
-			tmp = _expand_export_arg(argv->value, env);
+			tmp = _expand_arg(argv->value, env);
 		}
 		if (tmp)
 		{
 			free(argv->value);
 			argv->value = tmp;
 		}
-		argv = argv->next;
+		if (argv)
+			argv = argv->next;
 	}
 }
 
@@ -113,17 +107,14 @@ void	expand_tild(t_token *cur, t_env *env)
 	while (cur)
 	{
 		tmp = NULL;
-		if (cur && cur->value && cur->value[0] == '~' \
+		if (cur && cur->value && *cur->value == '~' \
 			&& cur->quote == QUOTE_NONE && !cur->glued \
 			&& (!cur->next || !cur->next->glued \
 				|| cur->next->quote == QUOTE_NONE \
 				|| ft_strchr(cur->value, '/'))
 		)
 		{
-			if (cur->value[1] == '\0')
-				tmp = _expand_alone_tild(env, NULL);
-			else
-				tmp = _expand_parametered_tild(cur->value, env);
+			tmp = _expand_arg(cur->value, env);
 		}
 		if (tmp)
 		{
