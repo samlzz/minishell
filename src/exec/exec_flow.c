@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/23 21:19:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:30:33 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,7 +144,7 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	}
 	else
 	{
-		ret = is_builtin(ctx, ctx->head, node);
+		ret = is_builtin(ctx, node);
 		if (ret == 2)
 			return (1);
 		else if (ret == 1)
@@ -178,7 +178,7 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	}
 	else
 	{
-		ret = is_builtin(ctx, ctx->head, node);
+		ret = is_builtin(ctx, node);
 		if (ret == 2)
 			return (1);
 		else if (ret == 1)

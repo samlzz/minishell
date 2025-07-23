@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 07:38:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/08 16:30:33 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:30:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ bool	get_builtin_func(char *cmd, t_builtin_func *func)
 	return (!!*func);
 }
 
-uint8_t	is_builtin(t_sh_ctx *ctx, t_ast *root, t_ast *node)
+uint8_t	is_builtin(t_sh_ctx *ctx, t_ast *node)
 {
 	t_token			*errtok;
 	t_builtin_func	func;
@@ -37,13 +37,12 @@ uint8_t	is_builtin(t_sh_ctx *ctx, t_ast *root, t_ast *node)
 	if (!node)
 		return (0);
 	if (node->type == ND_REDIR)
-		return (is_builtin(ctx, root, node->u_data.rd.child));
+		return (is_builtin(ctx, node->u_data.rd.child));
 	else if (node->type == ND_CMD)
 	{
 		errtok = NULL;
 		if (expand_node(ctx, node, &errtok))
-			return (err_print_expand(errtok), context_free(ctx), ast_free(root),
-				2);
+			return (err_print_expand(errtok), context_free(ctx), 2);
 		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
 			return (1);
 	}
