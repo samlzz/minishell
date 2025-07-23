@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/22 21:57:30 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:10:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
 	return (false);
 }
 
-void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3])
+void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *node, int32_t fds[3])
 {
 	int32_t	fds_[2];
 	int32_t	ret;
@@ -62,16 +62,16 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3])
 			sig_init(SIGH_RESTORE);
 			if (node->type == ND_SUBSHELL)
 			{
-				ret = exec_flow_exec(ctx, root, node->u_data.subsh.child, fds);
+				ret = exec_flow_exec(ctx, node->u_data.subsh.child, fds);
 				if (fds[0] != STDIN_FILENO)
 					close(fds[0]);
 				if (fds[1] != STDOUT_FILENO)
 					close(fds[1]);
-				return (ast_free(root), context_free(ctx), exit(ret));
+				return (context_free(ctx), exit(ret));
 			}
 			else
 				return (_set_pipe_pid_ret(node, -1, 0),
-					exec_flow_cmd(ctx, root, node, fds));
+					exec_flow_cmd(ctx, node, fds));
 		}
 		if (fds[0] != STDIN_FILENO)
 			close(fds[0]);
@@ -81,8 +81,8 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3])
 	}
 	if (pipe(fds_) == -1)
 		return (_set_pipe_pid_ret(node, -1, 129), perror("minishell: pipe error"));
-	exec_flow_pipe(ctx, root, node->u_data.op.left, (int32_t[3]){fds[0], fds_[1], fds_[0]});
-	exec_flow_pipe(ctx, root, node->u_data.op.right, (int32_t[3]){fds_[0], fds[1], -1});
+	exec_flow_pipe(ctx, node->u_data.op.left, (int32_t[3]){fds[0], fds_[1], fds_[0]});
+	exec_flow_pipe(ctx, node->u_data.op.right, (int32_t[3]){fds_[0], fds[1], -1});
 	if (fds[1] != STDOUT_FILENO)
 		close(fds[1]);
 }

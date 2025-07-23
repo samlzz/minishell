@@ -6,16 +6,18 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 11:21:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:45:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 01:07:24 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "env.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
+
+#include "env.h"
+#include "ast/ast.h"
 
 static inline char	*_ft_getpid(void)
 {
@@ -65,5 +67,6 @@ void	context_free(t_sh_ctx *ctx)
 	ft_splitfree(ctx->env->entries, ctx->env->size);
 	free(ctx->env);
 	free(ctx->p_id);
+	ast_free(ctx->head);
 	free(ctx);
 }

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/22 20:51:37 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:20:24 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,7 @@ static void	_print_cmd_err(char *cmd, int32_t fds[2])
 	_close_all_fds(fds);
 }
 
-static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	char			**argv;
 	char			**envp;
@@ -98,7 +98,8 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 
 	argv = &node->u_data.cmd.args->expanded;
 	node->u_data.cmd.args = NULL;
-	ast_free(root);
+	ast_free(ctx->head);
+	ctx->head = NULL;
 	cmd = exec_get_cmd_path(argv, ctx);
 	if (!cmd)
 		return (_close_all_fds(fds), ft_splitfree(argv, 0), context_free(ctx),
@@ -118,7 +119,7 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t 
 		ft_splitfree(envp, 0), context_free(ctx), exit(126));
 }
 
-void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	char			**av;
 	int32_t			old_fds[2];
@@ -139,26 +140,25 @@ void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	ret = func(ac, av, ctx);
 	if (node->u_data.cmd.exec_infos.pid == -2)
 		return (node->u_data.cmd.exec_infos.ret = ret, _dup_fds(old_fds));
-	return (_close_all_fds(old_fds), context_free(ctx),
-		ast_free(root), exit(ret));
+	return (_close_all_fds(old_fds), context_free(ctx), exit(ret));
 }
 
-void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	t_builtin_func	func;
 	t_token			*errtok;
 
 	if (node && node->type == ND_REDIR)
-		exec_flow_redir(ctx, root, node, fds);
+		exec_flow_redir(ctx, node, fds);
 	else if (node && node->type == ND_CMD)
 	{
 		errtok = NULL;
 		if (!node->u_data.cmd.is_expanded && expand_node(ctx, node, &errtok))
 			return (err_print_expand(errtok), _close_all_fds(fds),
-				context_free(ctx), ast_free(root), exit(1));
+				context_free(ctx), exit(1));
 		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
-			exec_flow_builtin(ctx, root, node, fds);
+			exec_flow_builtin(ctx, node, fds);
 		else
-			_exec_flow_cmd_cmd(ctx, root, node, fds);
+			_exec_flow_cmd_cmd(ctx, node, fds);
 	}
 }

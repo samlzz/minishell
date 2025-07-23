@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/06/29 19:27:40 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:12:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,9 @@
 #include "ft_gnl.h"
 #include "heredoc/here_doc.h"
 
-static void	_exit_clean(uint8_t code, t_sh_ctx *ctx, t_ast *root, int32_t fds[2])
+static void	_exit_clean(uint8_t code, t_sh_ctx *ctx, int32_t fds[2])
 {
 	context_free(ctx);
-	ast_free(root);
 	if (fds[0] != STDIN_FILENO)
 		close(fds[0]);
 	if (fds[1] != STDOUT_FILENO)
@@ -54,7 +53,7 @@ static void	_open_err(char *filename)
 	free(str);
 }
 
-void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+void	exec_flow_redir(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	t_token	*errtok;
 	char	filename[PATH_MAX];
@@ -64,7 +63,7 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 
 	errtok = NULL;
 	if (expand_node(ctx, node, &errtok))
-		return (err_print_expand(errtok), _exit_clean(1, ctx, root, fds));
+		return (err_print_expand(errtok), _exit_clean(1, ctx, fds));
 	if (node->u_data.rd.redir_type == RD_IN)
 	{
 		if (fds[0] != STDIN_FILENO)
@@ -72,7 +71,7 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		fds[0] = open(node->u_data.rd.filename.expanded, O_RDONLY);
 		if (fds[0] == -1)
 			return (_open_err(node->u_data.rd.filename.expanded),
-				_exit_clean(1, ctx, root, fds));
+				_exit_clean(1, ctx, fds));
 	}
 	else if (node->u_data.rd.redir_type == RD_OUT
 		|| node->u_data.rd.redir_type == RD_APPEND)
@@ -85,7 +84,7 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		fds[1] = open(node->u_data.rd.filename.expanded, oflags, 0644);
 		if (fds[1] == -1)
 			return (_open_err(node->u_data.rd.filename.expanded),
-				_exit_clean(1, ctx, root, fds));
+				_exit_clean(1, ctx, fds));
 	}
 	else if (node->u_data.rd.redir_type == RD_HEREDOC && node->u_data.rd.hd_expand)
 	{
@@ -93,18 +92,18 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 			close(fds[0]);
 		fd = hd_gen_filename(filename);
 		if (fd == -1)
-			return (_open_err(filename), _exit_clean(1, ctx, root, fds));
+			return (_open_err(filename), _exit_clean(1, ctx, fds));
 		fds[0] = open(filename, O_RDONLY);
 		if (fds[0] == -1)
 			return (_open_err(filename), close(fd),
-				_exit_clean(1, ctx, root, fds));
+				_exit_clean(1, ctx, fds));
 		unlink(filename);
 		while (ft_getline(&line, node->u_data.rd.fd))
 		{
 			hd_expand_line(ctx, &line);
 			if (!line)
 				return (perror("minishell: hd_expand_line"), close(fd),
-					close(fds[0]), _exit_clean(1, ctx, root, fds));
+					close(fds[0]), _exit_clean(1, ctx, fds));
 			write(fd, line, ft_strlen(line));
 		}
 		free(line);
@@ -117,8 +116,8 @@ void	exec_flow_redir(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 		fds[0] = node->u_data.rd.fd;
 	}
 	if (node->u_data.rd.child)
-		exec_flow_cmd(ctx, root, node->u_data.rd.child, fds);
+		exec_flow_cmd(ctx, node->u_data.rd.child, fds);
 	else
-		return (_exit_clean(0, ctx, root, fds));
+		return (_exit_clean(0, ctx, fds));
 }
 

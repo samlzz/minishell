@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:46:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 01:07:18 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,8 @@
 
 # define ENV_DEFAULT_PATH	"/usr/local/sbin:/usr/local/bin:/usr/bin"
 
+typedef	struct s_ast	t_ast;
+
 typedef struct s_env
 {
 	char	**entries;
@@ -40,6 +42,7 @@ typedef struct s_sh_ctx
 	uint8_t		lst_exit;
 	const char	*p_name;
 	char		*p_id;
+	t_ast		*head;
 	bool		use_fallback_path;
 	bool		exit;
 }	t_sh_ctx;

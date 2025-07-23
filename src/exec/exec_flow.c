@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/20 17:19:07 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 21:19:41 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,29 +128,29 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 
 #ifdef DEBUG_MODE
 
-uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	uint8_t	ret;
 
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
-		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
+		ctx->lst_exit = exec_flow_exec(ctx, node->u_data.op.left, fds);
 		if (ctx->lst_exit != 130 && !ctx->exit && (
 			(node->type == ND_AND && !ctx->lst_exit) ||
 			(node->type == ND_OR && ctx->lst_exit)
 		))
-			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
+			return (exec_flow_exec(ctx, node->u_data.op.right, fds));
 		return (ctx->lst_exit);
 	}
 	else
 	{
-		ret = is_builtin(ctx, root, node);
+		ret = is_builtin(ctx, ctx->head, node);
 		if (ret == 2)
 			return (1);
 		else if (ret == 1)
-			exec_flow_cmd(ctx, root, node, fds);
+			exec_flow_cmd(ctx, node, fds);
 		else
-			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+			exec_flow_pipe(ctx, node, (int32_t[3]){fds[0], fds[1], -1});
 	}
 	ctx->lst_exit = _exec_wait(ctx, node);
 	g_sig = 0;
@@ -159,31 +159,32 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	return (ctx->lst_exit);
 }
 
+
 #else
 
-uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
+uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	uint8_t	ret;
 
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
-		ctx->lst_exit = exec_flow_exec(ctx, root, node->u_data.op.left, fds);
+		ctx->lst_exit = exec_flow_exec(ctx, node->u_data.op.left, fds);
 		if (ctx->lst_exit != 130 && !ctx->exit && (
 			(node->type == ND_AND && !ctx->lst_exit) ||
 			(node->type == ND_OR && ctx->lst_exit)
 		))
-			return (exec_flow_exec(ctx, root, node->u_data.op.right, fds));
+			return (exec_flow_exec(ctx, node->u_data.op.right, fds));
 		return (ctx->lst_exit);
 	}
 	else
 	{
-		ret = is_builtin(ctx, root, node);
+		ret = is_builtin(ctx, ctx->head, node);
 		if (ret == 2)
 			return (1);
 		else if (ret == 1)
-			exec_flow_cmd(ctx, root, node, fds);
+			exec_flow_cmd(ctx, node, fds);
 		else
-			exec_flow_pipe(ctx, root, node, (int32_t[3]){fds[0], fds[1], -1});
+			exec_flow_pipe(ctx, node, (int32_t[3]){fds[0], fds[1], -1});
 	}
 	ctx->lst_exit = _exec_wait(ctx, node);
 	g_sig = 0;
@@ -199,15 +200,16 @@ uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node)
 	struct termios	tc_out;
 	struct termios	tc_err;
 
+	ctx->head = node;
 	tcgetattr(STDIN_FILENO, &tc_in);
 	tcgetattr(STDOUT_FILENO, &tc_out);
 	tcgetattr(STDERR_FILENO, &tc_err);
-	ret = exec_flow_exec(ctx, node, node, (int32_t[2]){STDIN_FILENO,
-		STDOUT_FILENO});
+	ret = exec_flow_exec(ctx, node, (int32_t[2]){STDIN_FILENO, STDOUT_FILENO});
 	sig_init(SIGH_MAIN);
 	g_sig = 0;
 	tcsetattr(STDIN_FILENO, TCSANOW, &tc_in);
 	tcsetattr(STDOUT_FILENO, TCSANOW, &tc_out);
 	tcsetattr(STDERR_FILENO, TCSANOW, &tc_err);
+	ctx->head = NULL;
 	return (ret);
 }
