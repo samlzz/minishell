@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 19:52:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 20:53:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void		expand_tild(t_token *cur, t_env *env);
 void		expand_tild_export(t_token *argv, t_env *env);
 
 t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur, bool assign_stop);
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
+t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split, \
 														bool assign_stop);
 bool		is_export_cmd(t_token *argv);
 t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx);
