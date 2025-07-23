@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/23 23:02:23 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 00:40:29 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,9 +81,8 @@ static inline int16_t	_append_value_and_lst(t_argword **lst,
 		argword_add_back(lst, *entry);
 		return (0);
 	}
-	if ((*entry)->value && !argword_append_value(
-		target, (*entry)->value, QUOTE_SINGLE)
-	)
+	if ((*entry)->value && !argword_append_value(target, (*entry)->value,
+			QUOTE_SINGLE))
 		return (1);
 	to_del = *entry;
 	*entry = (*entry)->next;
