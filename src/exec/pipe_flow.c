@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/07 19:23:52 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/22 21:57:30 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,14 +73,15 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[3])
 				return (_set_pipe_pid_ret(node, -1, 0),
 					exec_flow_cmd(ctx, root, node, fds));
 		}
+		if (fds[0] != STDIN_FILENO)
+			close(fds[0]);
+		if (fds[1] != STDOUT_FILENO)
+			close(fds[1]);
 		return ((void) _set_pipe_pid_ret(node, pid, 0));
 	}
 	if (pipe(fds_) == -1)
 		return (_set_pipe_pid_ret(node, -1, 129), perror("minishell: pipe error"));
 	exec_flow_pipe(ctx, root, node->u_data.op.left, (int32_t[3]){fds[0], fds_[1], fds_[0]});
-	close(fds_[1]);
-	if (fds[0] != STDIN_FILENO)
-		close(fds[0]);
 	exec_flow_pipe(ctx, root, node->u_data.op.right, (int32_t[3]){fds_[0], fds[1], -1});
 	if (fds[1] != STDOUT_FILENO)
 		close(fds[1]);

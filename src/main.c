@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:40:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 01:06:44 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,8 +145,9 @@ int	main(int argc, char const *argv[], char **envp)
 		if (ctx->exit)
 			break ;
 	}
-	context_free(ctx);
-	return (ret);
+	close(STDIN_FILENO);
+	close(STDOUT_FILENO);
+	return (context_free(ctx), ret);
 }
 
 #endif

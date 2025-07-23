@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/20 02:58:52 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/22 20:51:37 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,7 @@ void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *root, t_ast *node, int32_t fds[2])
 	ret = func(ac, av, ctx);
 	if (node->u_data.cmd.exec_infos.pid == -2)
 		return (node->u_data.cmd.exec_infos.ret = ret, _dup_fds(old_fds));
-	return (_close_fds(fds), _close_fds(old_fds), context_free(ctx),
+	return (_close_all_fds(old_fds), context_free(ctx),
 		ast_free(root), exit(ret));
 }
 
