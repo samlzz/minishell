@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:24:34 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 23:02:23 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,14 @@ static bool	_is_export_valid_key(t_token *cur)
 		if (cur && !cur->glued && ft_strjreplace(&key, " "))
 			return (free(key), false);
 	}
-	if (*key >= '0' && *key <= '9')
+	if (!key || (*key >= '0' && *key <= '9'))
 		return (free(key), false);
 	i = 0;
 	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
 		i++;
+	if (!i)
+		resp = false;
+	else
 	resp = key[i] == '\0';
 	free(key);
 	return (resp);
