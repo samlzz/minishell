@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/23 21:20:24 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 22:06:37 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,6 @@ void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	int32_t			old_fds[2];
 	int32_t			ac;
 	uint8_t			ret;
-	t_builtin_func	func;
 
 	if (node->u_data.cmd.exec_infos.pid == 0)
 		node->u_data.cmd.exec_infos.pid = -2;
@@ -136,8 +135,7 @@ void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	old_fds[0] = dup(STDIN_FILENO);
 	old_fds[1] = dup(STDOUT_FILENO);
 	_dup_fds(fds);
-	get_builtin_func(node->u_data.cmd.args->expanded, &func);
-	ret = func(ac, av, ctx);
+	ret = node->u_data.cmd.bi(ac, av, ctx);
 	if (node->u_data.cmd.exec_infos.pid == -2)
 		return (node->u_data.cmd.exec_infos.ret = ret, _dup_fds(old_fds));
 	return (_close_all_fds(old_fds), context_free(ctx), exit(ret));
@@ -145,7 +143,6 @@ void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 
 void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
-	t_builtin_func	func;
 	t_token			*errtok;
 
 	if (node && node->type == ND_REDIR)
@@ -156,7 +153,7 @@ void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 		if (!node->u_data.cmd.is_expanded && expand_node(ctx, node, &errtok))
 			return (err_print_expand(errtok), _close_all_fds(fds),
 				context_free(ctx), exit(1));
-		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
+		else if (node->u_data.cmd.bi)
 			exec_flow_builtin(ctx, node, fds);
 		else
 			_exec_flow_cmd_cmd(ctx, node, fds);

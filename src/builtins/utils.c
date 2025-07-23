@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 07:38:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/23 21:30:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/23 22:06:07 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ bool	get_builtin_func(char *cmd, t_builtin_func *func)
 uint8_t	is_builtin(t_sh_ctx *ctx, t_ast *node)
 {
 	t_token			*errtok;
-	t_builtin_func	func;
 
 	if (!node)
 		return (0);
@@ -41,9 +40,12 @@ uint8_t	is_builtin(t_sh_ctx *ctx, t_ast *node)
 	else if (node->type == ND_CMD)
 	{
 		errtok = NULL;
-		if (expand_node(ctx, node, &errtok))
+		if (!node->u_data.cmd.is_expanded && expand_node(ctx, node, &errtok))
 			return (err_print_expand(errtok), context_free(ctx), 2);
-		else if (get_builtin_func(node->u_data.cmd.args->expanded, &func))
+		if (node->u_data.cmd.bi || get_builtin_func(
+			node->u_data.cmd.args->expanded, 
+			&node->u_data.cmd.bi)
+		)
 			return (1);
 	}
 	return (0);

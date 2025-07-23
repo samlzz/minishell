@@ -6,17 +6,20 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:56:09 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 01:08:16 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef AST_H
 # define AST_H
 
+# include <sys/types.h>
+
 # include "parser/parser.h"
 # include "expansion/expander.h"
 # include "error/error.h"
-# include <sys/types.h>
+
+typedef int32_t	(*t_builtin_func)(int32_t ac, char **av, t_sh_ctx *ctx);
 
 //* Types
 
@@ -72,9 +75,10 @@ typedef struct s_binop
 // Data (cmd)
 typedef struct s_cmd
 {
-	t_words	*args;
-	bool	is_expanded;
-	t_expr	exec_infos;
+	t_words			*args;
+	bool			is_expanded;
+	t_expr			exec_infos;
+	t_builtin_func	bi;
 }	t_cmd;
 
 // Data (subshell)
