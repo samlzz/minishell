@@ -41,16 +41,28 @@ static bool	_is_export_valid_key(t_token *cur)
 	return (resp);
 }
 
-static inline int16_t	_handle_assign_tk(t_token **cur, t_argword *args,
+static inline int16_t	_handle_assign_tk(t_token **cur, t_argword **args,
 											t_argword **append, bool val_split)
 {
 	t_argword	*last;
 
 	if (*cur && (*cur)->type == TK_ASSIGN)
 	{
-		last = argword_getlast(args);
+		if ((*cur)->glued)
+		{
+			last = argword_getlast(*args);
 		if (ft_strjreplace(&last->value, "="))
 			return (-1);
+		}
+		else
+		{
+			last = argword_new();
+			if (!last)
+				return (-1);
+			last->value = (*cur)->value;
+			(*cur)->value = NULL;
+			argword_add_back(args, last);
+		}
 		next(cur);
 		if (*cur && (*cur)->glued)
 			*append = last;
@@ -101,7 +113,7 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 		if (_append_value_and_lst(&args, append, &entry))
 			return (argword_clear(args), argword_clear(entry), NULL);
 		append = NULL;
-		split = _handle_assign_tk(&cur, args, &append, val_split);
+		split = _handle_assign_tk(&cur, &args, &append, val_split);
 		if (split < 0)
 			return (argword_clear(args), NULL);
 	}
