@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 03:10:49 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 08:38:17 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,6 +125,7 @@ static void	_exec_flow_cmd_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	int32_t			ac;
 	uint8_t			ret;
 
+	sig_init(SIGH_RUNNING_BI);
 	if (node->u_data.cmd.exec_infos.pid == 0)
 		node->u_data.cmd.exec_infos.pid = -2;
 	av = &node->u_data.cmd.args->expanded;

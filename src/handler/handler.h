@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:57 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/03 09:39:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 08:34:53 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef enum e_sig_handle
 	SIGH_RESTORE,
 	SIGH_HD,
 	SIGH_RUNNING_CH,
+	SIGH_RUNNING_BI,
 }	t_sig_handle;
 
 void	sig_init(t_sig_handle action);

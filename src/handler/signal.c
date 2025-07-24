@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:43:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 08:56:13 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,13 @@ void	hd_quit_handler(int32_t sig)
 
 void	sig_init(t_sig_handle action)
 {
+	void	(*h)(int);
+
 	if (action == SIGH_MAIN)
 	{
 		signal(SIGINT, &sigint_handler);
 		signal(SIGQUIT, SIG_IGN);
+		signal(SIGPIPE, SIG_IGN);
 	}
 	else if (action == SIGH_RUNNING_CH)
 	{
@@ -66,9 +69,12 @@ void	sig_init(t_sig_handle action)
 	{
 		signal(SIGINT, &hd_quit_handler);
 	}
-	else if (action == SIGH_RESTORE)
+	else if (action == SIGH_RESTORE || action == SIGH_RUNNING_BI)
 	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
+		h = (void *)((action == SIGH_RESTORE) * (uintptr_t)SIG_DFL
+				+ (action == SIGH_RUNNING_BI) * (uintptr_t)SIG_IGN);
+		signal(SIGINT, h);
+		signal(SIGQUIT, h);
+		signal(SIGPIPE, h);
 	}
 }
