@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/23 22:06:37 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 03:01:18 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "builtins/builtins.h"
 #include "exec/exec.h"
 
 static void	_dup_err(int32_t oldfd, int32_t newfd)
@@ -119,7 +118,7 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 		ft_splitfree(envp, 0), context_free(ctx), exit(126));
 }
 
-void	exec_flow_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
+static void	_exec_flow_cmd_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
 	char			**av;
 	int32_t			old_fds[2];
@@ -154,7 +153,7 @@ void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 			return (err_print_expand(errtok), _close_all_fds(fds),
 				context_free(ctx), exit(1));
 		else if (node->u_data.cmd.bi)
-			exec_flow_builtin(ctx, node, fds);
+			_exec_flow_cmd_builtin(ctx, node, fds);
 		else
 			_exec_flow_cmd_cmd(ctx, node, fds);
 	}
