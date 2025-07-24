@@ -6,13 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 15:52:04 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 21:36:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
+#include "libft.h"
 #include "exec.h"
 #include "env/env.h"
 #include "handler/handler.h"
