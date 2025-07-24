@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:39:29 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:14:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,8 @@ t_ast	*pipe_parser(t_token **cur, t_token **errtok)
 	return (node);
 }
 
+# ifdef MINISHELL_BONUS
+
 static inline bool	_is_logicalop(t_tk_type type)
 {
 	return (type == TK_AND || type == TK_OR);
@@ -80,3 +82,5 @@ t_ast	*logical_parser(t_token **cur, t_token **errtok)
 	}
 	return (left);
 }
+
+#endif

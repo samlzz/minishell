@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:38:39 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:12:28 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 # include <stdbool.h>
 
 # define HANDLED_CHAR	"=()<>|&'\""
+
+# ifdef MINISHELL_BONUS
 
 typedef enum e_tk_type
 {
@@ -33,6 +35,22 @@ typedef enum e_tk_type
 	TK_HEREDOC,
 	TK_EOF
 }	t_tk_type;
+
+# else
+
+typedef enum e_tk_type
+{
+	TK_WORD,
+	TK_ASSIGN,
+	TK_PIPE,
+	TK_REDIR_IN,
+	TK_REDIR_OUT,
+	TK_REDIR_APPEND,
+	TK_HEREDOC,
+	TK_EOF
+}	t_tk_type;
+
+# endif
 
 typedef enum e_quote_type
 {

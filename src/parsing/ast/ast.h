@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:36:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:07:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,6 @@ typedef struct s_sh_ctx	t_sh_ctx;
 typedef int32_t	(*t_builtin_func)(int32_t ac, char **av, t_sh_ctx *ctx);
 
 //* Types
-
-typedef enum e_node_type
-{
-	ND_CMD,
-	ND_PIPE,
-	ND_AND,
-	ND_OR,
-	ND_REDIR,
-	ND_SUBSHELL
-}	t_node_type;
 
 typedef enum e_redir_type
 {
@@ -80,6 +70,18 @@ typedef struct s_cmd
 	t_builtin_func	bi;
 }	t_cmd;
 
+# ifdef MINISHELL_BONUS
+
+typedef enum e_node_type
+{
+	ND_CMD,
+	ND_PIPE,
+	ND_AND,
+	ND_OR,
+	ND_REDIR,
+	ND_SUBSHELL
+}	t_node_type;
+
 // Data (subshell)
 typedef struct s_subshell
 {
@@ -98,6 +100,28 @@ typedef struct s_ast
 		t_subshell	subsh;
 	}	u_data;
 }	t_ast;
+
+# else
+
+typedef enum e_node_type
+{
+	ND_CMD,
+	ND_PIPE,
+	ND_REDIR,
+}	t_node_type;
+
+typedef struct s_ast
+{
+	t_node_type	type;
+	union
+	{
+		t_redir		rd;
+		t_binop		op;
+		t_cmd		cmd;
+	}	u_data;
+}	t_ast;
+
+# endif
 
 //* Functions
 

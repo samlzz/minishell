@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 11:00:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:36:41 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,8 @@
 #include "expansion/expander.h"
 #include "builtins/builtins.h"
 #include "heredoc/here_doc.h"
+
+#ifdef MINISHELL_BONUS
 
 static pid_t	_get_node_pid(t_ast *node)
 {
@@ -60,6 +62,39 @@ static bool	_set_node_ret(t_ast *node, uint8_t ret)
 	}
 	return (false);
 }
+
+#else
+
+static pid_t	_get_node_pid(t_ast *node)
+{
+	if (node && node->type == ND_REDIR && node->u_data.rd.child)
+		return (_get_node_pid(node->u_data.rd.child));
+	else if (node && node->type == ND_REDIR)
+		return (node->u_data.rd.exec_infos.pid);
+	else if (node && node->type == ND_CMD)
+		return (node->u_data.cmd.exec_infos.pid);
+	return (-1);
+}
+
+static bool	_set_node_ret(t_ast *node, uint8_t ret)
+{
+	if (node && node->type == ND_PIPE)
+		return (_set_node_ret(node->u_data.op.left, ret));
+	else if (node && node->type == ND_REDIR
+		&& !_set_node_ret(node->u_data.rd.child, ret))
+	{
+		node->u_data.rd.exec_infos.ret = ret;
+		return (true);
+	}
+	else if (node && node->type == ND_CMD)
+	{
+		node->u_data.cmd.exec_infos.ret = ret;
+		return (true);
+	}
+	return (false);
+}
+
+#endif
 
 static void	_exit_clean(uint8_t code, t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {

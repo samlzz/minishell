@@ -72,24 +72,6 @@ static void	print_ast_generic(t_ast *node, const char *prefix, int is_last, t_sh
 			short_print_tokens(node->u_data.cmd.args->tk);
 		printf("\n");
 	}
-	else if (node->type == ND_PIPE)
-	{
-		printf(BLUE "PIPE" RESET "\n");
-		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
-		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
-	}
-	else if (node->type == ND_AND)
-	{
-		printf(GREEN "AND" RESET "\n");
-		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
-		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
-	}
-	else if (node->type == ND_OR)
-	{
-		printf(MAGENTA "OR" RESET "\n");
-		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
-		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
-	}
 	else if (node->type == ND_REDIR)
 	{
 		const char *expand_hd = "";
@@ -106,13 +88,34 @@ static void	print_ast_generic(t_ast *node, const char *prefix, int is_last, t_sh
 
 		print_ast_generic(node->u_data.rd.child, new_prefix, 1, ctx, expand_cb);
 	}
+	else if (node->type == ND_PIPE)
+	{
+		printf(BLUE "PIPE" RESET "\n");
+		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
+		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
+	}
+# ifdef MINISHELL_BONUS
+	else if (node->type == ND_AND)
+	{
+		printf(GREEN "AND" RESET "\n");
+		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
+		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
+	}
+	else if (node->type == ND_OR)
+	{
+		printf(MAGENTA "OR" RESET "\n");
+		print_ast_generic(node->u_data.op.left, new_prefix, 0, ctx, expand_cb);
+		print_ast_generic(node->u_data.op.right, new_prefix, 1, ctx, expand_cb);
+	}
 	else if (node->type == ND_SUBSHELL)
 	{
 		printf(CYAN "SUBSHELL" RESET "\n");
 		print_ast_generic(node->u_data.subsh.child, new_prefix, 1, ctx, expand_cb);
 	}
+# endif
 }
 
+# ifdef MINISHELL_BONUS
 void	print_ast(t_ast *node)
 {
 	print_ast_generic(node, "", \
@@ -125,3 +128,16 @@ void	print_expanded_ast(t_ast *node, t_sh_ctx *ctx)
 		node->type == ND_AND || node->type == ND_OR || node->type == ND_PIPE, ctx, expand_node);
 }
 
+# else
+
+void	print_ast(t_ast *node)
+{
+	print_ast_generic(node, "", node->type == ND_PIPE, NULL, NULL);
+}
+
+void	print_expanded_ast(t_ast *node, t_sh_ctx *ctx)
+{
+	print_ast_generic(node, "", node->type == ND_PIPE, ctx, expand_node);
+}
+
+# endif

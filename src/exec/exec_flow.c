@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 10:59:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:42:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,10 +16,13 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "builtins/builtins.h"
 #include "exec.h"
+#include "builtins/builtins.h"
 #include "handler/handler.h"
+#include "env/env.h"
 #include "minishell.h"
+
+#ifdef MINISHELL_BONUS
 
 static t_expr	_exec_wait_get_exec_infos(t_ast *node)
 {
@@ -88,6 +91,69 @@ size_t	exec_wait_get_count(t_ast *node, bool is_hd)
 		return (node->u_data.cmd.exec_infos.pid > 0);
 	return (0);
 }
+#else
+
+static t_expr	_exec_wait_get_exec_infos(t_ast *node)
+{
+	t_expr	left;
+
+	if (node->type == ND_PIPE)
+	{
+		left = _exec_wait_get_exec_infos(node->u_data.op.left);
+		if (left.pid == -1 && left.ret == 129)
+			return (left);
+		return (_exec_wait_get_exec_infos(node->u_data.op.right));
+	}
+	else if (node->type == ND_REDIR && node->u_data.rd.child)
+		return (_exec_wait_get_exec_infos(node->u_data.rd.child));
+	else if (node->type == ND_REDIR)
+		return (node->u_data.rd.exec_infos);
+	else if (node->type == ND_CMD)
+		return (node->u_data.cmd.exec_infos);
+	return ((t_expr){-1, -1});
+}
+
+static void	_exec_wait_set_ret(t_ast *node, pid_t pid, uint8_t ret)
+{
+	if (node && node->type == ND_PIPE)
+	{
+		_exec_wait_set_ret(node->u_data.op.left, pid, ret);
+		_exec_wait_set_ret(node->u_data.op.right, pid, ret);
+	}
+	else if (node && node->type == ND_REDIR
+		&& node->u_data.rd.exec_infos.pid == pid)
+		node->u_data.rd.exec_infos.ret = ret;
+	else if (node && node->type == ND_REDIR)
+		_exec_wait_set_ret(node->u_data.rd.child, pid, ret);
+	else if (node && node->type == ND_CMD && node->u_data.cmd.exec_infos.pid == pid)
+		node->u_data.cmd.exec_infos.ret = ret;
+}
+
+size_t	exec_wait_get_count(t_ast *node, bool is_hd)
+{
+	if (!node)
+		return (0);
+	if (node->type == ND_PIPE || is_hd)
+		return (exec_wait_get_count(node->u_data.op.left, is_hd)
+			+ exec_wait_get_count(node->u_data.op.right, is_hd));
+	else if (node->type == ND_REDIR)
+	{
+		if (node->u_data.rd.child && is_hd)
+			return (
+				exec_wait_get_count(node->u_data.rd.child, is_hd) +
+				node->u_data.rd.exec_infos.pid > 0
+			);
+		else if (node->u_data.rd.child)
+			return (exec_wait_get_count(node->u_data.rd.child, is_hd));
+		else
+			return (node->u_data.rd.exec_infos.pid > 0);
+	}
+	else if (node->type == ND_CMD)
+		return (node->u_data.cmd.exec_infos.pid > 0);
+	return (0);
+}
+
+#endif
 
 static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
 {
@@ -128,7 +194,7 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 	return (_exec_wait_get_exec_infos(node).ret);
 }
 
-#ifdef DEBUG_MODE
+#ifdef MINISHELL_BONUS
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
@@ -153,35 +219,19 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	}
 	ctx->lst_exit = _exec_wait(ctx, node);
 	g_sig = 0;
-	if (PRINT_EXIT_CODE)
-		dprintf(2, "Exit code: %d\n", ctx->lst_exit);
 	return (ctx->lst_exit);
 }
-
 
 #else
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
-	if (node->type == ND_AND || node->type == ND_OR)
-	{
-		ctx->lst_exit = exec_flow_exec(ctx, node->u_data.op.left, fds);
-		if (ctx->lst_exit != 130 && !ctx->exit && (
-			(node->type == ND_AND && !ctx->lst_exit) ||
-			(node->type == ND_OR && ctx->lst_exit)
-		))
-			return (exec_flow_exec(ctx, node->u_data.op.right, fds));
-		return (ctx->lst_exit);
-	}
+	if (!set_builtin_func(ctx, node))
+		return (1);
+	else if (is_builtin(node))
+		exec_flow_cmd(ctx, node, fds);
 	else
-	{
-		if (!set_builtin_func(ctx, node))
-			return (1);
-		else if (is_builtin(node))
-			exec_flow_cmd(ctx, node, fds);
-		else
-			exec_flow_pipe(ctx, node, (int32_t[3]){fds[0], fds[1], -1});
-	}
+		exec_flow_pipe(ctx, node, (int32_t[3]){fds[0], fds[1], -1});
 	ctx->lst_exit = _exec_wait(ctx, node);
 	g_sig = 0;
 	return (ctx->lst_exit);

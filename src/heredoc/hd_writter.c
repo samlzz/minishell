@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:54:48 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:19:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,8 @@ static uint8_t	_hd_process(t_redir *hd)
 	return (ret);
 }
 
+#ifdef MINISHELL_BONUS
+
 static uint8_t	_hd_rec_init(t_ast *node)
 {
 	uint8_t	ec;
@@ -86,6 +88,35 @@ static uint8_t	_hd_rec_init(t_ast *node)
 		return (_hd_rec_init(node->u_data.subsh.child));
 	return (0);
 }
+
+#else
+
+static uint8_t	_hd_rec_init(t_ast *node)
+{
+	uint8_t	ec;
+
+	if (!node)
+		return (0);
+	else if (node->type == ND_REDIR && node->u_data.rd.redir_type == RD_HEREDOC)
+	{
+		ec = _hd_process(&node->u_data.rd);
+		if (ec)
+			return (ec);
+		return (_hd_rec_init(node->u_data.rd.child));
+	}
+	else if (node->type == ND_REDIR)
+		return (_hd_rec_init(node->u_data.rd.child));
+	else if (node->type == ND_PIPE)
+	{
+		if (_hd_rec_init(node->u_data.op.left))
+			return (1);
+		return (_hd_rec_init(node->u_data.op.right));
+	}
+	return (0);
+}
+
+#endif
+
 
 int	check_rl_done_before_user_entry(void)
 {
