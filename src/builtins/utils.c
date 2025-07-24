@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 07:38:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 03:14:21 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 07:27:41 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ bool	set_builtin_func(t_sh_ctx *ctx, t_ast *node)
 	if (!node)
 		return (true);
 	else if (node->type == ND_REDIR)
-		return (set_builtin_func(ctx, node));
+		return (set_builtin_func(ctx, node->u_data.rd.child));
 	else if (node->type == ND_PIPE)
 		return (set_builtin_func(ctx, node->u_data.op.left)
 			&& set_builtin_func(ctx, node->u_data.op.right));
