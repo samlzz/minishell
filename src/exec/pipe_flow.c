@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 09:43:29 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:50:55 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,30 @@ static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
 	return (false);
 }
 
+static void	_dup_err(int32_t oldfd, int32_t newfd)
+{
+	char str[61];
+
+	str[0] = 0;
+	ft_strlcat(str, "minishell: cannot duplicate fd ", 61);
+	ft_itoa_str(str + ft_strlen(str), oldfd);
+	ft_strlcat(str, " to fd ", 61);
+	ft_itoa_str(str + ft_strlen(str), newfd);
+	perror(str);
+}
+
+static void _dup_fds(int32_t fds[2])
+{
+	if (dup2(fds[1], STDOUT_FILENO) == -1)
+		_dup_err(fds[1], STDOUT_FILENO);
+	if (fds[1] != STDOUT_FILENO)
+		close(fds[1]);
+	if (dup2(fds[0], STDIN_FILENO) == -1)
+		_dup_err(fds[0], STDIN_FILENO);
+	if (fds[0] != STDIN_FILENO)
+		close(fds[0]);
+}
+
 void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *node, int32_t fds[3])
 {
 	int32_t	fds_[2];
@@ -63,11 +87,11 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *node, int32_t fds[3])
 			sig_init(SIGH_RESTORE);
 			if (node->type == ND_SUBSHELL)
 			{
-				ret = exec_flow_exec(ctx, node->u_data.subsh.child, fds);
-				if (fds[0] != STDIN_FILENO)
-					close(fds[0]);
-				if (fds[1] != STDOUT_FILENO)
-					close(fds[1]);
+				_dup_fds(fds);
+				ret = exec_flow_exec(ctx, node->u_data.subsh.child,
+						(int32_t[2]){STDIN_FILENO, STDOUT_FILENO});
+				close(STDIN_FILENO);
+				close(STDOUT_FILENO);
 				return (context_free(ctx), exit(ret));
 			}
 			else
