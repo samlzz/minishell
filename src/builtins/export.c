@@ -6,7 +6,7 @@
 /*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/21 02:21:16 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 19:40:36 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,9 +51,9 @@ static inline bool	_is_valid_env_name(char *name, bool print_err)
 	}
 	if (!print_err)
 		return (false);
-	ft_putstr_fd("minishell: export: `", STDOUT_FILENO);
-	ft_putstr_fd(name, STDOUT_FILENO);
-	ft_putstr_fd("': not a valid identifier\n", STDOUT_FILENO);
+	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
+	ft_putstr_fd(name, STDERR_FILENO);
+	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
 	return (false);
 }
 
