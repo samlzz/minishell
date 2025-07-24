@@ -6,11 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-<<<<<<< HEAD
-/*   Updated: 2025/07/24 15:41:38 by sliziard         ###   ########.fr       */
-=======
-/*   Updated: 2025/07/24 11:35:47 by sliziard         ###   ########.fr       */
->>>>>>> 59053d7 (feat!: add a MINISHELL_BONUS flag that compile bonus or not)
+/*   Updated: 2025/07/24 15:52:04 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
