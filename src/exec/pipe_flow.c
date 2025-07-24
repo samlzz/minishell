@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/23 21:10:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 09:43:29 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,10 @@ static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
 {
 	if (node && node->type == ND_PIPE)
 		return (_set_pipe_pid_ret(node->u_data.op.left, pid, ret));
-	else if (node && node->type == ND_REDIR
-		&& !_set_pipe_pid_ret(node->u_data.rd.child, pid, ret))
+	else if (node && node->type == ND_REDIR)
 	{
+		if (_set_pipe_pid_ret(node->u_data.rd.child, pid, ret))
+			return (true);
 		node->u_data.rd.exec_infos.pid = pid;
 		node->u_data.rd.exec_infos.ret = ret;
 		return (true);
