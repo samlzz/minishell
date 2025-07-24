@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 01:55:30 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 04:05:02 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,6 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
-	uint8_t	ret;
-
 	if (node->type == ND_AND || node->type == ND_OR)
 	{
 		ctx->lst_exit = exec_flow_exec(ctx, node->u_data.op.left, fds);
@@ -145,10 +143,9 @@ uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	}
 	else
 	{
-		ret = is_builtin(ctx, node);
-		if (ret == 2)
+		if (!set_builtin_func(ctx, node))
 			return (1);
-		else if (ret == 1)
+		else if (is_builtin(node))
 			exec_flow_cmd(ctx, node, fds);
 		else
 			exec_flow_pipe(ctx, node, (int32_t[3]){fds[0], fds[1], -1});
