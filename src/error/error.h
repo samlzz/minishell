@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:59:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/26 12:12:29 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:40:30 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define ERROR_H
 
 # include "lexer/token.h"
-# include <errno.h>
 
 //? Error codes
 # define PARSE_OK				0

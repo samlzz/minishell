@@ -6,19 +6,23 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 01:06:44 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:42:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "exec/exec.h"
-#include "ft_gnl.h"
-#include "minishell.h"
-#include "heredoc/here_doc.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <unistd.h>
+
+#include "libft.h"
+#include "minishell.h"
+#include "env/env.h"
+#include "handler/handler.h"
+#include "utils.h"
+#include "heredoc/here_doc.h"
+#include "exec/exec.h"
 
 static inline bool	_skipable(const char *input, t_sh_ctx *ctx)
 {

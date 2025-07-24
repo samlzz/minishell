@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 01:08:16 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:36:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,8 @@
 # include <sys/types.h>
 
 # include "parser/parser.h"
-# include "expansion/expander.h"
-# include "error/error.h"
 
+typedef struct s_sh_ctx	t_sh_ctx;
 typedef int32_t	(*t_builtin_func)(int32_t ac, char **av, t_sh_ctx *ctx);
 
 //* Types

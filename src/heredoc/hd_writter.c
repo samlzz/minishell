@@ -6,18 +6,21 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:41:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:54:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "here_doc.h"
-#include "env/env.h"
-#include "exec/exec.h"
-#include "handler/handler.h"
+#include <stdlib.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
+#include "libft.h"
+#include "here_doc.h"
+#include "utils.h"
+#include "env/env.h"
+#include "handler/handler.h"
 
 static inline void	_hd_read(int write_fd, char const *delim)
 {

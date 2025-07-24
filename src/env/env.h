@@ -6,14 +6,16 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 01:07:18 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:53:29 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ENV_H
 # define ENV_H
 
-# include "ft_hmap.h"
+#include <stddef.h>
+#include <stdbool.h>
+#include <stdint.h>
 
 # ifndef PATH_MAX
 #  define PATH_MAX 4096

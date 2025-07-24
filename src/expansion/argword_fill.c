@@ -6,13 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/04 13:00:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:20:49 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:49:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
+
 #include "expander.h"
 #include "env/env.h"
-#include <stdlib.h>
+#include "handler/handler.h"
 
 /**
  * @brief Appends the value of a variable to the buffer from the input string.

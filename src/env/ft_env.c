@@ -6,14 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 21:57:43 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:22:30 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:54:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "env.h"
-#include "utils/utils.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "libft.h"
+#include "env.h"
 
 static int32_t	_env_get_idx(t_env *env, const char *key)
 {

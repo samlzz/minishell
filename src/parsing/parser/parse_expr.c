@@ -6,12 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:21:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:39:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast/ast.h"
 #include <stdlib.h>
+
+#include "libft.h"
+#include "ast/ast.h"
 
 t_words	*collect_args(t_token **cur, t_token **errtok)
 {

@@ -1,5 +1,6 @@
 #include "ast/ast.h"
 #include "expansion/expander.h" 
+#include "error/error.h"
 #include <stdio.h>
 
 #define RESET   "\033[0m"

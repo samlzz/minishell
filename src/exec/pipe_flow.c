@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 11:50:55 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 15:41:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "exec/exec.h"
+#include "exec.h"
+#include "env/env.h"
 #include "handler/handler.h"
 
 static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)

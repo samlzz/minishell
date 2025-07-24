@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 04:05:02 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:59:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 #include <unistd.h>
 
 #include "builtins/builtins.h"
-#include "exec/exec.h"
+#include "exec.h"
+#include "handler/handler.h"
 #include "minishell.h"
 
 static t_expr	_exec_wait_get_exec_infos(t_ast *node)

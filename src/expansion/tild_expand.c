@@ -6,12 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 21:23:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/23 17:17:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:50:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
 #include <stdlib.h>
+
+#include "expander.h"
 
 static char	*_expand_alone_tild(t_env *env, char *username)
 {

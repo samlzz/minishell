@@ -57,6 +57,7 @@ INCLUDES =	$(LIBFT_DIR)/include/	\
 
 ##begin: SRCS
 SRCS =	main.c \
+		utils.c \
 		builtins/cd.c \
 		builtins/echo.c \
 		builtins/env.c \
@@ -77,6 +78,7 @@ SRCS =	main.c \
 		exec/redir_flow.c \
 		expansion/argword_fill.c \
 		expansion/argword_sort.c \
+		expansion/expand_utils.c \
 		expansion/expander.c \
 		expansion/export_expander.c \
 		expansion/field_splitting.c \
@@ -94,11 +96,9 @@ SRCS =	main.c \
 		parsing/parser/parse_binop.c \
 		parsing/parser/parse_expr.c \
 		parsing/parser/parse_rd.c \
+		parsing/parser/rd_utils.c \
 		test/print_ast.c \
-		test/print_token.c \
-		utils/expand_utils.c \
-		utils/parse_utils.c \
-		utils/string_utils.c
+		test/print_token.c
 ##end: SRCS
 
 OBJS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))

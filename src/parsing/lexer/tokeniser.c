@@ -6,15 +6,17 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:44:48 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:48:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "token.h"
-#include "error/error.h"
-#include "utils/utils.h"
 #include <stdlib.h>
 #include <stdio.h>
+
+#include "libft.h"
+#include "token.h"
+#include "utils.h"
+#include "error/error.h"
 
 static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 {

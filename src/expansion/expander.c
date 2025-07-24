@@ -6,12 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/23 20:57:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:49:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
 #include <stdlib.h>
+
+#include "expander.h"
 
 t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
 															bool assign_stop)

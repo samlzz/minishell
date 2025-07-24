@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 11:21:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 01:07:24 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:53:40 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "libft.h"
 #include "env.h"
 #include "ast/ast.h"
 

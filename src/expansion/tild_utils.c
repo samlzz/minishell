@@ -6,17 +6,18 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 20:52:09 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:17:59 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:50:33 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+
 #include "libft.h"
 #include "ft_gnl.h"
+#include "expander.h"
 
 static char	*_extract_value(int fd, char *(*parse_line) (char **, char *),
 	char *to_comp)

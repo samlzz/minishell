@@ -6,12 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 15:46:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:50:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
 #include <stdlib.h>
+
+#include "expander.h"
 
 /**
  * @brief Allocate and initialize a new argword node.

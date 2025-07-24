@@ -6,13 +6,19 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:11:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/23 20:58:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:47:45 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+#include "libft.h"
 #include "here_doc.h"
-#include "unistd.h"
-#include "fcntl.h"
+#include "utils.h"
+#include "expansion/expander.h"
 
 /**
  * @brief Generate a unique temporary heredoc filename.

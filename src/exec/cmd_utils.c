@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 09:11:02 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:33:16 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "exec/exec.h"
+#include "libft.h"
+#include "exec.h"
+#include "utils.h"
+#include "env/env.h"
 
 static bool	_test_paths(char **paths, char *cmd, char **ret)
 {

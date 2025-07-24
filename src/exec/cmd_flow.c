@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 09:24:47 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:33:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include "exec/exec.h"
+#include "libft.h"
+#include "exec.h"
+#include "env/env.h"
+#include "handler/handler.h"
 
 static void	_dup_err(int32_t oldfd, int32_t newfd)
 {

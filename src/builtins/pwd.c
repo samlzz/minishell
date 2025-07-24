@@ -6,13 +6,16 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/20 20:21:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:57:12 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
 #include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
+
+#include "libft.h"
+#include "builtins.h"
 
 static inline bool	_check_invalid_opt(int32_t ac, char **av)
 {

@@ -6,14 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:34:21 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:46:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
-#include "utils/utils.h"
 #include <dirent.h>
-#include <stdlib.h>
+
+#include "expander.h"
+#include "utils.h"
 
 #define P 0
 #define T 1

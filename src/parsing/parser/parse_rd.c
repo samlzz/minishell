@@ -6,13 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 07:28:32 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:47:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast/ast.h"
-#include "utils/utils.h"	
 #include <stdlib.h>
+
+#include "libft.h"
+#include "ast/ast.h"
 
 static inline t_ast	*_new_redir(t_redir_type type)
 {

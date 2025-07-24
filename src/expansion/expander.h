@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/23 20:53:50 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:47:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,8 +17,6 @@
 # include "env/env.h"
 # include "ast/ast.h"
 # include "lexer/token.h"
-# include "utils/utils.h"
-# include "handler/handler.h"
 
 // * Argwords
 
@@ -39,6 +37,15 @@ void		argword_add_back(t_argword **lst, t_argword *new);
 void		argword_clear(t_argword *lst);
 
 void		argword_sort(t_argword **head);
+
+// utils
+t_argword	**argword_insert(t_argword **cur, t_argword *next, 
+					t_argword *node);
+t_argword	*argword_detach_next(t_argword *node);
+int16_t		argword_append_value(t_argword *node, const char *cur_arg, \
+					t_quote_type cur_quote);
+
+bool		is_wildcard(t_dynint wild_offsets, int32_t i);
 
 // * Expand
 

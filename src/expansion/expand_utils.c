@@ -6,13 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:43:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 21:03:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:49:32 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
+
 #include "utils.h"
 #include "expansion/expander.h"
-#include <stdlib.h>
 
 t_argword	*argword_detach_next(t_argword *node)
 {

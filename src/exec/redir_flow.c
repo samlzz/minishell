@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 08:21:36 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:00:27 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "builtins/builtins.h"
-#include "exec/exec.h"
+#include "libft.h"
 #include "ft_gnl.h"
+#include "exec.h"
+#include "error/error.h"
+#include "expansion/expander.h"
+#include "builtins/builtins.h"
 #include "heredoc/here_doc.h"
 
 static pid_t	_get_node_pid(t_ast *node)

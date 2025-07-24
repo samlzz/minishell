@@ -6,14 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:20:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:38:39 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKEN_H
 # define TOKEN_H
 
-# include "libft.h"
+# include <stdint.h>
+# include <stdbool.h>
 
 # define HANDLED_CHAR	"=()<>|&'\""
 

@@ -6,15 +6,17 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 12:20:49 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:46:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:54:23 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "env.h"
-#include "utils/utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+
+#include "libft.h"
+#include "env.h"
+#include "utils.h"
 
 int16_t	env_literal_set(t_env *env, const char *key, const char *val)
 {

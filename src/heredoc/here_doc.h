@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:49:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:43:15 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define HERE_DOC_H
 
 # include "ast/ast.h"
-# include <stdlib.h>
 
 # define HD_PROMPT			"> "
 # define HD_CHARSET			"abcdefghijklmnopqrstuvwxyz\

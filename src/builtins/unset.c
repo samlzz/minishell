@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/19 16:36:05 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:57:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
 #include <stdio.h>
 #include <unistd.h>
+
+#include "libft.h"
+#include "builtins.h"
 
 static inline bool	_check_invalid_opt(int32_t *ac, char ***av)
 {

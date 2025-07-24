@@ -6,12 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 09:16:24 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:33:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
 #include <stdlib.h>
+
+#include "expander.h"
+#include "utils.h"
 
 static bool	_is_export_valid_key(t_token *cur)
 {

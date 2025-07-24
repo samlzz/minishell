@@ -6,12 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 17:14:26 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 17:56:52 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:48:39 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "token.h"
 #include <stdlib.h>
+
+#include "token.h"
 
 /**
  * @brief Advance a token cursor to the next token.

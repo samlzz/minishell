@@ -6,10 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:30:40 by sliziard          #+#    #+#             */
-/*   Updated: 2025/06/27 20:11:27 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:39:29 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+#include <errno.h>
+
+#include "libft.h"
 #include "ast/ast.h"
 
 void	*parse_err(char const *msg, t_ast *to_free)
@@ -21,7 +25,7 @@ void	*parse_err(char const *msg, t_ast *to_free)
 	return (NULL);
 }
 
-// right_associative
+// ? right_associative
 t_ast	*pipe_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*node;
@@ -49,7 +53,7 @@ static inline bool	_is_logicalop(t_tk_type type)
 	return (type == TK_AND || type == TK_OR);
 }
 
-// left associative
+// ? left associative
 t_ast	*logical_parser(t_token **cur, t_token **errtok)
 {
 	t_ast	*node;

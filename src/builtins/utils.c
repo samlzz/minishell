@@ -6,11 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 07:38:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 07:27:41 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:58:14 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "libft.h"
 #include "builtins.h"
+#include "expansion/expander.h"
+#include "error/error.h"
 
 static inline void	_get_builtin_func(char *cmd, t_builtin_func *func)
 {

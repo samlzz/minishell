@@ -6,13 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 18:01:39 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:40:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ast.h"
 #include <stdlib.h>
 #include <unistd.h>
+
+#include "ast.h"
+#include "error/error.h"
 // TODO: for debug
 #include "minishell.h"
 

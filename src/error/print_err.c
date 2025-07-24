@@ -6,12 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:23:08 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:52:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "error.h"
 #include <stdio.h>
+#include <errno.h>
+
+#include "error.h"
+#include "libft.h"
 
 void	err_print_expand(t_token *errtok)
 {

@@ -3,16 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/20 02:58:42 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:56:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "builtins.h"
 #include <stdio.h>
 #include <unistd.h>
+
+#include "libft.h"
+#include "builtins.h"
 
 int32_t	main_env(int32_t ac, char **av, t_sh_ctx *ctx)
 {

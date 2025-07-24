@@ -1,17 +1,50 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   string_utils.c                                     :+:      :+:    :+:   */
+/*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:13:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:21:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 10:33:42 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
 #include <stdlib.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <unistd.h>
+
+#include "libft.h"
+#include "ft_gnl.h"
+
+char	*ft_getinput(char const *prompt)
+{
+	size_t	len;
+	char	*input;
+
+	if (isatty(STDIN_FILENO))
+	{
+		rl_outstream = stderr;
+		input = readline(prompt);
+		if (!input)
+			return (ft_putendl_fd("exit", 2), NULL);
+		if (*input)
+			add_history(input);
+	}
+	else
+	{
+		ft_getline(&input, STDIN_FILENO);
+		if (!input)
+			return (NULL);
+		len = ft_strlen(input) - 1;
+		if (input[len] == '\n')
+			input[len] = '\0';
+	}
+	return (input);
+}
 
 bool	ft_isspace(int c)
 {
