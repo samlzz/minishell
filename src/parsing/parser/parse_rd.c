@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/22 21:21:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/24 07:28:32 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static t_ast	*_parse_single_redir(t_token **cur, t_token **errtok)
 
 	type = get_rd_type((*cur)->type);
 	next(cur);
-	if (!*cur || (*cur)->type != TK_WORD || (*cur)->type != TK_ASSIGN \
+	if (!*cur || ((*cur)->type != TK_WORD && (*cur)->type != TK_ASSIGN)
 	|| !*(*cur)->value)
 		return ((*errtok = *cur), NULL);
 	redir = _new_redir(type);
