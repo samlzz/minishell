@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 08:38:17 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/24 09:47:59 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,8 +97,6 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 
 	argv = &node->u_data.cmd.args->expanded;
 	node->u_data.cmd.args = NULL;
-	ast_free(ctx->head);
-	ctx->head = NULL;
 	cmd = exec_get_cmd_path(argv, ctx);
 	if (!cmd)
 		return (_close_all_fds(fds), ft_splitfree(argv, 0), context_free(ctx),
@@ -111,6 +109,8 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 		return (_close_all_fds(fds), ft_splitfree(argv, 0), context_free(ctx),
 			free(cmd), exit(1));
 	_dup_fds(fds);
+	ast_free(ctx->head);
+	ctx->head = NULL;
 	execve(cmd, argv, envp);
 	if (!stat(cmd, &st) && S_ISDIR(st.st_mode))
 		errno = EISDIR;
