@@ -3,14 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mle-flem <mle-flem@student.42.fr>          +#+  +:+       +#+        */
+/*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 19:40:36 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:14:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "builtins.h"
+#include "env/env.h"
+#include "libft.h"
+#include <stddef.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -41,12 +45,14 @@ static inline bool	_is_valid_env_name(char *name, bool print_err)
 {
 	size_t	i;
 
-	if (name[0] != '\0' && name[0] != '=' && !ft_isdigit(name[0]))
+	if (name[0] != '\0' && name[0] != '=' && name[0] != '+' \
+		&& !ft_isdigit(name[0]))
 	{
 		i = 0;
 		while (ft_isalpha(name[i]) || ft_isdigit(name[i]) || name[i] == '_')
 			i++;
-		if (name[i] == '\0' || name[i] == '=')
+		if (name[i] == '\0' || name[i] == '=' \
+			|| (name[i] == '+' && name[i + 1] == '='))
 			return (true);
 	}
 	if (!print_err)
@@ -92,11 +98,36 @@ static inline int32_t	_print_env(t_sh_ctx *ctx)
 	return (ft_splitfree(envp, 0), 0);
 }
 
+static inline int32_t	_append_entry(t_env *env, char *entry)
+{
+	char	*key;
+	char	*val;
+	char	*eq;
+	char	*p;
+
+	eq = ft_strchr(entry, '=');
+	p = ft_strchr(entry, '+');
+	if (!eq || !p || p != eq - 1)
+	{
+		val = ft_strdup(entry);
+		if (!val || env_set(env, val))
+			return (perror("minishell: export: malloc"), free(val), 1);
+		return (0);
+	}
+	*p = '\0';
+	key = env_get(env, entry);
+	if (!key)
+		return (env_literal_set(env, entry, eq + 1));
+	val = ft_str3join(entry, key - 1, eq + 1);
+	if (!val || env_set(env, val))
+		return (perror("minishell: export: malloc"), free(val), 1);
+	return (0);
+}
+
 int32_t	main_export(int32_t ac, char **av, t_sh_ctx *ctx)
 {
 	int32_t	i;
 	int32_t	ret;
-	char	*tmp;
 
 	if (_check_invalid_opt(&ac, &av))
 		return (2);
@@ -111,9 +142,8 @@ int32_t	main_export(int32_t ac, char **av, t_sh_ctx *ctx)
 		if (!_is_valid_env_name(av[i], false) || (!ft_strchr(av[i], '=')
 				&& env_get(ctx->env, av[i])))
 			continue ;
-		tmp = ft_strdup(av[i]);
-		if (!tmp || env_set(ctx->env, tmp))
-			return (perror("minishell: malloc"), free(tmp), 1);
+		if (_append_entry(ctx->env, av[i]))
+			return (1);
 	}
 	return (ret);
 }

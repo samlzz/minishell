@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 00:40:29 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:16:24 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 static bool	_is_export_valid_key(t_token *cur)
 {
 	size_t	i;
-	bool	resp;
 	char	*key;
 
 	key = NULL;
@@ -28,17 +27,17 @@ static bool	_is_export_valid_key(t_token *cur)
 		if (cur && !cur->glued && ft_strjreplace(&key, " "))
 			return (free(key), false);
 	}
-	if (!key || (*key >= '0' && *key <= '9'))
-		return (free(key), false);
-	i = 0;
-	while (key[i] && (ft_isalnum(key[i]) || key[i] == '_'))
-		i++;
-	if (!i)
-		resp = false;
-	else
-		resp = key[i] == '\0';
-	free(key);
-	return (resp);
+	if (key && key[0] != '\0' && key[0] != '=' && key[0] != '+' \
+		&& !ft_isdigit(key[0]))
+	{
+		i = 0;
+		while (ft_isalpha(key[i]) || ft_isdigit(key[i]) || key[i] == '_')
+			i++;
+		if (key[i] == '\0' || key[i] == '=' \
+			|| (key[i] == '+' && key[i + 1] == '='))
+			return (free(key), true);
+	}
+	return (free(key), false);
 }
 
 static inline int16_t	_handle_assign_tk(t_token **cur, t_argword **args,
