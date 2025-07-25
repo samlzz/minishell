@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 11:19:35 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:22:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static inline void	_hd_read(int write_fd, char const *delim)
 	}
 }
 
-static uint8_t	_hd_process(t_redir *hd)
+uint8_t	hd_process(t_redir *hd)
 {
 	int		fds[2];
 	uint8_t	ret;
@@ -60,64 +60,6 @@ static uint8_t	_hd_process(t_redir *hd)
 	return (ret);
 }
 
-#ifdef MINISHELL_BONUS
-
-static uint8_t	_hd_rec_init(t_ast *node)
-{
-	uint8_t	ec;
-
-	if (!node)
-		return (0);
-	else if (node->type == ND_REDIR && node->u_data.rd.redir_type == RD_HEREDOC)
-	{
-		ec = _hd_process(&node->u_data.rd);
-		if (ec)
-			return (ec);
-		return (_hd_rec_init(node->u_data.rd.child));
-	}
-	else if (node->type == ND_REDIR)
-		return (_hd_rec_init(node->u_data.rd.child));
-	else if (node->type == ND_PIPE \
-		|| node->type == ND_AND || node->type == ND_OR)
-	{
-		if (_hd_rec_init(node->u_data.op.left))
-			return (1);
-		return (_hd_rec_init(node->u_data.op.right));
-	}
-	else if (node->type == ND_SUBSHELL)
-		return (_hd_rec_init(node->u_data.subsh.child));
-	return (0);
-}
-
-#else
-
-static uint8_t	_hd_rec_init(t_ast *node)
-{
-	uint8_t	ec;
-
-	if (!node)
-		return (0);
-	else if (node->type == ND_REDIR && node->u_data.rd.redir_type == RD_HEREDOC)
-	{
-		ec = _hd_process(&node->u_data.rd);
-		if (ec)
-			return (ec);
-		return (_hd_rec_init(node->u_data.rd.child));
-	}
-	else if (node->type == ND_REDIR)
-		return (_hd_rec_init(node->u_data.rd.child));
-	else if (node->type == ND_PIPE)
-	{
-		if (_hd_rec_init(node->u_data.op.left))
-			return (1);
-		return (_hd_rec_init(node->u_data.op.right));
-	}
-	return (0);
-}
-
-#endif
-
-
 int	check_rl_done_before_user_entry(void)
 {
 	return (0);
@@ -129,7 +71,7 @@ uint8_t	hd_init(t_ast *head)
 
 	sig_init(SIGH_HD);
 	rl_event_hook = &check_rl_done_before_user_entry;
-	ret = _hd_rec_init(head);
+	ret = hd_rec_init(head);
 	sig_init(SIGH_MAIN);
 	return (ret);
 }

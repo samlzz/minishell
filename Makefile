@@ -66,6 +66,7 @@ SRCS =	main.c \
 		builtins/env.c \
 		builtins/exit.c \
 		builtins/export.c \
+		builtins/export_helpers.c \
 		builtins/pwd.c \
 		builtins/unset.c \
 		builtins/utils.c \
@@ -74,6 +75,7 @@ SRCS =	main.c \
 		env/ft_env_init.c \
 		env/ft_env_utils.c \
 		error/print_err.c \
+		error/print_err_bonus.c \
 		exec/cmd_flow.c \
 		exec/cmd_utils.c \
 		exec/exec_flow.c \
@@ -91,15 +93,19 @@ SRCS =	main.c \
 		expansion/tild_utils.c \
 		expansion/wildcards.c \
 		handler/signal.c \
+		heredoc/hd_init.c \
 		heredoc/hd_tokeniser.c \
 		heredoc/hd_utils.c \
 		heredoc/hd_writter.c \
 		parsing/ast/ast_init.c \
+		parsing/ast/ast_init_bonus.c \
 		parsing/lexer/ft_token.c \
 		parsing/lexer/tokeniser.c \
+		parsing/lexer/tokeniser_bonus.c \
 		parsing/parser/parse_binop.c \
 		parsing/parser/parse_expr.c \
 		parsing/parser/parse_rd.c \
+		parsing/parser/parse_rd_bonus.c \
 		parsing/parser/rd_utils.c \
 		test/print_ast.c \
 		test/print_token.c

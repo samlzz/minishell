@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 09:59:46 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:13:38 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,50 +17,6 @@
 #include "libft.h"
 #include "builtins.h"
 #include "utils.h"
-
-static inline bool	_check_invalid_opt(int32_t *ac, char ***av)
-{
-	char	errstr[39];
-
-	(*ac)--;
-	*av = &(*av)[1];
-	if (*ac > 0 && ***av == '-' && (**av)[1] && ft_strcmp(**av, "--"))
-	{
-		errstr[0] = 0;
-		ft_strlcat(errstr, "minishell: export: -?: invalid option\n", 39);
-		errstr[20] = (**av)[1];
-		ft_putstr_fd(errstr, STDERR_FILENO);
-		return (true);
-	}
-	if (*ac > 0 && !ft_strcmp(**av, "--"))
-	{
-		(*ac)--;
-		*av = &(*av)[1];
-	}
-	return (false);
-}
-
-static inline bool	_is_valid_env_name(char *name, bool print_err)
-{
-	size_t	i;
-
-	if (name[0] != '\0' && name[0] != '=' && name[0] != '+' \
-		&& !ft_isdigit(name[0]))
-	{
-		i = 0;
-		while (ft_isalpha(name[i]) || ft_isdigit(name[i]) || name[i] == '_')
-			i++;
-		if (name[i] == '\0' || name[i] == '=' \
-			|| (name[i] == '+' && name[i + 1] == '='))
-			return (true);
-	}
-	if (!print_err)
-		return (false);
-	ft_putstr_fd("minishell: export: `", STDERR_FILENO);
-	ft_putstr_fd(name, STDERR_FILENO);
-	ft_putstr_fd("': not a valid identifier\n", STDERR_FILENO);
-	return (false);
-}
 
 static inline void	_print_env_var(char *envvar)
 {
@@ -128,7 +84,7 @@ int32_t	main_export(int32_t ac, char **av, t_sh_ctx *ctx)
 	int32_t	i;
 	int32_t	ret;
 
-	if (_check_invalid_opt(&ac, &av))
+	if (check_invalid_opt(&ac, &av))
 		return (2);
 	if (ac == 0)
 		return (_print_env(ctx));
@@ -136,9 +92,9 @@ int32_t	main_export(int32_t ac, char **av, t_sh_ctx *ctx)
 	i = -1;
 	while (++i < ac)
 	{
-		if (!_is_valid_env_name(av[i], true))
+		if (!is_valid_env_name(av[i], true))
 			ret = 1;
-		if (!_is_valid_env_name(av[i], false) || (!ft_strchr(av[i], '=')
+		if (!is_valid_env_name(av[i], false) || (!ft_strchr(av[i], '=')
 				&& env_get(ctx->env, av[i])))
 			continue ;
 		if (_append_entry(ctx->env, av[i]))

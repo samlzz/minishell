@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_rd.c                                         :+:      :+:    :+:   */
+/*   parse_rd_bonus.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/24 20:22:39 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:33:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:28:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,74 +16,7 @@
 #include "ast/ast.h"
 #include "parser/parser.h"
 
-static inline t_ast	*_new_redir(t_redir_type type)
-{
-	t_ast	*rd;
-
-	rd = ft_calloc(1, sizeof(t_ast));
-	if (!rd)
-		return (parse_err("minishell: malloc", NULL));
-	rd->type = ND_REDIR;
-	rd->u_data.rd.redir_type = type;
-	if (type == RD_HEREDOC)
-		rd->u_data.rd.hd_expand = true;
-	return (rd);
-}
-
-/**
- * @brief Parse a single redirection from the token stream.
- * 
- * Validates filename and builds a ND_REDIR AST node.
- * 
- * @param cur Pointer to the token cursor.
- * @param errtok Output pointer to the token causing error.
- * @return t_ast* The redirection AST node or NULL.
- */
-t_ast	*parse_single_redir(t_token **cur, t_token **errtok)
-{
-	t_token			*new;
-	t_redir_type	type;
-	t_ast			*redir;
-
-	type = get_rd_type((*cur)->type);
-	next(cur);
-	if (!*cur || ((*cur)->type != TK_WORD && (*cur)->type != TK_ASSIGN)
-		|| !*(*cur)->value)
-		return ((*errtok = *cur), NULL);
-	redir = _new_redir(type);
-	if (!redir)
-		return (NULL);
-	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_ASSIGN))
-	{
-		new = token_dup(*cur);
-		if (!new)
-			return (parse_err("minishell: token_dup", redir));
-		if (type == RD_HEREDOC && new->quote != QUOTE_NONE)
-			redir->u_data.rd.hd_expand = false;
-		token_addback(&redir->u_data.rd.filename.tk, new);
-		next(cur);
-		if (!*cur || !(*cur)->glued)
-			break ;
-	}
-	return (redir);
-}
-
-void	rd_add_last(t_ast **subtree, t_ast *leaf)
-{
-	t_ast	*last;
-
-	if (!*subtree)
-	{
-		*subtree = leaf;
-		return ;
-	}
-	last = *subtree;
-	while (last && last->type == ND_REDIR && last->u_data.rd.child)
-		last = last->u_data.rd.child;
-	last->u_data.rd.child = leaf;
-}
-
-#ifndef MINISHELL_BONUS
+#ifdef MINISHELL_BONUS
 
 /**
  * @brief Create NC_CMD node or append TK_WORD tokens to it.
@@ -101,7 +34,7 @@ static t_ast	*_collect_command(t_token **cur, t_ast *expr, t_token **errtok)
 	t_token	*last;
 
 	if (!expr)
-		return (cmd_parser(cur, errtok));
+		return (primary_parser(cur, errtok));
 	if (((*cur)->type != TK_WORD && (*cur)->type != TK_ASSIGN) \
 		|| expr->type != ND_CMD)
 	{
@@ -127,10 +60,10 @@ t_ast	*redir_parser(t_token **cur, t_token **errtok)
 
 	rd_subtree = NULL;
 	expr = NULL;
-	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_ASSIGN \
-	|| is_redirection((*cur)->type)))
+	while (*cur && ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN \
+		|| (*cur)->type == TK_ASSIGN || is_redirection((*cur)->type)))
 	{
-		if ((*cur)->type == TK_WORD)
+		if ((*cur)->type == TK_WORD || (*cur)->type == TK_LPAREN)
 			new = _collect_command(cur, expr, errtok);
 		else
 			new = parse_single_redir(cur, errtok);

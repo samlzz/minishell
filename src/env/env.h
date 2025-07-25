@@ -6,16 +6,16 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/19 17:32:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:53:29 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:14:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ENV_H
 # define ENV_H
 
-#include <stddef.h>
-#include <stdbool.h>
-#include <stdint.h>
+# include <stddef.h>
+# include <stdbool.h>
+# include <stdint.h>
 
 # ifndef PATH_MAX
 #  define PATH_MAX 4096
@@ -29,7 +29,7 @@
 
 # define ENV_DEFAULT_PATH	"/usr/local/sbin:/usr/local/bin:/usr/bin"
 
-typedef	struct s_ast	t_ast;
+typedef struct s_ast	t_ast;
 
 typedef struct s_env
 {

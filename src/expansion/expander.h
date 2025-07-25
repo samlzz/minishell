@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:47:06 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:18:44 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ void		argword_clear(t_argword *lst);
 void		argword_sort(t_argword **head);
 
 // utils
-t_argword	**argword_insert(t_argword **cur, t_argword *next, 
-					t_argword *node);
+t_argword	**argword_insert(t_argword **cur, t_argword *next, \
+													t_argword *node);
 t_argword	*argword_detach_next(t_argword *node);
 int16_t		argword_append_value(t_argword *node, const char *cur_arg, \
-					t_quote_type cur_quote);
+													t_quote_type cur_quote);
 
 bool		is_wildcard(t_dynint wild_offsets, int32_t i);
 

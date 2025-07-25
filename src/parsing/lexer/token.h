@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 13:37:32 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 11:12:28 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:31:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,11 +68,15 @@ typedef struct s_token
 	struct s_token	*next;
 }	t_token;
 
-//* Tokeniser
+// *Tokeniser
 
 t_token		*tokenise(const char *input, int16_t *exit_code);
 
-//* Ft_token
+// *Utils
+int32_t		_handle_word(const char *input, t_token *curr);
+int32_t		_fill_token(const char *input, t_token *curr);
+
+// *Ft_token
 void		next(t_token **cur);
 t_token		*token_pop(t_token **lst, t_token *to_retrieve);
 t_token		*token_dup(t_token *og);

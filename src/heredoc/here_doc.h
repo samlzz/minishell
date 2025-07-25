@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 17:04:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:43:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:23:22 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,9 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 uint8_t	hd_init(t_ast *node);
 
 // utils
+
+uint8_t	hd_rec_init(t_ast *node);
+uint8_t	hd_process(t_redir *hd);
 
 t_token	*hd_tokenise(const char *input);
 

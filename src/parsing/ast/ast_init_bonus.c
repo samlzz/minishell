@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ast_init.c                                         :+:      :+:    :+:   */
+/*   ast_init_bonus.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:36:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:35:54 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,9 @@
 
 #include "ast.h"
 #include "error/error.h"
-#include "minishell.h"
 #include "parser/parser.h"
 
-#ifndef MINISHELL_BONUS
+#ifdef MINISHELL_BONUS
 
 static inline void	_words_free(t_words *val, bool expand, bool allocated)
 {
@@ -63,11 +62,14 @@ void	ast_free(t_ast *node)
 			close(node->u_data.rd.fd);
 		ast_free(node->u_data.rd.child);
 	}
-	else if (node->type == ND_PIPE)
+	else if (node->type == ND_PIPE
+		|| node->type == ND_AND || node->type == ND_OR)
 	{
 		ast_free(node->u_data.op.left);
 		ast_free(node->u_data.op.right);
 	}
+	else if (node->type == ND_SUBSHELL)
+		ast_free(node->u_data.subsh.child);
 	free(node);
 }
 
@@ -95,7 +97,7 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 	t_token	*cursor;
 
 	cursor = tokens;
-	ast = pipe_parser(&cursor, errtok);
+	ast = logical_parser(&cursor, errtok);
 	if (!ast && !*errtok)
 		*errcode = PARSE_ERR;
 	if (!ast)
@@ -111,51 +113,4 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 	return (ast);
 }
 
-#endif
-
-#ifdef DEBUG_MODE
-
-t_ast	*parse_ast(const char *input)
-{
-	t_ast	*res;
-	int16_t	errcode;
-	t_token	*errtok;
-	t_token	*tk_lst;
-
-	errcode = PARSE_OK;
-	errtok = NULL;
-	tk_lst = tokenise(input, &errcode);
-	if (!tk_lst)
-		return (err_print(errcode, errtok, true), NULL);
-	if (PRINT_TOKENS)
-		print_tokens(tk_lst);
-	res = new_ast(tk_lst, &errtok, &errcode);
-	errtok = token_pop(&tk_lst, errtok);
-	token_clear(tk_lst);
-	if (!res)
-		return (err_print(errcode, errtok, false), NULL);
-	return (res);
-}
-
-#else
-
-t_ast	*parse_ast(const char *input)
-{
-	t_ast	*res;
-	int16_t	errcode;
-	t_token	*errtok;
-	t_token	*tk_lst;
-
-	errcode = PARSE_OK;
-	errtok = NULL;
-	tk_lst = tokenise(input, &errcode);
-	if (!tk_lst)
-		return (err_print(errcode, errtok, true), NULL);
-	res = new_ast(tk_lst, &errtok, &errcode);
-	errtok = token_pop(&tk_lst, errtok);
-	token_clear(tk_lst);
-	if (!res)
-		return (err_print(errcode, errtok, false), NULL);
-	return (res);
-}
 #endif

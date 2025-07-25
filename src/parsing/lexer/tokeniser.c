@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 14:17:47 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 15:57:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:32:20 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ static inline int32_t	_handle_quoted_word(const char *input, t_token *curr)
 	return (len + 1);
 }
 
-static inline int32_t	_handle_word(const char *input, t_token *curr)
+int32_t	_handle_word(const char *input, t_token *curr)
 {
 	int32_t	len;
 
@@ -69,39 +69,9 @@ static inline int32_t	_handle_word(const char *input, t_token *curr)
 	return (len);
 }
 
-#ifdef MINISHELL_BONUS
+#ifndef MINISHELL_BONUS
 
-static int32_t	_fill_token(const char *input, t_token *curr)
-{
-	if (!*input)
-		return (curr->type = TK_EOF, 0);
-	else if (*input == '(')
-		curr->type = TK_LPAREN;
-	else if (*input == ')')
-		curr->type = TK_RPAREN;
-	else if (*input == '|' && input[1] == '|')
-		curr->type = TK_OR;
-	else if (*input == '|')
-		curr->type = TK_PIPE;
-	else if (*input == '&' && input[1] == '&')
-		curr->type = TK_AND;
-	else if (*input == '&')
-		return (PARSE_ERR_SOLO_AND);
-	else if (input[0] == '>')
-		curr->type = (input[1] == '>') * TK_REDIR_APPEND
-			+ !(input[1] == '>') * TK_REDIR_OUT;
-	else if (input[0] == '<')
-		curr->type = (input[1] == '<') * TK_HEREDOC
-			+ !(input[1] == '<') * TK_REDIR_IN;
-	else
-		return (_handle_word(input, curr));
-	return (1 + (curr->type == TK_OR || curr->type == TK_AND \
-		|| curr->type == TK_REDIR_APPEND || curr->type == TK_HEREDOC));
-}
-
-#else
-
-static int32_t	_fill_token(const char *input, t_token *curr)
+int32_t	_fill_token(const char *input, t_token *curr)
 {
 	if (!*input)
 		return (curr->type = TK_EOF, 0);

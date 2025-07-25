@@ -6,12 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 10:29:34 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:32:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:29:37 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "lexer/token.h"
-# include "ast/ast.h"
+#include "ast/ast.h"
+#include "lexer/token.h"
 
 bool	is_redirection(t_tk_type type)
 {

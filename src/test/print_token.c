@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "parser/parser.h"
 
-const char	*token_type_str(t_tk_type type)
+static inline const char	*_token_type_str(t_tk_type type)
 {
 	if (type == TK_WORD) return "WORD";
 	if (type == TK_ASSIGN) return "ASSIGN";
@@ -34,14 +34,14 @@ void	print_tokens(t_token *tokens)
 	{
 		if (tokens->type == TK_WORD)
 			printf("Token: %s %-18s | Joined: %s\n\tValue: \"%s\"\n",
-				token_type_str(tokens->type),
+				_token_type_str(tokens->type),
 				quote_type_str(tokens->quote),
 				tokens->glued ? "true" : "false",
 				tokens->value
 			);
 		else
 			printf("Token: %-23s | Value: \"%s\"\n",
-				token_type_str(tokens->type),
+				_token_type_str(tokens->type),
 				tokens->value);
 		tokens = tokens->next;
 	}
@@ -53,7 +53,7 @@ void	short_print_tokens(t_token *tokens)
 	{
 		if (tokens->type == TK_WORD)
 		{
-			printf(" %s(\"%s\"", token_type_str(tokens->type), tokens->value);
+			printf(" %s(\"%s\"", _token_type_str(tokens->type), tokens->value);
 			if (tokens->quote != QUOTE_NONE)
 				printf(" | %s", quote_type_str(tokens->quote));
 			if (tokens->glued)
@@ -62,7 +62,7 @@ void	short_print_tokens(t_token *tokens)
 		}
 		else
 		{
-			printf(" %s(\"%s\")", token_type_str(tokens->type), tokens->value);
+			printf(" %s(\"%s\")", _token_type_str(tokens->type), tokens->value);
 		}
 		tokens = tokens->next;
 	}

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 18:47:53 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 11:34:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:45:51 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,33 +23,9 @@ void	err_print_expand(t_token *errtok)
 	ft_putstr_fd(": ambiguous redirect\n", 2);
 }
 
-#ifdef MINISHELL_BONUS
+#ifndef MINISHELL_BONUS
 
-static inline const char	*token_type_str(t_token *errtok)
-{
-	const char	*stringify[TK_EOF + 1];
-
-	if (!errtok \
-		|| errtok->type < TK_WORD \
-		|| errtok->type > TK_EOF)
-		return ("unknow");
-	stringify[TK_WORD] = "WORD";
-	stringify[TK_PIPE] = "|";
-	stringify[TK_AND] = "&&";
-	stringify[TK_OR] = "||";
-	stringify[TK_LPAREN] = "(";
-	stringify[TK_RPAREN] = ")";
-	stringify[TK_REDIR_IN] = "<";
-	stringify[TK_REDIR_OUT] = ">";
-	stringify[TK_REDIR_APPEND] = ">>";
-	stringify[TK_HEREDOC] = "<<";
-	stringify[TK_EOF] = "newline";
-	return (stringify[errtok->type]);
-}
-
-#else
-
-static inline const char	*token_type_str(t_token *errtok)
+const char	*token_type_str(t_token *errtok)
 {
 	const char	*stringify[TK_EOF + 1];
 

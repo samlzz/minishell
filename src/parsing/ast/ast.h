@@ -6,19 +6,20 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:00:57 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:36:58 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef AST_H
 # define AST_H
 
+# include <stdint.h>
 # include <sys/types.h>
 
 # include "parser/parser.h"
 
 typedef struct s_sh_ctx	t_sh_ctx;
-typedef int32_t	(*t_builtin_func)(int32_t ac, char **av, t_sh_ctx *ctx);
+typedef int32_t			(*t_builtin_func)(int32_t ac, char **av, t_sh_ctx *ctx);
 
 //* Types
 

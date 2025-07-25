@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/03 15:24:10 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 11:14:50 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:24:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ t_ast	*cmd_parser(t_token **cur, t_token **errtok)
 	return (node);
 }
 
-# ifdef MINISHELL_BONUS
+#ifdef MINISHELL_BONUS
+
 /**
  * @brief Parse either a command or a parenthesized subshell expression.
  * 
@@ -107,4 +108,4 @@ t_ast	*primary_parser(t_token **cur, t_token **errtok)
 	return (cmd_parser(cur, errtok));
 }
 
-# endif
+#endif
