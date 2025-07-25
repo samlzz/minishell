@@ -79,8 +79,11 @@ SRCS =	main.c \
 		exec/cmd_flow.c \
 		exec/cmd_utils.c \
 		exec/exec_flow.c \
+		exec/exec_utils.c \
 		exec/pipe_flow.c \
 		exec/redir_flow.c \
+		exec/redir_utils.c \
+		exec/utils.c \
 		expansion/argword_fill.c \
 		expansion/argword_sort.c \
 		expansion/expand_utils.c \

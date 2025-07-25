@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/16 22:15:52 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 09:33:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:36:19 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,19 +48,29 @@ static bool	_test_paths(char **paths, char *cmd, char **ret)
 	return (*ret = tmp, true);
 }
 
+static bool	_check_cmd_path(char *name, char **cmd)
+{
+	if (!name || !name[0])
+		*cmd = ft_strdup("");
+	if (name && (ft_strchr(name, '/') || !ft_strcmp(name, ".")
+			|| !ft_strcmp(name, "..")))
+		*cmd = ft_strdup(name);
+	if ((!name || !name[0] || ft_strchr(name, '/') || !ft_strcmp(name, ".")
+			|| !ft_strcmp(name, "..")) && !*cmd)
+		perror("minishell: malloc");
+	if (!name || !name[0] || ft_strchr(name, '/') || !ft_strcmp(name, ".")
+		|| !ft_strcmp(name, ".."))
+		return (true);
+	return (false);
+}
+
 char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx)
 {
 	char	**paths;
 	char	*path_str;
 	char	*cmd;
 
-	if (!av[0] || !av[0][0])
-		cmd = ft_strdup("");
-	if (av[0] && (ft_strchr(av[0], '/') || !ft_strcmp(av[0], ".") || !ft_strcmp(av[0], "..")))
-		cmd = ft_strdup(av[0]);
-	if ((!av[0] || !av[0][0] || ft_strchr(av[0], '/') || !ft_strcmp(av[0], ".") || !ft_strcmp(av[0], "..")) && !cmd)
-		perror("minishell: malloc");
-	if (!av[0] || !av[0][0] || ft_strchr(av[0], '/') || !ft_strcmp(av[0], ".") || !ft_strcmp(av[0], ".."))
+	if (_check_cmd_path(av[0], &cmd))
 		return (cmd);
 	path_str = env_get(ctx->env, "PATH");
 	if (!path_str && ctx->use_fallback_path)
@@ -75,6 +85,30 @@ char	*exec_get_cmd_path(char **av, t_sh_ctx *ctx)
 	else if (!cmd)
 		cmd = ft_strdup(av[0]);
 	if (!cmd)
-		 perror("minishell: malloc");
+		perror("minishell: malloc");
 	return (free(paths), cmd);
+}
+
+static inline void	_dup_err(int32_t oldfd, int32_t newfd)
+{
+	char	str[61];
+
+	str[0] = 0;
+	ft_strlcat(str, "minishell: cannot duplicate fd ", 61);
+	ft_itoa_str(str + ft_strlen(str), oldfd);
+	ft_strlcat(str, " to fd ", 61);
+	ft_itoa_str(str + ft_strlen(str), newfd);
+	perror(str);
+}
+
+void	ft_dup_fds(int32_t fds[2])
+{
+	if (dup2(fds[1], STDOUT_FILENO) == -1)
+		_dup_err(fds[1], STDOUT_FILENO);
+	if (fds[1] != STDOUT_FILENO)
+		close(fds[1]);
+	if (dup2(fds[0], STDIN_FILENO) == -1)
+		_dup_err(fds[0], STDIN_FILENO);
+	if (fds[0] != STDIN_FILENO)
+		close(fds[0]);
 }
