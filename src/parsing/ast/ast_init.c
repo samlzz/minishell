@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:36:54 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 11:22:50 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 #include "ast.h"
 #include "error/error.h"
-#include "minishell.h"
 #include "parser/parser.h"
 
 #ifndef MINISHELL_BONUS
@@ -113,32 +112,6 @@ t_ast	*new_ast(t_token *tokens, t_token **errtok, int16_t *errcode)
 
 #endif
 
-#ifdef DEBUG_MODE
-
-t_ast	*parse_ast(const char *input)
-{
-	t_ast	*res;
-	int16_t	errcode;
-	t_token	*errtok;
-	t_token	*tk_lst;
-
-	errcode = PARSE_OK;
-	errtok = NULL;
-	tk_lst = tokenise(input, &errcode);
-	if (!tk_lst)
-		return (err_print(errcode, errtok, true), NULL);
-	if (PRINT_TOKENS)
-		print_tokens(tk_lst);
-	res = new_ast(tk_lst, &errtok, &errcode);
-	errtok = token_pop(&tk_lst, errtok);
-	token_clear(tk_lst);
-	if (!res)
-		return (err_print(errcode, errtok, false), NULL);
-	return (res);
-}
-
-#else
-
 t_ast	*parse_ast(const char *input)
 {
 	t_ast	*res;
@@ -158,4 +131,3 @@ t_ast	*parse_ast(const char *input)
 		return (err_print(errcode, errtok, false), NULL);
 	return (res);
 }
-#endif
