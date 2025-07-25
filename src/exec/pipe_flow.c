@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 22:39:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 21:36:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:56:55 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,6 @@
 #include "exec.h"
 #include "env/env.h"
 #include "handler/handler.h"
-
-#ifdef MINISHELL_BONUS
 
 static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
 {
@@ -115,60 +113,3 @@ void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *node, int32_t fds[3])
 	if (fds[1] != STDOUT_FILENO)
 		close(fds[1]);
 }
-
-#else
-
-static bool	_set_pipe_pid_ret(t_ast *node, pid_t pid, uint8_t ret)
-{
-	if (node && node->type == ND_PIPE)
-		return (_set_pipe_pid_ret(node->u_data.op.left, pid, ret));
-	else if (node && node->type == ND_REDIR
-		&& !_set_pipe_pid_ret(node->u_data.rd.child, pid, ret))
-	{
-		node->u_data.rd.exec_infos.pid = pid;
-		node->u_data.rd.exec_infos.ret = ret;
-		return (true);
-	}
-	else if (node && node->type == ND_CMD)
-	{
-		node->u_data.cmd.exec_infos.pid = pid;
-		node->u_data.cmd.exec_infos.ret = ret;
-		return (true);
-	}
-	return (false);
-}
-
-void	exec_flow_pipe(t_sh_ctx *ctx, t_ast *node, int32_t fds[3])
-{
-	int32_t	fds_[2];
-	pid_t	pid;
-
-	if (node->type != ND_PIPE)
-	{
-		sig_init(SIGH_RUNNING_CH);
-		pid = fork();
-		if (pid == -1)
-			return (_set_pipe_pid_ret(node, -1, 254), perror("minishell: fork"));
-		if (pid == 0)
-		{
-			if (fds[2] != -1)
-				close(fds[2]);
-			sig_init(SIGH_RESTORE);
-			return (_set_pipe_pid_ret(node, -1, 0),
-				exec_flow_cmd(ctx, node, fds));
-		}
-		if (fds[0] != STDIN_FILENO)
-			close(fds[0]);
-		if (fds[1] != STDOUT_FILENO)
-			close(fds[1]);
-		return ((void) _set_pipe_pid_ret(node, pid, 0));
-	}
-	if (pipe(fds_) == -1)
-		return (_set_pipe_pid_ret(node, -1, 129), perror("minishell: pipe error"));
-	exec_flow_pipe(ctx, node->u_data.op.left, (int32_t[3]){fds[0], fds_[1], fds_[0]});
-	exec_flow_pipe(ctx, node->u_data.op.right, (int32_t[3]){fds_[0], fds[1], -1});
-	if (fds[1] != STDOUT_FILENO)
-		close(fds[1]);
-}
-
-#endif

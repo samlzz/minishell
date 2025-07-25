@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:19:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 01:54:36 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:59:06 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 # define EXEC_H
 
 # include "ast/ast.h"
+
+# ifndef MINISHELL_BONUS
+#  define ND_SUBSHELL 42
+#  define ND_AND 42
+#  define ND_OR 42
+# endif
 
 uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node);
 

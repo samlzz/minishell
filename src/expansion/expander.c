@@ -6,13 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:49:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:07:41 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
 #include "expander.h"
+
+#ifndef MINISHELL_BONUS
 
 t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
 															bool assign_stop)
@@ -31,8 +33,10 @@ t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
 			return (NULL);
 		expanded = splitted;
 	}
-	return (replace_wildcards(expanded));
+	return (expanded);
 }
+
+#endif
 
 int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
 {

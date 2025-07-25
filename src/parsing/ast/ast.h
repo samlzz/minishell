@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 11:07:35 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:00:57 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,17 @@ typedef enum e_node_type
 	ND_SUBSHELL
 }	t_node_type;
 
+# else
+
+typedef enum e_node_type
+{
+	ND_CMD,
+	ND_PIPE,
+	ND_REDIR,
+}	t_node_type;
+
+# endif
+
 // Data (subshell)
 typedef struct s_subshell
 {
@@ -100,28 +111,6 @@ typedef struct s_ast
 		t_subshell	subsh;
 	}	u_data;
 }	t_ast;
-
-# else
-
-typedef enum e_node_type
-{
-	ND_CMD,
-	ND_PIPE,
-	ND_REDIR,
-}	t_node_type;
-
-typedef struct s_ast
-{
-	t_node_type	type;
-	union
-	{
-		t_redir		rd;
-		t_binop		op;
-		t_cmd		cmd;
-	}	u_data;
-}	t_ast;
-
-# endif
 
 //* Functions
 

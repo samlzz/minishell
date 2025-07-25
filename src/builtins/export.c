@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 09:33:51 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/25 09:59:46 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include "libft.h"
 #include "builtins.h"
+#include "utils.h"
 
 static inline bool	_check_invalid_opt(int32_t *ac, char ***av)
 {
