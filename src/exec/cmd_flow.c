@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 09:47:59 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/25 08:12:14 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -62,29 +63,16 @@ static void	_close_all_fds(int32_t fds[2])
 
 static void	_print_cmd_err(char *cmd, int32_t fds[2])
 {
-	char	*str;
-	size_t	len;
 	int32_t	errno_;
 
 	errno_ = errno;
-	len = ft_strlen("minishell: ") + ft_strlen(cmd) + 1;
-	str = malloc(len);
-	if (!str)
-		return (perror("minishell: malloc"), _close_all_fds(fds));
-	str[0] = 0;
-	ft_strlcat(str, "minishell: ", len);
-	ft_strlcat(str, cmd, len);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(cmd, STDERR_FILENO);
+	ft_putstr_fd(": ", STDERR_FILENO);
 	if (fds)
-	{
-		dup2(STDERR_FILENO, STDOUT_FILENO);
-		printf("%s: command not found\n", str);
-	}
+		ft_putendl_fd("command not found", STDERR_FILENO);
 	else
-	{
-		errno = errno_;
-		perror(str);
-	}
-	free(str);
+		ft_putendl_fd(strerror(errno_), STDERR_FILENO);
 	_close_all_fds(fds);
 }
 
