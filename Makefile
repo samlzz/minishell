@@ -6,7 +6,7 @@
 #    By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/05/23 20:25:27 by mle-flem          #+#    #+#              #
-#    Updated: 2025/07/18 15:48:48 by mle-flem         ###   ########.fr        #
+#    Updated: 2025/07/25 10:16:33 by mle-flem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,6 +28,9 @@ ifeq ($(MAKELEVEL),0)
 		RM	= rm -f
 	endif
 	CFLAGS	+= -Wall -Wextra -Werror
+	ifneq ($(filter bonus, $(MAKECMDGOALS)),)
+		CFLAGS	+= -DMINISHELL_BONUS
+	endif
 	LDLIBS	+= -lftc -lreadline
 	LDFLAGS	+= -L$(LIBFT_DIR)
 	ARFLAGS	= rcs
@@ -80,6 +83,7 @@ SRCS =	main.c \
 		expansion/argword_sort.c \
 		expansion/expand_utils.c \
 		expansion/expander.c \
+		expansion/expander_bonus.c \
 		expansion/export_expander.c \
 		expansion/field_splitting.c \
 		expansion/ft_argword.c \
@@ -388,6 +392,8 @@ all:	$(NAME)
 
 endif
 
+bonus:	all
+
 header:
 ifeq ($(MAKELEVEL),0)
 ifeq ($(NOPRETTY),)
@@ -497,4 +503,4 @@ update-srcs:	header
 	@$(call update_sources,$(CLR_COM)Updating sources of $(CLR_OBJ)$(NAME))
 	@$(call run_make_and_test,,$(MAKE) -C $(LIBFT_DIR) update-srcs)
 
-.PHONY:	all header setup clean fclean re update-srcs
+.PHONY:	all bonus header setup clean fclean re update-srcs
