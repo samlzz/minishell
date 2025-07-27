@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:13:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:33:42 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 04:12:55 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,6 @@ char	*ft_getinput(char const *prompt)
 		input = readline(prompt);
 		if (!input)
 			return (ft_putendl_fd("exit", 2), NULL);
-		if (*input)
-			add_history(input);
 	}
 	else
 	{

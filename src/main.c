@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 11:22:16 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 04:12:51 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,15 @@ static inline bool	_skipable(const char *input, t_sh_ctx *ctx)
 	if (!*input || !ft_strcmp(input, "\n"))
 		return (true);
 	if (!ft_strcmp(input, ":"))
-		return (ctx->lst_exit = 0, true);
+		return (ctx->lst_exit = 0, add_history(input), true);
 	if (!ft_strcmp(input, "!"))
-		return (ctx->lst_exit = 1, true);
+		return (ctx->lst_exit = 1, add_history(input), true);
 	i = 0;
 	while (input[i] && (input[i] == ' ' || input[i] == '\t'))
 		i++;
 	if (!input[i])
 		return (ctx->lst_exit = 0, true);
+	add_history(input);
 	return (false);
 }
 
