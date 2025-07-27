@@ -6,13 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/27 09:22:35 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/27 22:10:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <readline/readline.h>
 #include <readline/history.h>
 #include <unistd.h>
 
@@ -24,23 +23,17 @@
 #include "heredoc/here_doc.h"
 #include "exec/exec.h"
 
-static inline bool	_skipable(const char *input, t_sh_ctx *ctx)
+static inline bool	_skipable(const char *input)
 {
 	size_t	i;
 
 	if (!*input || !ft_strcmp(input, "\n"))
 		return (true);
-	if (!ft_strcmp(input, ":"))
-		return (ctx->lst_exit = 0, add_history(input), true);
-	if (!ft_strcmp(input, "!"))
-		return (ctx->lst_exit = 1, add_history(input), true);
+	add_history(input);
 	i = 0;
 	while (input[i] && (input[i] == ' ' || input[i] == '\t'))
 		i++;
-	if (!input[i])
-		return (ctx->lst_exit = 0, true);
-	add_history(input);
-	return (false);
+	return (input[i] == '\0');
 }
 
 static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
@@ -79,7 +72,7 @@ int	main(int argc, char const *argv[], char **envp)
 		input = ft_getinput(CMD_PROMPT, true);
 		if (!input)
 			break ;
-		if (!_skipable(input, ctx))
+		if (!_skipable(input))
 			ret = _launch_exec(ctx, input);
 		free(input);
 		if (ctx->exit)
