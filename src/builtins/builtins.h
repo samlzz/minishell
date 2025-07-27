@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:39 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 10:13:15 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:25:03 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,9 @@ typedef int32_t	(*t_builtin_func)(int32_t ac, char **av, t_sh_ctx *ctx);
 
 bool	set_builtin_func(t_sh_ctx *ctx, t_ast *node);
 bool	is_builtin(t_ast *node);
+
+bool	bi_putstr(char *cmd, char *str);
+bool	bi_putendl(char *cmd, char *str);
 
 int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx);
 int32_t	main_echo(int32_t ac, char **av, t_sh_ctx *ctx);

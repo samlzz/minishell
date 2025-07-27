@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/26 19:39:28 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:43:20 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ static inline int32_t	_print_and_update_pwd(bool should_print, t_sh_ctx *ctx)
 {
 	char	*pwd;
 	char	*tmp;
+	bool	ok;
 
 	pwd = env_get(ctx->env, "PWD");
 	if (!pwd)
@@ -97,10 +98,11 @@ static inline int32_t	_print_and_update_pwd(bool should_print, t_sh_ctx *ctx)
 	tmp = ft_strjoin("PWD=", pwd);
 	if (!tmp || env_set(ctx->env, tmp))
 		return (perror("minishell: malloc"), free(tmp), free(pwd), 1);
+	ok = true;
 	if (should_print)
-		ft_putendl_fd(pwd, STDOUT_FILENO);
+		ok = bi_putendl("cd", pwd);
 	free(pwd);
-	return (0);
+	return (!ok);
 }
 
 int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx)

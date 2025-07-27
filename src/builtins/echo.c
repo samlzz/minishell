@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 10:55:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:41:30 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,21 @@ int32_t	main_echo(int32_t ac, char **av, t_sh_ctx *ctx)
 	int32_t	i;
 	bool	has_n;
 	bool	first;
+	bool	ok;
 
 	(void) ctx;
+	ok = true;
 	i = 0;
 	has_n = _check_n(ac, av, &i);
 	first = true;
-	while (++i < ac)
+	while (++i < ac && ok)
 	{
 		if (!first)
-			ft_putstr_fd(" ", STDOUT_FILENO);
-		ft_putstr_fd(av[i], STDOUT_FILENO);
+			ok = (ok && bi_putstr("echo", " "));
+		ok = (ok && bi_putstr("echo", av[i]));
 		first = false;
 	}
-	if (!has_n)
-		ft_putstr_fd("\n", STDOUT_FILENO);
-	return (0);
+	if (!has_n && ok)
+		ok = (ok && bi_putstr("echo", "\n"));
+	return (!ok);
 }

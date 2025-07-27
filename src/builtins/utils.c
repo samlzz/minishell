@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 07:38:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 10:58:14 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:33:43 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,9 @@
 #include "builtins.h"
 #include "expansion/expander.h"
 #include "error/error.h"
+#include <errno.h>
+#include <string.h>
+#include <unistd.h>
 
 static inline void	_get_builtin_func(char *cmd, t_builtin_func *func)
 {
@@ -62,4 +65,29 @@ bool	is_builtin(t_ast *node)
 	else if (node->type == ND_CMD)
 		return (!!node->u_data.cmd.bi);
 	return (false);
+}
+
+bool	bi_putstr(char *cmd, char *str)
+{
+	size_t	len;
+	int32_t	errno_;
+
+	len = ft_strlen(str);
+	if (write(STDOUT_FILENO, str, len) == -1)
+	{
+		errno_ = errno;
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
+		ft_putstr_fd(cmd, STDERR_FILENO);
+		ft_putstr_fd(": write error: ", STDERR_FILENO);
+		ft_putendl_fd(strerror(errno_), STDERR_FILENO);
+		return (false);
+	}
+	return (true);
+}
+
+bool	bi_putendl(char *cmd, char *str)
+{
+	if (!bi_putstr(cmd, str) || !bi_putstr(cmd, "\n"))
+		return (false);
+	return (true);
 }

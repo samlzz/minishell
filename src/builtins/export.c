@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 10:13:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:39:40 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,39 +18,43 @@
 #include "builtins.h"
 #include "utils.h"
 
-static inline void	_print_env_var(char *envvar)
+static inline bool	_print_env_var(char *envvar)
 {
 	char	*eq;
 	char	save;
+	bool	ok;
 
 	eq = ft_strchr(envvar, '=');
-	ft_putstr_fd("export ", STDOUT_FILENO);
-	if (eq)
+	ok = bi_putstr("export", "export ");
+	if (eq && ok)
 	{
 		save = eq[1];
 		eq[1] = '\0';
-		ft_putstr_fd(envvar, STDOUT_FILENO);
+		ok = (ok && bi_putstr("export", envvar));
 		eq[1] = save;
-		ft_putstr_fd("\"", STDOUT_FILENO);
-		ft_putstr_fd(eq + 1, STDOUT_FILENO);
-		ft_putstr_fd("\"\n", STDOUT_FILENO);
+		ok = (ok && bi_putstr("export", "\""));
+		ok = (ok && bi_putstr("export", eq + 1));
+		ok = (ok && bi_putstr("export", "\"\n"));
 	}
-	else
-		ft_putendl_fd(envvar, STDOUT_FILENO);
+	else if (ok)
+		ok = (ok && bi_putendl("export", envvar));
+	return (ok);
 }
 
 static inline int32_t	_print_env(t_sh_ctx *ctx)
 {
 	char	**envp;
 	size_t	i;
+	bool	ok;
 
 	envp = env_get_envp(ctx->env, NULL, true);
 	if (!envp)
 		return (perror("minishell: malloc"), 1);
+	ok = true;
 	i = -1;
-	while (envp[++i])
-		_print_env_var(envp[i]);
-	return (ft_splitfree(envp, 0), 0);
+	while (envp[++i] && ok)
+		ok = _print_env_var(envp[i]);
+	return (ft_splitfree(envp, 0), !ok);
 }
 
 static inline int32_t	_append_entry(t_env *env, char *entry)

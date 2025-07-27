@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 10:57:12 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 00:44:42 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ static inline bool	_check_invalid_opt(int32_t ac, char **av)
 int32_t	main_pwd(int32_t ac, char **av, t_sh_ctx *ctx)
 {
 	char	*pwd;
+	bool	ok;
 
 	(void) ctx;
 	if (_check_invalid_opt(ac, av))
@@ -54,8 +55,7 @@ int32_t	main_pwd(int32_t ac, char **av, t_sh_ctx *ctx)
 	if (!pwd)
 		return (perror("pwd: error retrieving current directory: getcwd: " \
 			"cannot access parent directories"), 1);
-	ft_putstr_fd(pwd, STDOUT_FILENO);
-	ft_putstr_fd("\n", STDOUT_FILENO);
+	ok = bi_putendl("pwd", pwd);
 	free(pwd);
-	return (0);
+	return (!ok);
 }
