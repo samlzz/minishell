@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/27 05:46:24 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/27 08:07:59 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ static t_expr	_exec_wait_get_exec_infos(t_ast *node)
 		return (node->u_data.rd.exec_infos);
 	else if (node->type == ND_CMD)
 		return (node->u_data.cmd.exec_infos);
-	return ((t_expr){-1, -1});
+	return ((t_expr){-1, -1, -1});
 }
 
 static void	_update_underscore(t_sh_ctx *ctx, t_ast *node)
@@ -68,6 +68,7 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 	int32_t	status;
 	pid_t	pid;
 	uint8_t	ret;
+	t_expr	infos;
 
 	i = exec_wait_get_count(node, false);
 	while (i-- > 0)
@@ -76,10 +77,13 @@ static uint8_t	_exec_wait(t_sh_ctx *ctx, t_ast *node)
 		ret = WEXITSTATUS(status);
 		if (WIFSIGNALED(status))
 			ret = 128 + WTERMSIG(status);
-		exec_wait_set_ret(node, pid, ret);
+		exec_wait_set_ret(node, pid, ret, status);
 	}
 	_update_underscore(ctx, node);
-	return (_exec_wait_get_exec_infos(node).ret);
+	infos = _exec_wait_get_exec_infos(node);
+	if (WIFSIGNALED(infos.status))
+		print_sig_message(WTERMSIG(infos.status), WCOREDUMP(infos.status));
+	return (infos.ret);
 }
 
 uint8_t	exec_flow_exec(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])

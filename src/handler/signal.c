@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 11:02:26 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 08:59:18 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,26 +22,16 @@ volatile sig_atomic_t	g_sig = 0;
 void	sigint_handler(int32_t sig)
 {
 	g_sig = sig;
-	write(1, "\n", 1);
+	if (isatty(STDIN_FILENO))
+		write(2, "\n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 	rl_redisplay();
 }
 
-void	sigint_when_child_handler(int32_t sig)
+void	child_sig_handler(int32_t sig)
 {
 	g_sig = sig;
-	write(1, "\n", 1);
-	rl_replace_line("", 0);
-	rl_redisplay();
-}
-
-void	sigquit_when_child_handler(int32_t sig)
-{
-	g_sig = sig;
-	write(2, "Quit (core dumped)\n", 19);
-	rl_replace_line("", 0);
-	rl_redisplay();
 }
 
 void	hd_quit_handler(int32_t sig)
@@ -62,8 +52,8 @@ void	sig_init(t_sig_handle action)
 	}
 	else if (action == SIGH_RUNNING_CH)
 	{
-		signal(SIGINT, &sigint_when_child_handler);
-		signal(SIGQUIT, &sigquit_when_child_handler);
+		signal(SIGINT, &child_sig_handler);
+		signal(SIGQUIT, &child_sig_handler);
 	}
 	else if (action == SIGH_HD)
 	{

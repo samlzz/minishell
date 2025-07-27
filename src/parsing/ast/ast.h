@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:21:29 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:36:58 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 08:02:55 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef union u_words
 typedef struct s_expr
 {
 	uint8_t	ret;
+	int32_t	status;
 	pid_t	pid;
 }	t_expr;
 

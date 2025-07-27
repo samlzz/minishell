@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:19:12 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 11:18:24 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/27 08:23:23 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	ft_dup_fds(int32_t fds[2]);
 
 void	rd_exit_clean(uint8_t code, t_sh_ctx *ctx, t_ast *node, int32_t fds[2]);
 
-void	exec_wait_set_ret(t_ast *node, pid_t pid, uint8_t ret);
+void	exec_wait_set_ret(t_ast *node, pid_t pid, uint8_t ret, int32_t status);
+void	print_sig_message(uint8_t sig, bool coredump);
 
 #endif
