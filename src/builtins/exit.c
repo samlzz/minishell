@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/24 10:56:35 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 10:34:44 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,10 @@
 #include "libft.h"
 #include "utils.h"
 
-static inline int32_t	_exit_atoi(char **s_)
+static inline int64_t	_exit_atoi(char **s_)
 {
-	int32_t	res;
-	int32_t	sign;
+	int64_t	res;
+	int64_t	sign;
 	char	*s;
 
 	s = *s_;
@@ -34,7 +34,13 @@ static inline int32_t	_exit_atoi(char **s_)
 		return (*s = '!', *s_ = s, 0);
 	res = 0;
 	while (ft_isdigit(*s))
+	{
+		if (sign == 1 && res > (INT64_MAX - *s + '0') / 10)
+			return (*s_ = s, 1);
+		else if (sign == -1 && res < (INT64_MIN + *s - '0') / 10)
+			return (*s_ = s, 1);
 		res = res * 10 + sign * (*s++ - '0');
+	}
 	while (ft_isspace(*s))
 		s++;
 	return (*s_ = s, res);
@@ -44,7 +50,7 @@ int32_t	main_exit(int32_t ac, char **av, t_sh_ctx *ctx)
 {
 	char	*arg;
 	char	*tmp;
-	int32_t	ret;
+	int64_t	ret;
 	size_t	arg_idx;
 
 	if (isatty(STDIN_FILENO) && isatty(STDOUT_FILENO))
@@ -66,5 +72,5 @@ int32_t	main_exit(int32_t ac, char **av, t_sh_ctx *ctx)
 	if (ac > (2 + !ft_strcmp(av[1], "--")))
 		return (ft_putstr_fd("minishell: exit: too many arguments\n",
 				STDERR_FILENO), 1);
-	return (ctx->exit = true, ret);
+	return (ctx->exit = true, ret % 256);
 }
