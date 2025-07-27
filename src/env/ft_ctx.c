@@ -6,12 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 11:21:58 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:53:40 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 15:22:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <readline/readline.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -70,4 +71,5 @@ void	context_free(t_sh_ctx *ctx)
 	free(ctx->p_id);
 	ast_free(ctx->head);
 	free(ctx);
+	rl_clear_history();
 }
