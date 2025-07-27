@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/08/01 11:35:09 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/08/01 12:14:44 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,21 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 	if (!ast)
 		return (ctx->lst_exit = 2);
 	g_sig = 0;
+#ifdef DEBUG_MODE
+# include "test/test.h"
+	if (PRINT_AST || PRINT_AST_NO_EXPAND)
+		print_ast(ast);
+#endif
 	ret = hd_init(ast);
 	if (!ret)
 		ret = exec_wrapper(ctx, ast);
 	else
 		ctx->lst_exit = ret;
+#ifdef DEBUG_MODE
+# include "test/test.h"
+	if (PRINT_AST || PRINT_AST_EXPAND)
+		print_expanded_ast(ast, ctx);
+#endif
 	ast_free(ast);
 	return (ret);
 }

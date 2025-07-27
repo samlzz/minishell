@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 15:23:50 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 11:22:50 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 16:43:02 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,11 @@ t_ast	*parse_ast(const char *input)
 	tk_lst = tokenise(input, &errcode);
 	if (!tk_lst)
 		return (err_print(errcode, errtok, true), NULL);
+#ifdef DEBUG_MODE
+# include "test/test.h"
+	if (PRINT_TOKENS)
+		print_tokens(tk_lst);
+#endif
 	res = new_ast(tk_lst, &errtok, &errcode);
 	errtok = token_pop(&tk_lst, errtok);
 	token_clear(tk_lst);

@@ -112,7 +112,9 @@ SRCS =	main.c \
 		parsing/parser/parse_expr.c \
 		parsing/parser/parse_rd.c \
 		parsing/parser/parse_rd_bonus.c \
-		parsing/parser/rd_utils.c
+		parsing/parser/rd_utils.c \
+		test/print_ast.c \
+		test/print_token.c
 ##end: SRCS
 
 OBJS	= $(addprefix $(BUILD_DIR)/, $(SRCS:.c=.o))
