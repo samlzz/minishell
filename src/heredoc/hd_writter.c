@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:08:12 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:22:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/27 09:22:27 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ static inline void	_hd_read(int write_fd, char const *delim)
 
 	while (1)
 	{
-		line = ft_getinput(HD_PROMPT);
+		line = ft_getinput(HD_PROMPT, false);
 		if (!line || g_sig == 2 || ft_strcmp(line, delim) == 0)
 		{
 			free(line);
@@ -72,6 +72,7 @@ uint8_t	hd_init(t_ast *head)
 	sig_init(SIGH_HD);
 	rl_event_hook = &check_rl_done_before_user_entry;
 	ret = hd_rec_init(head);
+	rl_event_hook = NULL;
 	sig_init(SIGH_MAIN);
 	return (ret);
 }

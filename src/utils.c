@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:13:30 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/27 04:12:55 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/27 09:22:15 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,9 @@
 
 #include "libft.h"
 #include "ft_gnl.h"
+#include "utils.h"
 
-char	*ft_getinput(char const *prompt)
+char	*ft_getinput(char const *prompt, bool is_main)
 {
 	size_t	len;
 	char	*input;
@@ -29,8 +30,10 @@ char	*ft_getinput(char const *prompt)
 	{
 		rl_outstream = stderr;
 		input = readline(prompt);
-		if (!input)
-			return (ft_putendl_fd("exit", 2), NULL);
+		if (!input && is_main)
+			return (ft_putendl_fd("exit", STDERR_FILENO), NULL);
+		else if (!input)
+			return (NULL);
 	}
 	else
 	{

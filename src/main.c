@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/01 16:56:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/27 04:12:51 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/27 09:22:35 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ static uint8_t	_launch_exec(t_sh_ctx *ctx, const char *input)
 	ast = parse_ast(input);
 	if (!ast)
 		return (ctx->lst_exit = 2);
+	g_sig = 0;
 	ret = hd_init(ast);
 	if (!ret)
 		ret = exec_wrapper(ctx, ast);
@@ -75,7 +76,7 @@ int	main(int argc, char const *argv[], char **envp)
 		return (_launch_exec(ctx, argv[2]));
 	while (1)
 	{
-		input = ft_getinput(CMD_PROMPT);
+		input = ft_getinput(CMD_PROMPT, true);
 		if (!input)
 			break ;
 		if (!_skipable(input, ctx))
