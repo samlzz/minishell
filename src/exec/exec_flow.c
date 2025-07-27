@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 18:18:54 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 11:18:09 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/27 05:46:24 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,18 +112,19 @@ uint8_t	exec_wrapper(t_sh_ctx *ctx, t_ast *node)
 	uint8_t			ret;
 	struct termios	tc_in;
 	struct termios	tc_out;
-	struct termios	tc_err;
 
 	ctx->head = node;
-	tcgetattr(STDIN_FILENO, &tc_in);
-	tcgetattr(STDOUT_FILENO, &tc_out);
-	tcgetattr(STDERR_FILENO, &tc_err);
+	if (isatty(STDIN_FILENO))
+		tcgetattr(STDIN_FILENO, &tc_in);
+	if (isatty(STDOUT_FILENO))
+		tcgetattr(STDOUT_FILENO, &tc_out);
 	ret = exec_flow_exec(ctx, node, (int32_t[2]){STDIN_FILENO, STDOUT_FILENO});
 	sig_init(SIGH_MAIN);
 	g_sig = 0;
-	tcsetattr(STDIN_FILENO, TCSANOW, &tc_in);
-	tcsetattr(STDOUT_FILENO, TCSANOW, &tc_out);
-	tcsetattr(STDERR_FILENO, TCSANOW, &tc_err);
+	if (isatty(STDIN_FILENO))
+		tcsetattr(STDIN_FILENO, TCSANOW, &tc_in);
+	if (isatty(STDOUT_FILENO))
+		tcsetattr(STDOUT_FILENO, TCSANOW, &tc_out);
 	ctx->head = NULL;
 	return (ret);
 }
