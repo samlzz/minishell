@@ -1,18 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_argword.c                                       :+:      :+:    :+:   */
+/*   argword_lib_bonus.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 19:25:33 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:50:13 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:13:56 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdlib.h>
+#ifdef MINISHELL_BONUS
 
-#include "expander.h"
+# include <stdlib.h>
+
+# include "argword.h"
 
 /**
  * @brief Allocate and initialize a new argword node.
@@ -44,39 +46,6 @@ t_argword	*argword_new(void)
 	return (new);
 }
 
-size_t	argword_size(t_argword *head)
-{
-	size_t	i;
-
-	i = 0;
-	while (head)
-	{
-		i++;
-		head = head->next;
-	}
-	return (i);
-}
-
-t_argword	*argword_getlast(t_argword *lst)
-{
-	while (lst && lst->next)
-		lst = lst->next;
-	return (lst);
-}
-
-void	argword_add_back(t_argword **lst, t_argword *new)
-{
-	t_argword	*last;
-
-	if (!*lst)
-	{
-		*lst = new;
-		return ;
-	}
-	last = argword_getlast(*lst);
-	last->next = new;
-}
-
 void	argword_clear(t_argword *lst)
 {
 	t_argword	*next;
@@ -91,3 +60,28 @@ void	argword_clear(t_argword *lst)
 		lst = next;
 	}
 }
+
+t_argword	*argword_detach_next(t_argword *node)
+{
+	t_argword	*next;
+
+	next = node->next;
+	node->next = NULL;
+	return (next);
+}
+
+t_argword	**argword_insert(t_argword **cur, t_argword *next, t_argword *node)
+{
+	t_argword	*tail;
+
+	(*cur)->next = NULL;
+	argword_clear(*cur);
+	*cur = node;
+	tail = node;
+	while (tail->next)
+		tail = tail->next;
+	tail->next = next;
+	return (&tail->next);
+}
+
+#endif

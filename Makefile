@@ -84,17 +84,19 @@ SRCS =	main.c \
 		exec/redir_flow.c \
 		exec/redir_utils.c \
 		exec/utils.c \
-		expansion/argword_fill.c \
-		expansion/argword_sort.c \
 		expansion/expand_utils.c \
 		expansion/expander.c \
 		expansion/expander_bonus.c \
 		expansion/export_expander.c \
 		expansion/field_splitting.c \
-		expansion/ft_argword.c \
 		expansion/tild_expand.c \
 		expansion/tild_utils.c \
-		expansion/wildcards.c \
+		expansion/wildcards_bonus.c \
+		expansion/ft_argword/argword_append.c \
+		expansion/ft_argword/argword_fill.c \
+		expansion/ft_argword/argword_lib.c \
+		expansion/ft_argword/argword_lib_bonus.c \
+		expansion/ft_argword/argword_sort.c \
 		handler/signal.c \
 		heredoc/hd_init.c \
 		heredoc/hd_tokeniser.c \

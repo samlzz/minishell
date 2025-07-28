@@ -6,11 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/10 10:47:05 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:24:39 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:13:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "expander.h"
+#ifdef MINISHELL_BONUS
+
+# include "argword.h"
 
 /**
  * @brief Merge two sorted argword lists.
@@ -83,3 +85,5 @@ void	argword_sort(t_argword **head)
 	argword_sort(&b);
 	*head = _merge(a, b);
 }
+
+#endif

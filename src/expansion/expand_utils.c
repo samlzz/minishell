@@ -6,104 +6,16 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/30 16:43:52 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:49:32 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:36:43 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
+#include "expander.h"
 #include "utils.h"
-#include "expansion/expander.h"
 
-t_argword	*argword_detach_next(t_argword *node)
-{
-	t_argword	*next;
-
-	next = node->next;
-	node->next = NULL;
-	return (next);
-}
-
-t_argword	**argword_insert(t_argword **cur, t_argword *next, t_argword *node)
-{
-	t_argword	*tail;
-
-	(*cur)->next = NULL;
-	argword_clear(*cur);
-	*cur = node;
-	tail = node;
-	while (tail->next)
-		tail = tail->next;
-	tail->next = next;
-	return (&tail->next);
-}
-
-/**
- * @brief Check for spaces and wildcards in the argument and record offsets.
- * 
- * This is use to later know witch char need to be expanded 
- * (or splited for space).
- * 
- * @param node Target argword node.
- * @param arg Input argument string.
- * @return int16_t 1 on success, 0 on failure.
- * 
- * @note This only runs for unquoted text.
- */
-static inline int16_t	_check_split_and_wild(t_argword *node, const char *arg)
-{
-	size_t	val_len;
-	size_t	i;
-
-	i = 0;
-	if (node->value)
-		val_len = ft_strlen(node->value);
-	else
-		val_len = 0;
-	while (arg[i])
-	{
-		if (ft_isspace(arg[i]))
-		{
-			if (!ft_dynint_append(&node->space_offsets, val_len + i))
-				return (0);
-		}
-		if (arg[i] == '*')
-		{
-			if (!ft_dynint_append(&node->wild_offsets, val_len + i))
-				return (0);
-		}
-		i++;
-	}
-	return (1);
-}
-
-/**
- * @brief Append a new value segment to an argword node.
- * 
- * If not quoted, updates space and wildcard tracking offsets.
- * 
- * @param node Target argword.
- * @param cur_arg The value string to append.
- * @param cur_quote Quote context of the string.
- * @return int16_t 1 on success, 0 on failure.
- */
-int16_t	argword_append_value(t_argword *node, const char *cur_arg,
-	t_quote_type cur_quote)
-{
-	char	*new_arg;
-
-	if (cur_quote == QUOTE_NONE)
-	{
-		if (!_check_split_and_wild(node, cur_arg))
-			return (0);
-	}
-	new_arg = ft_strappend(node->value, cur_arg);
-	if (!new_arg)
-		return (0);
-	free(node->value);
-	node->value = new_arg;
-	return (1);
-}
+#ifdef MINISHELL_BONUS
 
 bool	is_wildcard(t_dynint wild_offsets, int32_t i)
 {
@@ -117,4 +29,24 @@ bool	is_wildcard(t_dynint wild_offsets, int32_t i)
 		j++;
 	}
 	return (false);
+}
+
+#endif
+
+bool	is_export_cmd(t_token *argv)
+{
+	char	*argv0;
+	bool	resp;
+
+	argv0 = NULL;
+	while (argv && argv->value)
+	{
+		ft_strjreplace(&argv0, argv->value);
+		argv = argv->next;
+		if (argv && !argv->glued)
+			break ;
+	}
+	resp = ft_strcmp(argv0, "export") == 0;
+	free(argv0);
+	return (resp);
 }

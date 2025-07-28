@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 15:37:18 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:33:31 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
 		return (NULL);
 	if (split && expanded->space_offsets.len)
 	{
-		splitted = split_withespaces(expanded);
+		splitted = field_splitting(expanded);
 		argword_clear(expanded);
 		if (!splitted)
 			return (NULL);

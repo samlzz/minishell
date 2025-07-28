@@ -1,22 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wildcards.c                                        :+:      :+:    :+:   */
+/*   wildcards_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:46:48 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:41:35 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <dirent.h>
+#ifdef MINISHELL_BONUS
 
-#include "expander.h"
-#include "utils.h"
+# include <dirent.h>
 
-#define P 0
-#define T 1
+# include "expander.h"
+# include "utils.h"
+
+# define P 0
+# define T 1
 
 static inline void	_reassign_nb(int32_t *nb1, int32_t *nb2,
 	int32_t val1, int32_t val2)
@@ -103,7 +105,7 @@ static inline struct dirent	*_init_vars(DIR **dir_ptr, t_argword **null_ptr)
  * 
  * @see ft_strcmp
  */
-t_argword	*expand_wildcards(t_argword *arg)
+static t_argword	*_expand_wildcards(t_argword *arg)
 {
 	DIR				*dir;
 	struct dirent	*strm;
@@ -155,7 +157,7 @@ t_argword	*replace_wildcards(t_argword *head)
 			continue ;
 		}
 		next = argword_detach_next(*cursor);
-		expanded = expand_wildcards(*cursor);
+		expanded = _expand_wildcards(*cursor);
 		if (!expanded)
 		{
 			(*cursor)->next = next;
@@ -166,3 +168,5 @@ t_argword	*replace_wildcards(t_argword *head)
 	}
 	return (head);
 }
+
+#endif

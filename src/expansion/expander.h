@@ -6,67 +6,42 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 16:02:00 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:56:56 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXPANDER_H
 # define EXPANDER_H
 
-# include "ft_dyn.h"
-# include "env/env.h"
+# include "ft_argword/argword.h"
 # include "ast/ast.h"
-# include "lexer/token.h"
 
-// * Argwords
+int16_t		expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok);
 
-typedef struct s_argword
-{
-	char				*value;
-	t_dynint			wild_offsets;
-	t_dynint			space_offsets;
-	bool				is_expanded;
-	struct s_argword	*next;
-}	t_argword;
+t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split, \
+														bool is_export);
+t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx);
 
-// Ft_argword
-t_argword	*argword_new(void);
-size_t		argword_size(t_argword *head);
-t_argword	*argword_getlast(t_argword *lst);
-void		argword_add_back(t_argword **lst, t_argword *new);
-void		argword_clear(t_argword *lst);
-
-void		argword_sort(t_argword **head);
-
-// utils
-t_argword	**argword_insert(t_argword **cur, t_argword *next, \
-													t_argword *node);
-t_argword	*argword_detach_next(t_argword *node);
-int16_t		argword_append_value(t_argword *node, const char *cur_arg, \
-													t_quote_type cur_quote);
-
-bool		is_wildcard(t_dynint wild_offsets, int32_t i);
-
-// * Expand
-
-// ? tild expand
+// *Tild expand
 char		*ft_getuser(void);
 char		*ft_gethome(const char *username);
 void		expand_tild(t_token *cur, t_env *env);
 void		expand_tild_export(t_token *argv, t_env *env);
 
-t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur, bool assign_stop);
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split, \
-														bool is_export);
-bool		is_export_cmd(t_token *argv);
-t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx);
+// *Field splitting
+t_argword	*field_splitting(t_argword *field);
 
-int16_t		expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok);
+# ifdef MINISHELL_BONUS
 
-t_argword	*split_withespaces(t_argword *field);
-
+// *Wildcards
 t_argword	*replace_wildcards(t_argword *head);
 t_argword	*export_wildcard_handler(t_argword *args, t_argword *entry, \
 																t_token *cur);
+
+// *Utils
+bool		is_wildcard(t_dynint wild_offsets, int32_t i);
+# endif
+
+bool		is_export_cmd(t_token *argv);
 
 #endif

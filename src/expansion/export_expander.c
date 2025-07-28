@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 16:34:19 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:57:25 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,7 +125,8 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 	}
 	return (args);
 }
-# else
+
+#else
 
 t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 {
@@ -154,22 +155,5 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 	}
 	return (args);
 }
+
 #endif
-
-bool	is_export_cmd(t_token *argv)
-{
-	char	*argv0;
-	bool	resp;
-
-	argv0 = NULL;
-	while (argv && argv->value)
-	{
-		ft_strjreplace(&argv0, argv->value);
-		argv = argv->next;
-		if (argv && !argv->glued)
-			break ;
-	}
-	resp = ft_strcmp(argv0, "export") == 0;
-	free(argv0);
-	return (resp);
-}

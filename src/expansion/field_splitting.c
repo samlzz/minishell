@@ -6,11 +6,13 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/20 20:25:03 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:32:28 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "expander.h"
+
+#ifdef MINISHELL_BONUS
 
 /**
  * @brief Adjust wildcard offsets for a substring.
@@ -69,6 +71,36 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
 	return (1);
 }
 
+#else
+
+/**
+ * @brief Create and append a new argword from a substring.
+ *
+ * Substring is taken from `arg->value` using [start, start+len).
+ *
+ * @param lst Destination list to append to.
+ * @param arg Source argument word.
+ * @param start Start index.
+ * @param len Length of substring.
+ * @return int16_t 1 on success, 0 on failure.
+ */
+static int16_t	_add_word(t_argword **lst, t_argword *arg, \
+	int32_t start, int32_t len)
+{
+	t_argword	*new;
+
+	new = argword_new();
+	if (!new)
+		return (0);
+	new->value = ft_substr(arg->value, start, len);
+	if (!new->value)
+		return (argword_clear(new), 0);
+	argword_add_back(lst, new);
+	return (1);
+}
+
+#endif
+
 /**
  * @brief Split an argument word into several at whitespace positions.
  *
@@ -77,7 +109,7 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
  * @param arg Original argword.
  * @return t_argword* List of split argwords or NULL.
  */
-t_argword	*split_withespaces(t_argword *field)
+t_argword	*field_splitting(t_argword *field)
 {
 	t_argword	*lst;
 	size_t		i;
