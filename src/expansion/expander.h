@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:18:44 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 16:02:00 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,13 +57,16 @@ void		expand_tild_export(t_token *argv, t_env *env);
 
 t_argword	*fill_argword(t_sh_ctx *ctx, t_token **cur, bool assign_stop);
 t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split, \
-														bool assign_stop);
+														bool is_export);
 bool		is_export_cmd(t_token *argv);
 t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx);
 
 int16_t		expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok);
 
 t_argword	*split_withespaces(t_argword *field);
+
 t_argword	*replace_wildcards(t_argword *head);
+t_argword	*export_wildcard_handler(t_argword *args, t_argword *entry, \
+																t_token *cur);
 
 #endif

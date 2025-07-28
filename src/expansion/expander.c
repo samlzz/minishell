@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 10:07:41 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 15:37:18 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@
 #ifndef MINISHELL_BONUS
 
 t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
-															bool assign_stop)
+															bool is_export)
 {
 	t_argword	*splitted;
 	t_argword	*expanded;
 
-	expanded = fill_argword(ctx, cur, assign_stop);
+	expanded = fill_argword(ctx, cur, is_export);
 	if (!expanded)
 		return (NULL);
 	if (split && expanded->space_offsets.len)

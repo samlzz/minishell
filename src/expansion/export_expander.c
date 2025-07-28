@@ -6,10 +6,11 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/25 09:33:20 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/28 16:34:19 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #include "expander.h"
@@ -42,6 +43,28 @@ static bool	_is_export_valid_key(t_token *cur)
 	return (free(key), false);
 }
 
+static inline int16_t	_append_value_and_lst(t_argword **lst,
+										t_argword *target, t_argword **entry)
+{
+	t_argword	*to_del;
+
+	if (!target)
+	{
+		argword_add_back(lst, *entry);
+		return (0);
+	}
+	if ((*entry)->value && !argword_append_value(target, (*entry)->value,
+			QUOTE_SINGLE))
+		return (1);
+	to_del = *entry;
+	*entry = (*entry)->next;
+	to_del->next = NULL;
+	argword_clear(to_del);
+	if (*entry)
+		argword_add_back(lst, *entry);
+	return (0);
+}
+
 static inline int16_t	_handle_assign_tk(t_token **cur, t_argword **args,
 											t_argword **append, bool val_split)
 {
@@ -72,27 +95,37 @@ static inline int16_t	_handle_assign_tk(t_token **cur, t_argword **args,
 	return (1);
 }
 
-static inline int16_t	_append_value_and_lst(t_argword **lst,
-										t_argword *target, t_argword **entry)
-{
-	t_argword	*to_del;
+#ifdef MINISHELL_BONUS
 
-	if (!target)
+t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
+{
+	t_argword	*args;
+	t_argword	*entry;
+	int16_t		split;
+	bool		val_split;
+	t_argword	*append;
+
+	args = NULL;
+	append = NULL;
+	split = true;
+	expand_tild_export(cur, ctx->env);
+	while (cur)
 	{
-		argword_add_back(lst, *entry);
-		return (0);
+		val_split = !_is_export_valid_key(cur);
+		entry = expand_word(ctx, &cur, split, true);
+		entry = export_wildcard_handler(args, entry, cur);
+		if (!entry)
+			return (argword_clear(args), NULL);
+		if (_append_value_and_lst(&args, append, &entry))
+			return (argword_clear(args), argword_clear(entry), NULL);
+		append = NULL;
+		split = _handle_assign_tk(&cur, &args, &append, val_split);
+		if (split < 0)
+			return (argword_clear(args), NULL);
 	}
-	if ((*entry)->value && !argword_append_value(target, (*entry)->value,
-			QUOTE_SINGLE))
-		return (1);
-	to_del = *entry;
-	*entry = (*entry)->next;
-	to_del->next = NULL;
-	argword_clear(to_del);
-	if (*entry)
-		argword_add_back(lst, *entry);
-	return (0);
+	return (args);
 }
+# else
 
 t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 {
@@ -121,6 +154,7 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 	}
 	return (args);
 }
+#endif
 
 bool	is_export_cmd(t_token *argv)
 {
