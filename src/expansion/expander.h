@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 19:14:55 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 08:38:47 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@
 
 int16_t		expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok);
 
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split, \
-														bool is_export);
+t_argword	*expand_word_handler(t_sh_ctx *ctx, t_token **cur, bool split,
+																bool is_export);
 t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx);
 
 // *Tild expand

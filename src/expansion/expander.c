@@ -6,37 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 17:33:31 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:00:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
 #include "expander.h"
-
-#ifndef MINISHELL_BONUS
-
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
-															bool is_export)
-{
-	t_argword	*splitted;
-	t_argword	*expanded;
-
-	expanded = fill_argword(ctx, cur, is_export);
-	if (!expanded)
-		return (NULL);
-	if (split && expanded->space_offsets.len)
-	{
-		splitted = field_splitting(expanded);
-		argword_clear(expanded);
-		if (!splitted)
-			return (NULL);
-		expanded = splitted;
-	}
-	return (expanded);
-}
-
-#endif
+#include "lexer/token.h"
 
 int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
 {
@@ -45,7 +22,7 @@ int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
 
 	cur = rd->u_data.rd.filename.tk;
 	expand_tild(cur, ctx->env);
-	file = expand_word(ctx, &cur, false, false);
+	file = expand_word_handler(ctx, &cur, false, false);
 	if (!file)
 		return (1);
 	if (argword_size(file) > 1)
@@ -100,7 +77,7 @@ int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 		while (cur)
 		{
 			expand_tild(cur, ctx->env);
-			field = expand_word(ctx, &cur, true, false);
+			field = expand_word_handler(ctx, &cur, true, false);
 			if (!field)
 				return (argword_clear(args), 1);
 			argword_add_back(&args, field);
@@ -108,10 +85,13 @@ int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 	}
 	if (!args)
 		return (1);
-	return (token_clear(cmd->u_data.cmd.args->tk), free(cmd->u_data.cmd.args),
-		cmd->u_data.cmd.args = NULL, cmd->u_data.cmd.is_expanded = true,
-		_construct_argv(&cmd->u_data.cmd.args, args),
-		argword_clear(args), !cmd->u_data.cmd.args);
+	token_clear(cmd->u_data.cmd.args->tk);
+	free(cmd->u_data.cmd.args);
+	cmd->u_data.cmd.args = NULL;
+	cmd->u_data.cmd.is_expanded = true;
+	_construct_argv(&cmd->u_data.cmd.args, args);
+	argword_clear(args);
+	return (!cmd->u_data.cmd.args);
 }
 
 int16_t	expand_node(t_sh_ctx *ctx, t_ast *node, t_token **errtok)

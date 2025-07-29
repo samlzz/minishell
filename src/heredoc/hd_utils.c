@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/27 22:11:06 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 10:47:45 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 08:39:34 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ void	hd_expand_line(t_sh_ctx *ctx, char **line)
 	cur = tokens;
 	while (cur && cur->type != TK_EOF)
 	{
-		expanded = expand_word(ctx, &cur, false, false);
+		expanded = expand_word_handler(ctx, &cur, false, false);
 		if (!expanded || !ft_dynbuf_append_str(&dest, expanded->value))
 			return (token_clear(tokens), ft_dynbuf_free(&dest));
 	}

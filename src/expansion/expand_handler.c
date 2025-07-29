@@ -1,21 +1,21 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   expander_bonus.c                                   :+:      :+:    :+:   */
+/*   expand_handler.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 17:42:38 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 08:41:05 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-#ifdef MINISHELL_BONUS
 
 # include "expander.h"
 # include "lexer/token.h"
 # include "libft.h"
 # include <stdbool.h>
+
+#ifdef MINISHELL_BONUS
 
 static inline bool	_prev_is_glued_eq(t_argword *already_parsed, t_token *word)
 {
@@ -43,8 +43,8 @@ t_argword	*export_wildcard_handler(t_argword *args, t_argword *entry, \
 	return (replace_wildcards(entry));
 }
 
-t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
-														bool is_export)
+t_argword	*expand_word_handler(t_sh_ctx *ctx, t_token **cur, bool split,
+																bool is_export)
 {
 	t_argword	*splitted;
 	t_argword	*expanded;
@@ -64,5 +64,28 @@ t_argword	*expand_word(t_sh_ctx *ctx, t_token **cur, bool split,
 		return (expanded);
 	return (replace_wildcards(expanded));
 }
+
+#else
+
+t_argword	*expand_word_handler(t_sh_ctx *ctx, t_token **cur, bool split,
+																bool is_export)
+{
+	t_argword	*splitted;
+	t_argword	*expanded;
+
+	expanded = fill_argword(ctx, cur, is_export);
+	if (!expanded)
+		return (NULL);
+	if (split && expanded->space_offsets.len)
+	{
+		splitted = field_splitting(expanded);
+		argword_clear(expanded);
+		if (!splitted)
+			return (NULL);
+		expanded = splitted;
+	}
+	return (expanded);
+}
+
 
 #endif

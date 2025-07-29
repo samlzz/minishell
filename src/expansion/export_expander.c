@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 17:57:25 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 08:39:45 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,7 +112,7 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 	while (cur)
 	{
 		val_split = !_is_export_valid_key(cur);
-		entry = expand_word(ctx, &cur, split, true);
+		entry = expand_word_handler(ctx, &cur, split, true);
 		entry = export_wildcard_handler(args, entry, cur);
 		if (!entry)
 			return (argword_clear(args), NULL);
@@ -143,7 +143,7 @@ t_argword	*expand_export_cmd(t_token *cur, t_sh_ctx *ctx)
 	while (cur)
 	{
 		val_split = !_is_export_valid_key(cur);
-		entry = expand_word(ctx, &cur, split, true);
+		entry = expand_word_handler(ctx, &cur, split, true);
 		if (!entry)
 			return (argword_clear(args), NULL);
 		if (_append_value_and_lst(&args, append, &entry))
