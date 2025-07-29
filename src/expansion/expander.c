@@ -6,13 +6,15 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/29 09:00:17 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:18:08 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
 
 #include "expander.h"
+#include "env/env.h"
+#include "expansion/ft_argword/argword.h"
 #include "lexer/token.h"
 
 int16_t	expand_redir(t_ast *rd, t_sh_ctx *ctx, t_token **errtok)
@@ -62,6 +64,16 @@ static inline void	_construct_argv(t_words **dest, t_argword *args)
 	}
 }
 
+static void	_replace_tks_by_strs(t_ast *cmd, t_argword *args)
+{
+	token_clear(cmd->u_data.cmd.args->tk);
+	free(cmd->u_data.cmd.args);
+	cmd->u_data.cmd.args = NULL;
+	cmd->u_data.cmd.is_expanded = true;
+	_construct_argv(&cmd->u_data.cmd.args, args);
+	argword_clear(args);
+}
+
 int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 {
 	t_argword	*args;
@@ -85,12 +97,7 @@ int16_t	expand_command(t_ast *cmd, t_sh_ctx *ctx)
 	}
 	if (!args)
 		return (1);
-	token_clear(cmd->u_data.cmd.args->tk);
-	free(cmd->u_data.cmd.args);
-	cmd->u_data.cmd.args = NULL;
-	cmd->u_data.cmd.is_expanded = true;
-	_construct_argv(&cmd->u_data.cmd.args, args);
-	argword_clear(args);
+	_replace_tks_by_strs(cmd, args);
 	return (!cmd->u_data.cmd.args);
 }
 

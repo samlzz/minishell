@@ -6,14 +6,14 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:21:54 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/29 08:41:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:15:48 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include "expander.h"
-# include "lexer/token.h"
-# include "libft.h"
-# include <stdbool.h>
+#include "expander.h"
+#include "lexer/token.h"
+#include "libft.h"
+#include <stdbool.h>
 
 #ifdef MINISHELL_BONUS
 
@@ -86,6 +86,5 @@ t_argword	*expand_word_handler(t_sh_ctx *ctx, t_token **cur, bool split,
 	}
 	return (expanded);
 }
-
 
 #endif
