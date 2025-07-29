@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/11 18:58:42 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 19:16:05 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:12:17 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,6 @@ static t_argword	*_expand_wildcards(t_argword *arg)
 	}
 	if (dir)
 		closedir(dir);
-	match = filter_dot_ones(match);
 	return (argword_sort(&match), match);
 }
 

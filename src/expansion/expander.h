@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/09 19:18:15 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/29 08:38:47 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:12:13 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ t_argword	*export_wildcard_handler(t_argword *args, t_argword *entry, \
 
 // *Utils
 bool		is_wildcard(t_dynint wild_offsets, int32_t i);
-t_argword	*filter_dot_ones(t_argword *lst);
 # endif
 
 bool		is_export_cmd(t_token *argv);
