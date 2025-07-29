@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 07:38:14 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/28 00:33:43 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/29 03:42:25 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ bool	bi_putstr(char *cmd, char *str)
 	if (write(STDOUT_FILENO, str, len) == -1)
 	{
 		errno_ = errno;
+		if (errno_ == EPIPE)
+			return (false);
 		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		ft_putstr_fd(cmd, STDERR_FILENO);
 		ft_putstr_fd(": write error: ", STDERR_FILENO);
