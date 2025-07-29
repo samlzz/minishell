@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/25 10:28:47 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/29 04:31:02 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,19 @@ static void	_exec_flow_cmd_builtin(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 
 void	exec_flow_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 {
+	int32_t	ret;
+
 	if (node && node->type == ND_REDIR)
 		exec_flow_redir(ctx, node, fds);
 	else if (node && node->type == ND_CMD && node->u_data.cmd.bi)
 		_exec_flow_cmd_builtin(ctx, node, fds);
 	else if (node && node->type == ND_CMD)
 		_exec_flow_cmd_cmd(ctx, node, fds);
+	else if (node && node->type == ND_SUBSHELL)
+	{
+		ft_dup_fds(fds);
+		ret = exec_flow_exec(ctx, node->u_data.subsh.child,
+				(int32_t[2]){STDIN_FILENO, STDOUT_FILENO});
+		return (ft_close_all(NULL), context_free(ctx), exit(ret));
+	}
 }
