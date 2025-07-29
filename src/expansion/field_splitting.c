@@ -6,11 +6,17 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 18:15:41 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/28 17:32:28 by sliziard         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:08:09 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdint.h>
+
 #include "expander.h"
+#include "ft_dyn.h"
+#include "libft.h"
 
 #ifdef MINISHELL_BONUS
 
@@ -67,6 +73,7 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
 		return (argword_clear(new), 0);
 	if (!_adjust_wildcards(&new->wild_offsets, &arg->wild_offsets, start, len))
 		return (0);
+	new->is_expanded = arg->is_expanded;
 	argword_add_back(lst, new);
 	return (1);
 }
@@ -101,6 +108,24 @@ static int16_t	_add_word(t_argword **lst, t_argword *arg, \
 
 #endif
 
+static inline bool	_is_full_ws(const char *val, t_dynint space_offset)
+{
+	int32_t	prev;
+	size_t	ws_char;
+	size_t	i;
+
+	i = 0;
+	ws_char = 0;
+	prev = -1;
+	while (i < space_offset.len)
+	{
+		if (space_offset.data[i] == prev + 1)
+			ws_char++;
+		prev = space_offset.data[i++];
+	}
+	return (ws_char == ft_strlen(val));
+}
+
 /**
  * @brief Split an argument word into several at whitespace positions.
  *
@@ -119,7 +144,9 @@ t_argword	*field_splitting(t_argword *field)
 	i = 0;
 	start = 0;
 	lst = NULL;
-	if (!field->value || !*field->value)
+	if (!field->value || !*field->value \
+		|| _is_full_ws(field->value, field->space_offsets)
+	)
 		return (_add_word(&lst, field, 0, 0), lst);
 	while (i < field->space_offsets.len)
 	{
