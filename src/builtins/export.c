@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/28 00:39:40 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/29 06:54:37 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static inline int32_t	_print_env(t_sh_ctx *ctx)
 	envp = env_get_envp(ctx->env, NULL, true);
 	if (!envp)
 		return (perror("minishell: malloc"), 1);
+	export_sort_envp(envp);
 	ok = true;
 	i = -1;
 	while (envp[++i] && ok)
