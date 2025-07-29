@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 18:54:02 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/29 04:31:02 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/29 09:19:31 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,8 @@ static void	_exec_flow_cmd_cmd(t_sh_ctx *ctx, t_ast *node, int32_t fds[2])
 	char	*cmd;
 
 	argv = &node->u_data.cmd.args->expanded;
+	if (!*argv)
+		return (context_free(ctx), exit(0));
 	node->u_data.cmd.args = NULL;
 	cmd = exec_get_cmd_path(argv, ctx);
 	if (!cmd)
