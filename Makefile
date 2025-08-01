@@ -62,6 +62,7 @@ INCLUDES =	$(LIBFT_DIR)/include/	\
 SRCS =	main.c \
 		utils.c \
 		builtins/cd.c \
+		builtins/cd_helpers.c \
 		builtins/echo.c \
 		builtins/env.c \
 		builtins/exit.c \

@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/28 00:43:20 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/08/01 03:45:17 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include "libft.h"
@@ -107,7 +108,8 @@ static inline int32_t	_print_and_update_pwd(bool should_print, t_sh_ctx *ctx)
 
 int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx)
 {
-	char	*dir;
+	char		*dir;
+	char		*tmp;
 
 	if (_check_invalid_opt(&ac, &av))
 		return (2);
@@ -118,8 +120,15 @@ int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx)
 		return (1);
 	if (!dir[0])
 		return (free(dir), _print_and_update_pwd(false, ctx));
-	if (chdir(dir))
-		return (_print_chdir_err(dir));
+	tmp = cd_absolute(ctx, dir);
+	if (!tmp)
+		return (perror("minishell: malloc"), free(dir), 1);
+	tmp = cd_canonicalize(tmp);
+	if (!tmp || !tmp[0])
+		return (errno = ENOTDIR, _print_chdir_err(dir));
+	if (chdir(tmp))
+		return (_print_chdir_err(dir), free(tmp), 1);
+	free(tmp);
 	return (free(dir), _print_and_update_pwd(ac > 0 && !ft_strcmp(av[0], "-"),
 			ctx));
 }

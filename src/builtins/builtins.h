@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:39 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/07/29 06:54:26 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/31 11:22:45 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,9 @@ int32_t	main_unset(int32_t ac, char **av, t_sh_ctx *ctx);
 bool	check_invalid_opt(int32_t *ac, char ***av);
 bool	is_valid_env_name(char *name, bool print_err);
 void	export_sort_envp(char **envp);
+
+// cd helpers
+char	*cd_absolute(t_sh_ctx *ctx, char *path);
+char	*cd_canonicalize(char *path);
 
 #endif
