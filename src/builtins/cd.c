@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/01 05:28:30 by mle-flem          #+#    #+#             */
-/*   Updated: 2025/08/01 03:45:17 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/08/01 12:11:21 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,8 +124,10 @@ int32_t	main_cd(int32_t ac, char **av, t_sh_ctx *ctx)
 	if (!tmp)
 		return (perror("minishell: malloc"), free(dir), 1);
 	tmp = cd_canonicalize(tmp);
-	if (!tmp || !tmp[0])
+	if ((!tmp || !tmp[0]) && errno == EACCES)
 		return (errno = ENOTDIR, _print_chdir_err(dir));
+	if (!tmp || !tmp[0])
+		return (_print_chdir_err(dir));
 	if (chdir(tmp))
 		return (_print_chdir_err(dir), free(tmp), 1);
 	free(tmp);
