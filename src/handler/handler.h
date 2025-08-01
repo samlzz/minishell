@@ -6,7 +6,7 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:57 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/24 08:34:53 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/31 09:35:42 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,8 @@
 # define HANDLER_H
 
 # include <stdint.h>
-# include <signal.h>
 
-extern volatile sig_atomic_t	g_sig;
+extern volatile int32_t	g_sig;
 
 typedef enum e_sig_handle
 {

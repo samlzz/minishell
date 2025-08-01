@@ -6,18 +6,18 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/27 08:59:18 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/07/31 09:36:04 by mle-flem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
-#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
 
 #include "handler.h"
 
-volatile sig_atomic_t	g_sig = 0;
+volatile int32_t	g_sig = 0;
 
 void	sigint_handler(int32_t sig)
 {
@@ -42,7 +42,7 @@ void	hd_quit_handler(int32_t sig)
 
 void	sig_init(t_sig_handle action)
 {
-	void	(*h)(int);
+	void	(*h)(int32_t);
 
 	if (action == SIGH_MAIN)
 	{
