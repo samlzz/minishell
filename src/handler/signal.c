@@ -6,11 +6,12 @@
 /*   By: sliziard <sliziard@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/02 12:15:07 by sliziard          #+#    #+#             */
-/*   Updated: 2025/07/31 09:36:04 by mle-flem         ###   ########.fr       */
+/*   Updated: 2025/08/01 11:38:02 by sliziard         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
